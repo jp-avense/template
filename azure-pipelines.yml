@@ -16,8 +16,8 @@ steps:
 
 - task: NodeTool@0
   inputs:
-    versionSpec: '6.x'
-    checkLatest: true
+    versionSpec: '10.24.1'
+    checkLatest: false
   displayName: 'Install Node.js'
 
 - task: Npm@1
