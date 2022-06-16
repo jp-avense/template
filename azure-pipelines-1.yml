@@ -17,9 +17,17 @@ steps:
 
 - script: |
     npm install
-    npm run build
+   
   displayName: 'npm install and build'
   
+   
+- task: Npm@1
+  displayName: 'npm run build'
+  inputs:
+    command: 'custom'
+    workingDir: '.'
+    customCommand: 'run build'
+
 - task: PublishBuildArtifacts@1
   displayName: 'publish product-bo/build'
   inputs:
