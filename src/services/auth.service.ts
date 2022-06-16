@@ -1,15 +1,22 @@
-import { ApiService } from "./api.service";
+import { apiService } from "./api.service";
 
-export class AuthService extends ApiService {
-  private LOGIN_URL = "auth/login";
+const LOGIN_URL = "auth/login";
 
-  private REFRESH_URL = "auth/refresh";
+const REFRESH_URL = "auth/refresh";
 
-  private LOGOUT_URL = "auth/logout";
+const LOGOUT_URL = "auth/logout";
 
-  private USER_URL = "auth/user";
+const USER_URL = "auth/user";
 
+export const authService = {
   async login(username: string, password: string) {
-    return this.axios.post(this.LOGIN_URL, { username, password });
-  }
-}
+    return apiService.post(LOGIN_URL, { username, password });
+  },
+  async refresh(token: string) {
+    return apiService.get(REFRESH_URL, {
+      headers: {
+        "x-refresh-token": token,
+      },
+    });
+  },
+};

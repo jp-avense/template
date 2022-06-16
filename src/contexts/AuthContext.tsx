@@ -1,7 +1,8 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import { apiService } from "src/services/api.service";
 
 type AuthContextT = {
-  handleAuth: {
+  handleAccess: {
     accessToken: any;
     setAccessToken: React.Dispatch<any>;
   };
@@ -21,12 +22,30 @@ export const AuthProvider = ({ children }) => {
   const [idToken, setIdToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
 
-  const handleAuth = { accessToken, setAccessToken };
+  const handleAccess = { accessToken, setAccessToken };
   const handleId = { idToken, setIdToken };
   const handleRefresh = { refreshToken, setRefreshToken };
 
+  useEffect(() => {
+    if (accessToken)
+      apiService.defaults.headers.common["x-access-token"] = accessToken;
+    else delete apiService.defaults.headers.common["x-access-token"];
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (idToken)
+      apiService.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
+    else delete apiService.defaults.headers.common["Authorization"];
+  }, [idToken]);
+
+  useEffect(() => {
+    if (refreshToken)
+      apiService.defaults.headers.common["x-refresh-token"] = refreshToken;
+    else delete apiService.defaults.headers.common["x-refresh-token"];
+  }, [refreshToken]);
+
   return (
-    <AuthContext.Provider value={{ handleAuth, handleId, handleRefresh }}>
+    <AuthContext.Provider value={{ handleAccess, handleId, handleRefresh }}>
       {children}
     </AuthContext.Provider>
   );

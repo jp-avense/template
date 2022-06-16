@@ -12,39 +12,43 @@ import {
 } from "@mui/material";
 import { useState, useRef, useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import logo from "src/assets/images/logo.png";
-import { AuthService } from "src/services/auth.service";
+import { authService } from "src/services/auth.service";
 import { useFormik } from "formik";
 import { AuthContext } from "src/contexts/AuthContext";
 import { useCookies } from "react-cookie";
+import * as yup from "yup";
 
-const service = new AuthService();
+const validationSchema = yup.object({
+  username: yup.string().required().email(),
+  password: yup.string().required(),
+});
 
 const LoginPage = () => {
   const navigate = useNavigate();
+
   const [error, setError] = useState("");
   const context = useContext(AuthContext);
-  const [cookies, setCookie] = useCookies(["refreshToken"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["refreshToken"]);
+
+  const {
+    handleAccess: { accessToken, setAccessToken },
+    handleRefresh: { setRefreshToken },
+    handleId: { idToken, setIdToken },
+  } = context;
 
   const formik = useFormik({
     initialValues: { username: "", password: "" },
+    validationSchema,
     onSubmit: async ({ username, password }, { setSubmitting }) => {
       try {
         setSubmitting(true);
 
-        const { data } = await service.login(username, password);
+        const { data } = await authService.login(username, password);
 
         const { AccessToken, RefreshToken, IdToken } =
           data.AuthenticationResult;
-
-        console.log(AccessToken, RefreshToken, IdToken);
-
-        const {
-          handleAuth: { setAccessToken },
-          handleRefresh: { setRefreshToken },
-          handleId: { setIdToken },
-        } = context;
 
         setAccessToken(AccessToken);
         setRefreshToken(RefreshToken);
@@ -55,6 +59,8 @@ const LoginPage = () => {
         setCookie("refreshToken", RefreshToken, {
           maxAge: DAYS * 30,
         });
+
+        navigate("/tasks");
       } catch (error) {
         if (error.response) setError(error.response.data.message);
         else if (error.request) setError("No response from server");
@@ -64,6 +70,10 @@ const LoginPage = () => {
       }
     },
   });
+
+  if (accessToken && idToken) {
+    return <Navigate to="/tasks" />;
+  }
 
   return (
     <>
@@ -102,6 +112,10 @@ const LoginPage = () => {
                     variant="outlined"
                     type="email"
                     name="username"
+                    helperText={
+                      formik.touched.username && formik.errors.username
+                    }
+                    error={formik.touched.username && !!formik.errors.username}
                     onChange={formik.handleChange}
                   />
                   <TextField
@@ -110,6 +124,10 @@ const LoginPage = () => {
                     variant="outlined"
                     type="password"
                     name="password"
+                    helperText={
+                      formik.touched.password && formik.errors.password
+                    }
+                    error={formik.touched.password && !!formik.errors.password}
                     onChange={formik.handleChange}
                   />
                   <Button
