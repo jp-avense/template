@@ -1,22 +1,70 @@
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   TextField,
 } from "@mui/material";
+import { useState, useRef, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router";
 import logo from "src/assets/images/logo.png";
+import { AuthService } from "src/services/auth.service";
+import { useFormik } from "formik";
+import { AuthContext } from "src/contexts/AuthContext";
+import { useCookies } from "react-cookie";
+
+const service = new AuthService();
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const context = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(["refreshToken"]);
 
-  const navigateToHome = () => {
-    navigate("/tasks");
-  };
+  const formik = useFormik({
+    initialValues: { username: "", password: "" },
+    onSubmit: async ({ username, password }, { setSubmitting }) => {
+      try {
+        setSubmitting(true);
+
+        const { data } = await service.login(username, password);
+
+        const { AccessToken, RefreshToken, IdToken } =
+          data.AuthenticationResult;
+
+        console.log(AccessToken, RefreshToken, IdToken);
+
+        const {
+          handleAuth: { setAccessToken },
+          handleRefresh: { setRefreshToken },
+          handleId: { setIdToken },
+        } = context;
+
+        setAccessToken(AccessToken);
+        setRefreshToken(RefreshToken);
+        setIdToken(IdToken);
+
+        const DAYS = 60 * 60 * 24;
+
+        setCookie("refreshToken", RefreshToken, {
+          maxAge: DAYS * 30,
+        });
+      } catch (error) {
+        if (error.response) setError(error.response.data.message);
+        else if (error.request) setError("No response from server");
+        else setError("Unable to submit data. Please try again later");
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
+
   return (
     <>
       <Helmet>Login</Helmet>
@@ -35,7 +83,13 @@ const LoginPage = () => {
           <Card sx={{ width: 500 }}>
             <CardHeader title="Login to the app"></CardHeader>
             <CardContent>
-              <form action="">
+              {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
+              )}
+
+              <form onSubmit={formik.handleSubmit}>
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -46,16 +100,28 @@ const LoginPage = () => {
                     id="outlined-basic"
                     label="Email"
                     variant="outlined"
-                    type="text"
+                    type="email"
+                    name="username"
+                    onChange={formik.handleChange}
                   />
                   <TextField
                     id="outlined-basic"
                     label="Password"
                     variant="outlined"
                     type="password"
+                    name="password"
+                    onChange={formik.handleChange}
                   />
-                  <Button variant="contained" onClick={navigateToHome}>
-                    Login
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={formik.isSubmitting}
+                  >
+                    {formik.isSubmitting ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </Box>
               </form>

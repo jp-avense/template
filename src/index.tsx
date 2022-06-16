@@ -1,19 +1,24 @@
-import ReactDOM from 'react-dom';
-import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter } from 'react-router-dom';
+import ReactDOM from "react-dom";
+import { HelmetProvider } from "react-helmet-async";
+import { BrowserRouter } from "react-router-dom";
 
-import 'nprogress/nprogress.css';
-import App from 'src/App';
-import { SidebarProvider } from 'src/contexts/SidebarContext';
+import "nprogress/nprogress.css";
+import App from "src/App";
+import { SidebarProvider } from "src/contexts/SidebarContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CookiesProvider } from "react-cookie";
 
 ReactDOM.render(
   <HelmetProvider>
-    <SidebarProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </SidebarProvider>
+    <CookiesProvider>
+      <AuthProvider>
+        <SidebarProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </SidebarProvider>
+      </AuthProvider>
+    </CookiesProvider>
   </HelmetProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
-
