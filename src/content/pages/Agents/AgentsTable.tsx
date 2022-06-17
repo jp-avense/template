@@ -1,17 +1,10 @@
-
-import { FC, ChangeEvent, useState } from 'react';
-import { format } from 'date-fns';
-import numeral from 'numeral';
-import PropTypes from 'prop-types';
+import { FC, ChangeEvent, useState, useCallback, useContext } from "react";
+import PropTypes from "prop-types";
 import {
-  Tooltip,
   Divider,
   Box,
-  FormControl,
-  InputLabel,
   Card,
   Checkbox,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -19,132 +12,82 @@ import {
   TablePagination,
   TableRow,
   TableContainer,
-  Select,
-  MenuItem,
   Typography,
   useTheme,
-  CardHeader
-} from '@mui/material';
+  CardHeader,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
-import Label from 'src/components/Label';
-import { CryptoOrder, CryptoOrderStatus } from 'src/models/crypto_order';
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { Agents , AgentStatus } from 'src/models/agents';
-
+import { AgentContext, IAgent } from "src/contexts/AgentContext";
+import Label from "src/components/Label";
+import { agentService } from "src/services/agent.service";
 
 interface AgentTableProps {
   className?: string;
-  Agents: Agents[];
+  Agents: IAgent[];
+  loading: boolean;
 }
 
-interface Filters {
-  status?: AgentStatus;
-}
+const headCells = [
+  { id: "name", label: "Name" },
+  { id: "phone_number", label: "Phone Number" },
+  { id: "email", label: "Email" },
+  { id: "status", label: "Status" },
+];
 
-const getStatusLabel = (cryptoOrderStatus: AgentStatus): JSX.Element => {
+const getStatusLabel = (status: 0 | 1) => {
   const map = {
-    disabled: {
-      text: 'Disabled',
-      color: 'error'
+    1: {
+      text: "Enabled",
+      color: "success",
     },
-    active: {
-      text: 'Active',
-      color: 'success'
+    0: {
+      text: "Disabled",
+      color: "error",
     },
-    pending: {
-      text: 'Pending',
-      color: 'warning'
-    }
   };
 
-  const { text, color }: any = map[cryptoOrderStatus];
+  const { text, color }: any = map[status];
 
   return <Label color={color}>{text}</Label>;
 };
 
-const headCells = [
-  { id: 'name', label: 'First Name' },
-  { id: 'familyName', label: 'Last Name' },
-  { id: 'phoneNumber', label: 'Phone Number' },
-  { id: 'username', label: 'User Name' },
-  { id: 'email', label: 'Email Address' },
-  { id: 'status', label: 'Status' },
-];
-
-
-const applyFilters = (
-  Agents: Agents[],
-  filters: Filters
-): Agents[] => {
-  return Agents.filter((agents) => {
-    let matches = true;
-
-    if (filters.status && agents.status !== filters.status) {
-      matches = false;
-    }
-
-    return matches;
-  });
+const applyPagination = (agents: IAgent[], page: number, limit: number) => {
+  return agents.slice(page * limit, page * limit + limit);
 };
 
-const applyPagination = (
-  cryptoOrders: Agents[],
-  page: number,
-  limit: number
-): Agents[] => {
-  return cryptoOrders.slice(page * limit, page * limit + limit);
-};
-
-const RecentOrdersTable: FC<AgentTableProps> = ({ Agents }) => {
-  const [selectedCryptoOrders, setSelectedCryptoOrders] = useState<string[]>(
-    []
-  );
+const AgentTable: FC<AgentTableProps> = ({ Agents, loading }) => {
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+  const context = useContext(AgentContext)
+  const { getAgents } = context.handleAgents
+  const { setLoading } = context.handleLoading
 
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
-  const [filters, setFilters] = useState<Filters>({
-    status: null
-  });
 
-  const statusOptions = [
-    {
-      id: 'active',
-      name: 'Active'
-    },
-    {
-      id: 'disabled',
-      name: 'Disabled'
-    },
-    {
-      id: 'pending',
-      name: 'Pending'
-    },
-  ];
+  const changeStatus = useCallback(async (status: "enable" | "disable") => {
+    try {
+      setLoading(true)
+      await agentService.changeStatus(selectedAgents, status);
+      await getAgents()
+    } catch (error) {
 
-  const handleSelectAllCryptoOrders = (
-    event: ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSelectedCryptoOrders(
-      event.target.checked
-        ? Agents.map((cryptoOrder) => cryptoOrder.firstName)
-        : []
-    );
+    }
+  }, [selectedAgents]);
+
+  const handleSelectAll = (event) => {
+    const res = event.target.checked ? Agents.map((item) => item.email) : [];
+    setSelectedAgents(res);
   };
 
-  const handleSelectOneCryptoOrder = (
-    event: ChangeEvent<HTMLInputElement>,
-    cryptoOrderId: string
-  ): void => {
-    if (!selectedCryptoOrders.includes(cryptoOrderId)) {
-      setSelectedCryptoOrders((prevSelected) => [
-        ...prevSelected,
-        cryptoOrderId
-      ]);
+  const handleSelectOne = (event, agentEmail: string): void => {
+    if (!selectedAgents.includes(agentEmail)) {
+      const res = [...selectedAgents, agentEmail]
+      setSelectedAgents(res);
     } else {
-      setSelectedCryptoOrders((prevSelected) =>
-        prevSelected.filter((id) => id !== cryptoOrderId)
-      );
+      const res = selectedAgents.filter((id) => id !== agentEmail)
+      setSelectedAgents(res);
     }
   };
 
@@ -152,28 +95,32 @@ const RecentOrdersTable: FC<AgentTableProps> = ({ Agents }) => {
     setPage(newPage);
   };
 
-  const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleLimitChange = (event: any): void => {
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredCryptoOrders = applyFilters(Agents, filters);
-  const paginatedCryptoOrders = applyPagination(
-    filteredCryptoOrders,
-    page,
-    limit
-  );
-  const selectedSomeCryptoOrders =
-    selectedCryptoOrders.length > 0 &&
-    selectedCryptoOrders.length < Agents.length;
-  const selectedAllCryptoOrders =
-    selectedCryptoOrders.length === Agents.length;
+  const paginatedAgents = applyPagination(Agents, page, limit);
+  const indeterminate =
+    selectedAgents.length > 0 && selectedAgents.length < Agents.length;
+  const selectedAllAgents = selectedAgents.length === Agents.length;
   const theme = useTheme();
 
   return (
     <Card>
-        <CardHeader
-          title="Agents"
-        />
+      <CardHeader
+        title="Agents"
+        action={
+          selectedAgents.length ? (
+            <>
+              <Button onClick={() => changeStatus("enable")}>Enable</Button>
+              <Button color="error" onClick={() => changeStatus("disable")}>
+                Disable
+              </Button>
+            </>
+          ) : null
+        }
+        sx={{ height: "60px" }}
+      />
       <Divider />
       <TableContainer>
         <Table>
@@ -182,101 +129,88 @@ const RecentOrdersTable: FC<AgentTableProps> = ({ Agents }) => {
               <TableCell padding="checkbox">
                 <Checkbox
                   color="primary"
-                  checked={selectedAllCryptoOrders}
-                  indeterminate={selectedSomeCryptoOrders}
-                  onChange={handleSelectAllCryptoOrders}
+                  checked={selectedAllAgents}
+                  indeterminate={indeterminate}
+                  onChange={handleSelectAll}
                 />
               </TableCell>
-              {headCells.map((headCell: any)=>  (
-              <TableCell key={headCell.id}>
-                {headCell.label}
-              </TableCell>
-
+              {headCells.map((headCell: any) => (
+                <TableCell key={headCell.id}>{headCell.label}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedCryptoOrders.map((cryptoOrder) => {
-              const isCryptoOrderSelected = selectedCryptoOrders.includes(
-                cryptoOrder.id
-              );
-              return (
-                <TableRow
-                  hover
-                  key={cryptoOrder.id}
-                  selected={isCryptoOrderSelected}
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={headCells.length + 1}
+                  align="center"
+                  height="200px"
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isCryptoOrderSelected}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneCryptoOrder(event, cryptoOrder.id)
-                      }
-                      value={isCryptoOrderSelected}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.firstName}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.lastName}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.phoneNumber}
-                    </Typography>
-                  </TableCell>
-                  <TableCell >
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.userName}
+                  <CircularProgress size={30} />
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedAgents.map((item) => {
+                const agentSelected = selectedAgents.includes(item.email);
+                return (
+                  <TableRow hover key={item.sub} selected={agentSelected}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={agentSelected}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          handleSelectOne(event, item.email)
+                        }
+                        value={agentSelected}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {`${item.name} ${item.family_name}`}
+                      </Typography>
+                    </TableCell>
 
-                    </Typography>
-                  </TableCell>
-                  <TableCell >
-                    {cryptoOrder.emailAddress}
-                  </TableCell>
-                  <TableCell >
-                    {getStatusLabel(cryptoOrder.status)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {item.phone_number}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {item.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{getStatusLabel(item.status)}</TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <Box p={2}>
         <TablePagination
           component="div"
-          count={filteredCryptoOrders.length}
+          count={Agents.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -288,12 +222,12 @@ const RecentOrdersTable: FC<AgentTableProps> = ({ Agents }) => {
   );
 };
 
-RecentOrdersTable.propTypes = {
-  Agents: PropTypes.array.isRequired
+AgentTable.propTypes = {
+  Agents: PropTypes.array.isRequired,
 };
 
-RecentOrdersTable.defaultProps = {
-  Agents: []
+AgentTable.defaultProps = {
+  Agents: [],
 };
 
-export default RecentOrdersTable;
+export default AgentTable;

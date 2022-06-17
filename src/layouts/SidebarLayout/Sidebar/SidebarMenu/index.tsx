@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import {
   ListSubheader,
@@ -11,12 +11,16 @@ import {
 } from '@mui/material';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
-
+import { authService } from 'src/services/auth.service';
+import { AuthContext } from 'src/contexts/AuthContext';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 import AssignmentIcon from '@mui/icons-material/AssignmentTwoTone';
 import PersonIcon from '@mui/icons-material/PersonTwoTone';
 import LogoutIcon from '@mui/icons-material/LogoutTwoTone';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import { useCookies } from "react-cookie";
+
+
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -160,12 +164,55 @@ const SubMenuWrapper = styled(Box)(
 `
 );
 
+
+
 function SidebarMenu() {
   const { closeSidebar } = useContext(SidebarContext);
+  const context = useContext(AuthContext);
+  const [cookies, setCookie , removeCookie] = useCookies(["refreshToken"]);
+  const {
+    handleAccess: { accessToken, setAccessToken },
+    handleId: { idToken, setIdToken },
+    handleRefresh: { refreshToken, setRefreshToken },
+  } = context;
+
+
+
+
+const logout = () => {
+  authService.logout(refreshToken)
+  removeCookie('refreshToken');
+  setAccessToken(null)
+  setIdToken(null)
+}
 
   return (
     <>
       <MenuWrapper sx={{ pt: 2 }}>
+      <List
+          component="div"
+          subheader={
+            <ListSubheader component="div" disableSticky>
+              Dashboards
+            </ListSubheader>
+          }
+        >
+          <SubMenuWrapper>
+            <List component="div">
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboard"
+                  startIcon={<DashboardIcon />}
+                >
+                  Status
+                </Button>
+              </ListItem>
+            </List>
+          </SubMenuWrapper>
+        </List>
         <List
           component="div"
           subheader={
@@ -239,7 +286,7 @@ function SidebarMenu() {
                 <Button
                   disableRipple
                   component={RouterLink}
-                  onClick={closeSidebar}
+                  onClick={logout}
                   to="/login"
                   startIcon={<LogoutIcon />}
                 >
