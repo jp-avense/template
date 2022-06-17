@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { apiService } from "src/services/api.service";
+import { authService } from "src/services/auth.service";
 
 type AuthContextT = {
   handleAccess: {
@@ -33,8 +34,13 @@ export const AuthProvider = ({ children }) => {
   }, [accessToken]);
 
   useEffect(() => {
-    if (idToken)
+    if (idToken) {
       apiService.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
+
+      authService.getUser().then(({data}) => {
+        apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
+      })
+    }
     else delete apiService.defaults.headers.common["Authorization"];
   }, [idToken]);
 

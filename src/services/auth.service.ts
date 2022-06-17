@@ -32,5 +32,9 @@ export const authService = {
         "x-refresh-token": token,
       }
     })
+  },
+
+  async getUser() {
+    return apiService.get(USER_URL)
   }
 };
