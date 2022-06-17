@@ -8,6 +8,7 @@ type FilterContextT = {
     originalData: any;
     setOriginalData: React.Dispatch<any>;
     filterTable: React.Dispatch<any>;
+    filter: string
   };
 };
 
@@ -18,8 +19,10 @@ export const FilterContext = createContext<FilterContextT>(
 export const FilterProvider = ({ children }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
+  const [filter, setFilter] = useState('clear_filters')
 
-  const filterTable = (filter) => {
+  const filterTable = (filter: string) => {
+    setFilter(filter)
     if (filter == "clear_filters") {
       setFilteredData(originalData);
     } else {
@@ -35,6 +38,7 @@ export const FilterProvider = ({ children }) => {
     filterTable,
     originalData,
     setOriginalData,
+    filter,
   };
 
   return (

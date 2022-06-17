@@ -2,6 +2,7 @@ import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { Button, Grid } from "@mui/material";
+
 function TaskFilter() {
   const filters = [
     { label: "New", value: "new" },
@@ -12,19 +13,20 @@ function TaskFilter() {
   ];
   const context = useContext(FilterContext);
   const {
-    handleFilter: { filterTable },
+    handleFilter: { filterTable, filter },
   } = context;
 
   return (
-    <Grid container justifyContent="space-between" width="40%">
+    <Grid container spacing={2}>
       {filters.map((c) => (
-        <Button
-          key={c.value}
-          variant="contained"
-          onClick={() => filterTable(c.value)}
-        >
-          {c.label}
-        </Button>
+        <Grid item key={c.value}>
+          <Button
+            variant={filter == c.value ? "contained" : "text"}
+            onClick={() => filterTable(c.value)}
+          >
+            {c.label}
+          </Button>
+        </Grid>
       ))}
     </Grid>
   );

@@ -10,13 +10,7 @@ const USER_URL = "auth/user";
 
 export const authService = {
   async login(username: string, password: string) {
-    return apiService.post(LOGIN_URL, { username, password },
-      {
-        headers: {
-          "Access-Control-Allow-Origin": 'http://localhost:3000',
-        },
-      }
-      );
+    return apiService.post(LOGIN_URL, { username, password });
   },
   async refresh(token: string) {
     return apiService.get(REFRESH_URL, {
@@ -30,11 +24,11 @@ export const authService = {
     return apiService.get(LOGOUT_URL, {
       headers: {
         "x-refresh-token": token,
-      }
-    })
+      },
+    });
   },
 
   async getUser() {
-    return apiService.get(USER_URL)
-  }
+    return apiService.get(USER_URL);
+  },
 };

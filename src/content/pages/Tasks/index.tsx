@@ -26,7 +26,6 @@ const TaskPage = () => {
           spacing={3}
         >
           <FilterProvider>
-            <TaskFilter />
             <Grid item xs={12}>
               <TaskTable tasks={[]} />
             </Grid>

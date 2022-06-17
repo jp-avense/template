@@ -11,6 +11,11 @@ import {
   TableRow,
   TableContainer,
   CardHeader,
+  CardContent,
+  Box,
+  CircularProgress,
+  Checkbox,
+  TablePagination,
 } from "@mui/material";
 import { TableRowsTwoTone } from "@mui/icons-material";
 import Label from "src/components/Label";
@@ -18,6 +23,9 @@ import { TaskStatus } from "src/models/tasks";
 import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
+import TaskFilter from "./TaskFilters";
+import { handleAxiosError } from "src/lib";
+import { taskService } from "src/services/task.service";
 
 interface TaskTableProps {
   className?: string;
@@ -34,16 +42,28 @@ interface Rows {
 
 const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
   const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const context = useContext(FilterContext);
   const {
-    handleFilter: { filteredData, originalData, setOriginalData },
+    handleFilter: { filteredData, setOriginalData, originalData },
   } = context;
-  const jsonData = require("./response (2).json");
+
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(5);
 
   useEffect(() => {
-    setOriginalData(jsonData);
-    createRows(jsonData);
-  }, [originalData]);
+    setLoading(true);
+    taskService
+      .getAll()
+      .then(({ data }) => {
+        setOriginalData(data);
+        createRows(data);
+      })
+      .catch(handleAxiosError)
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     createRows(filteredData);
@@ -112,7 +132,10 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
 
   const headCells = () => {
     let headers = [];
-    jsonData[0].task_details.map((c) => {
+
+    if(!originalData.length) return headers
+
+    originalData[0].task_details.map((c) => {
       if (c.show_in_table) headers.push({ id: c.label, label: c.label });
     });
     headers.push(
@@ -123,38 +146,84 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
     return headers;
   };
 
+  const handlePageChange = (event: any, newPage: number): void => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = (event: any): void => {
+    setLimit(parseInt(event.target.value));
+  };
+
+  const headers = headCells();
+
   return (
-    <Card>
-      <CardHeader title="Tasks" />
-      <Divider />
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {headCells().map((c) => (
-                <TableCell key={c.id}>{c.label}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tableData.map((rows, index) => (
-              <TableRow key={index}>
-                {rows.dynamicDetails.map((dynamic) => (
-                  <TableCell key={dynamic.id}>{dynamic.value}</TableCell>
+    <>
+      <Card>
+        <CardHeader title="Tasks" action={<TaskFilter />} />
+        <Divider />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    // checked={selectedAllAgents}
+                    // indeterminate={indeterminate}
+                    // onChange={handleSelectAll}
+                  />
+                </TableCell>
+                {headers.map((c) => (
+                  <TableCell key={c.id}>{c.label}</TableCell>
                 ))}
-                <TableCell key={rows.id + rows.status}>
-                  {getStatusLabel(rows.status)}
-                </TableCell>
-                <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
-                <TableCell key={rows.id + rows.createdAt}>
-                  {rows.createdAt}
-                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Card>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={headers.length + 1}
+                    align="center"
+                    height="200px"
+                  >
+                    <CircularProgress size={30} />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                tableData.map((rows, index) => (
+                  <TableRow key={index}>
+                    <TableCell padding="checkbox">
+                      <Checkbox color="primary" />
+                    </TableCell>
+                    {rows.dynamicDetails.map((dynamic) => (
+                      <TableCell key={dynamic.id}>{dynamic.value}</TableCell>
+                    ))}
+                    <TableCell key={rows.id + rows.status}>
+                      {getStatusLabel(rows.status)}
+                    </TableCell>
+                    <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
+                    <TableCell key={rows.id + rows.createdAt}>
+                      {rows.createdAt}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box p={2}>
+          <TablePagination
+            component="div"
+            count={tableData.length}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleLimitChange}
+            page={page}
+            rowsPerPage={limit}
+            rowsPerPageOptions={[5, 10, 25, 30]}
+          />
+        </Box>
+      </Card>
+    </>
   );
 };
 
