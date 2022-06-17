@@ -4,6 +4,8 @@ import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
 import TaskTable from "./TaskTable";
+import TaskFilter from "./TaskFilters";
+import { FilterProvider } from "src/contexts/FilterContext";
 
 const TaskPage = () => {
   return (
@@ -14,6 +16,7 @@ const TaskPage = () => {
       <PageTitleWrapper>
         <TaskHeader />
       </PageTitleWrapper>
+
       <Container maxWidth="lg">
         <Grid
           container
@@ -22,9 +25,12 @@ const TaskPage = () => {
           alignItems="stretch"
           spacing={3}
         >
-          <Grid item xs={12}>
-            <TaskTable tasks={[]} />
-          </Grid>
+          <FilterProvider>
+            <TaskFilter />
+            <Grid item xs={12}>
+              <TaskTable tasks={[]} />
+            </Grid>
+          </FilterProvider>
         </Grid>
       </Container>
     </>

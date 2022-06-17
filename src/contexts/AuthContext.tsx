@@ -18,7 +18,7 @@ type AuthContextT = {
 export const AuthContext = createContext<AuthContextT>({} as AuthContextT);
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(null);
+  const [accessToken, setAccessToken] = useState(null); 
   const [idToken, setIdToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
 

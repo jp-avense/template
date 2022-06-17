@@ -20,6 +20,8 @@ const Status404 = Loader(
 const LoginPage = Loader(lazy(() => import("src/content/pages/Login")));
 const TaskPage = Loader(lazy(() => import("src/content/pages/Tasks")));
 
+const DashboardPage = Loader(lazy(()=> import("src/content/dashboards/Crypto")))
+
 const AgentsPage = Loader(lazy(() => import("src/content/pages/Agents")));
 
 const routes: RouteObject[] = [
@@ -38,6 +40,16 @@ const routes: RouteObject[] = [
       {
         path: "*",
         element: <Status404 />,
+      },
+    ],
+  },
+  {
+    path: "",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "dashboard",
+        element: <DashboardPage />,
       },
     ],
   },
