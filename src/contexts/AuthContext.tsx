@@ -15,17 +15,37 @@ type AuthContextT = {
     refreshToken: any;
     setRefreshToken: React.Dispatch<any>;
   };
+  handleLoading: {
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  };
+  handleUser: {
+    user: any;
+    setUser: React.Dispatch<any>;
+    getUser: (idToken: string) => Promise<void>;
+  };
 };
 export const AuthContext = createContext<AuthContextT>({} as AuthContextT);
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(null); 
+  const [accessToken, setAccessToken] = useState(null);
   const [idToken, setIdToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const getUser = async (IdToken?: string) => {
+    const { data } = await authService.getUser(IdToken);
+    console.log(data);
+    apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
+    setUser(data);
+  };
 
   const handleAccess = { accessToken, setAccessToken };
   const handleId = { idToken, setIdToken };
   const handleRefresh = { refreshToken, setRefreshToken };
+  const handleLoading = { loading, setLoading };
+  const handleUser = { user, setUser, getUser };
 
   useEffect(() => {
     if (accessToken)
@@ -36,12 +56,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (idToken) {
       apiService.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
-
-      authService.getUser().then(({data}) => {
-        apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
-      })
-    }
-    else delete apiService.defaults.headers.common["Authorization"];
+    } else delete apiService.defaults.headers.common["Authorization"];
   }, [idToken]);
 
   useEffect(() => {
@@ -51,7 +66,15 @@ export const AuthProvider = ({ children }) => {
   }, [refreshToken]);
 
   return (
-    <AuthContext.Provider value={{ handleAccess, handleId, handleRefresh }}>
+    <AuthContext.Provider
+      value={{
+        handleAccess,
+        handleId,
+        handleRefresh,
+        handleLoading,
+        handleUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
