@@ -28,7 +28,15 @@ export const authService = {
     });
   },
 
-  async getUser() {
+  async getUser(idToken?: string) {
+    if (idToken) {
+      const headers = {
+        Authorization: `Bearer ${idToken}`,
+      };
+
+      return apiService.get(USER_URL, { headers });
+    }
+
     return apiService.get(USER_URL);
   },
 };

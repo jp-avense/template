@@ -1,9 +1,11 @@
-import { FC, ReactNode } from 'react';
-import { Box, alpha, lighten, useTheme } from '@mui/material';
-import { Outlet } from 'react-router-dom';
+import { FC, ReactNode, useContext } from "react";
+import { Box, alpha, lighten, useTheme } from "@mui/material";
+import { Navigate, Outlet } from "react-router-dom";
 
-import Sidebar from './Sidebar';
-import Header from './Header';
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import { AuthContext } from "src/contexts/AuthContext";
+import SuspenseLoader from "src/components/SuspenseLoader";
 
 interface SidebarLayoutProps {
   children?: ReactNode;
@@ -12,21 +14,33 @@ interface SidebarLayoutProps {
 const SidebarLayout: FC<SidebarLayoutProps> = () => {
   const theme = useTheme();
 
+  const context = useContext(AuthContext);
+
+  const {
+    handleAccess: { accessToken },
+    handleId: { idToken },
+    handleLoading: { loading },
+  } = context;
+
+  if (loading) return <SuspenseLoader />;
+
+  if (!accessToken || !idToken) return <Navigate to="/login" />;
+
   return (
     <>
       <Box
         sx={{
           flex: 1,
-          height: '100%',
+          height: "100%",
 
-          '.MuiPageTitle-wrapper': {
+          ".MuiPageTitle-wrapper": {
             background:
-              theme.palette.mode === 'dark'
+              theme.palette.mode === "dark"
                 ? theme.colors.alpha.trueWhite[5]
                 : theme.colors.alpha.white[50],
             marginBottom: `${theme.spacing(4)}`,
             boxShadow:
-              theme.palette.mode === 'dark'
+              theme.palette.mode === "dark"
                 ? `0 1px 0 ${alpha(
                     lighten(theme.colors.primary.main, 0.7),
                     0.15
@@ -37,21 +51,21 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
                   )}, 0px 5px 12px -4px ${alpha(
                     theme.colors.alpha.black[100],
                     0.05
-                  )}`
-          }
+                  )}`,
+          },
         }}
       >
         {/* <Header /> */}
         <Sidebar />
         <Box
           sx={{
-            position: 'relative',
+            position: "relative",
             zIndex: 5,
-            display: 'block',
+            display: "block",
             flex: 1,
-            [theme.breakpoints.up('lg')]: {
-              ml: `${theme.sidebar.width}`
-            }
+            [theme.breakpoints.up("lg")]: {
+              ml: `${theme.sidebar.width}`,
+            },
           }}
         >
           <Box display="block">
