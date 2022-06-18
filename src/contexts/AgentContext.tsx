@@ -56,7 +56,8 @@ export const AgentProvider = ({ children }) => {
 
         setAgents(res);
       })
-      .catch(handleAxiosError).finally(() => setLoading(false));
+      .catch(handleAxiosError)
+      .finally(() => setLoading(false));
   };
 
   const handleAgents = { agents, setAgents, getAgents };

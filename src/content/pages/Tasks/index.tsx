@@ -1,10 +1,11 @@
-import { Container, Grid } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
 import TaskTable from "./TaskTable";
 import TaskFilter from "./TaskFilters";
+import DynamicFilter from "./DynamicFilters";
 import { FilterProvider } from "src/contexts/FilterContext";
 
 const TaskPage = () => {
@@ -26,6 +27,9 @@ const TaskPage = () => {
           spacing={3}
         >
           <FilterProvider>
+            <Box>
+              <DynamicFilter />
+            </Box>
             <Grid item xs={12}>
               <TaskTable tasks={[]} />
             </Grid>
