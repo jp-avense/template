@@ -62,22 +62,28 @@ const TaskTable: FC<TaskTableProps> = () => {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(5);
 
-  const jsonData = require("./response (2).json");
+  const jsonData = require("./trueresponse.json");
 
   useEffect(() => {
-    setLoading(true);
-    taskService
-      .getAll(page, limit)
-      .then(({ data }) => {
-        setTotal(data.totalDocuments);
-        setOriginalData(data.tasks);
-        createRows(data.tasks);
-      })
-      .catch(handleAxiosError)
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [page, limit]);
+    setOriginalData(jsonData);
+    createRows(jsonData);
+    setLoading(false);
+  }, [originalData]);
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   taskService
+  //     .getAll(page, limit)
+  //     .then(({ data }) => {
+  //       setTotal(data.totalDocuments);
+  //       setOriginalData(data.tasks);
+  //       createRows(data.tasks);
+  //     })
+  //     .catch(handleAxiosError)
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, [page, limit]);
 
   useEffect(() => {
     createRows(filteredData);
@@ -107,6 +113,10 @@ const TaskTable: FC<TaskTableProps> = () => {
 
     return <Label color={color}>{text}</Label>;
   };
+
+  useEffect(() => {
+    setTabsData(selectedRow);
+  }, [selectedRow]);
 
   const createRows = (data) => {
     console.log("dataaa", data);
@@ -172,7 +182,6 @@ const TaskTable: FC<TaskTableProps> = () => {
     });
     headers.sort((a, b) => a.order - b.order);
     headers.push(
-      { id: "assigned", label: "Assigned To" },
       { id: "status", label: "Status" },
       { id: "createdAt", label: "Created" }
     );
@@ -219,9 +228,22 @@ const TaskTable: FC<TaskTableProps> = () => {
               </TableRow>
             ) : (
               tableData.map((rows, index) => (
-                <TableRow key={index}>
+                <TableRow
+                  key={index}
+                  sx={
+                    rows == selectedRow ? { backgroundColor: "aquamarine" } : {}
+                  }
+                  onClick={() =>
+                    rows == selectedRow
+                      ? setSelectedRow({})
+                      : setSelectedRow(rows)
+                  }
+                >
                   <TableCell padding="checkbox">
-                    <Checkbox color="primary" />
+                    <Checkbox
+                      checked={rows == selectedRow ? true : false}
+                      color="primary"
+                    />
                   </TableCell>
                   <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
                   {rows.dynamicDetails.map((dynamic) => (
