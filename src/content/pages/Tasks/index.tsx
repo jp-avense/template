@@ -7,6 +7,8 @@ import TaskTable from "./TaskTable";
 import TaskFilter from "./TaskFilters";
 import DynamicFilter from "./DynamicFilters";
 import { FilterProvider } from "src/contexts/FilterContext";
+import { TabsProvider } from "src/contexts/TabsContext";
+import InfoTab from "./InfoTab";
 
 const TaskPage = () => {
   return (
@@ -18,21 +20,17 @@ const TaskPage = () => {
         <TaskHeader />
       </PageTitleWrapper>
 
-      <Container maxWidth="lg">
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="stretch"
-          spacing={3}
-        >
+      <Container maxWidth="xl">
+        <Grid container direction="row" alignItems="stretch" spacing={3}>
           <FilterProvider>
-            <Box>
-              <DynamicFilter />
-            </Box>
-            <Grid item xs={12}>
-              <TaskTable tasks={[]} />
-            </Grid>
+            <TabsProvider>
+              <Grid item xs={8}>
+                <TaskTable tasks={[]} />
+              </Grid>
+              <Grid item xs={4}>
+                <InfoTab />
+              </Grid>
+            </TabsProvider>
           </FilterProvider>
         </Grid>
       </Container>
