@@ -10,6 +10,8 @@ type FilterContextT = {
     filterTable: React.Dispatch<any>;
     filterDynamicTable: React.Dispatch<any>;
     filter: string;
+    setDetails: React.Dispatch<React.SetStateAction<any[]>>;
+    details: any[];
   };
 };
 
@@ -20,6 +22,8 @@ export const FilterContext = createContext<FilterContextT>(
 export const FilterProvider = ({ children }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
+  const [details, setDetails] = useState([])
+
   const [filter, setFilter] = useState("clear_filters");
 
   const filterTable = (filter: string) => {
@@ -64,6 +68,8 @@ export const FilterProvider = ({ children }) => {
     originalData,
     setOriginalData,
     filter,
+    setDetails,
+    details
   };
 
   return (

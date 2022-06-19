@@ -31,7 +31,6 @@ import { values } from "lodash";
 
 interface TaskTableProps {
   className?: string;
-  tasks: any[];
 }
 
 interface Rows {
@@ -45,8 +44,9 @@ interface Rows {
   updatedBy: string;
 }
 
-const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
+const TaskTable: FC<TaskTableProps> = () => {
   const [tableData, setTableData] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
@@ -65,28 +65,19 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
   const jsonData = require("./response (2).json");
 
   useEffect(() => {
-    setOriginalData(jsonData);
-    createRows(jsonData);
-    setLoading(false);
-  }, [originalData]);
-
-  useEffect(() => {
-    setTabsData(selectedRow);
-  }, [selectedRow]);
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   taskService
-  //     .getAll()
-  //     .then(({ data }) => {
-  //       setOriginalData(data);
-  //       createRows(data);
-  //     })
-  //     .catch(handleAxiosError)
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, []);
+    setLoading(true);
+    taskService
+      .getAll(page, limit)
+      .then(({ data }) => {
+        setTotal(data.totalDocuments);
+        setOriginalData(data.tasks);
+        createRows(data.tasks);
+      })
+      .catch(handleAxiosError)
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [page, limit]);
 
   useEffect(() => {
     createRows(filteredData);
@@ -135,25 +126,24 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
         updatedBy: "",
       };
       c.task_details.map((e) => {
-        if (e.label == "Payment Date") {
-          dynamicDetails.push({
-            value: new Date(e.value).toDateString() || "",
-            id: e.label,
-            showInTable: e.show_in_table,
-          });
-        } else if (e.label == "Payment method" && e.value) {
-          dynamicDetails.push({
-            value: e.value.charAt(0).toUpperCase() + e.value.slice(1),
-            id: e.label,
-            showInTable: e.show_in_table,
-          });
-        } else
-          dynamicDetails.push({
-            value: e.value || "",
-            id: e.label,
-            showInTable: e.show_in_table,
-          });
+        let dynamicId = 1;
+        if (e.show_in_table) {
+          if (e.input_type === "date") {
+            dynamicDetails.push({
+              value: e.value ? new Date(e.value).toLocaleDateString() : "",
+              id: e.label,
+              order: e.order,
+            });
+          } else
+            dynamicDetails.push({
+              value: e.value || "",
+              id: e.label,
+              order: e.order,
+            });
+        }
+        dynamicId++;
       });
+      dynamicDetails.sort((a, b) => a.order - b.order);
       details.dynamicDetails = dynamicDetails;
       details.status = c.status_id;
       details.type = c.type_id.charAt(0).toUpperCase() + c.type_id.slice(1);
@@ -177,14 +167,16 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
     if (!originalData.length) return headers;
 
     originalData[0].task_details.map((c) => {
-      if (c.show_in_table) headers.push({ id: c.label, label: c.label });
+      if (c.show_in_table)
+        headers.push({ id: c.label, label: c.label, order: c.order });
     });
+    headers.sort((a, b) => a.order - b.order);
     headers.push(
       { id: "assigned", label: "Assigned To" },
       { id: "status", label: "Status" },
-      { id: "type", label: "Type" },
       { id: "createdAt", label: "Created" }
     );
+    headers.unshift({ id: "type", label: "Type" });
     return headers;
   };
 
@@ -193,115 +185,73 @@ const TaskTable: FC<TaskTableProps> = ({ tasks }) => {
   };
 
   const handleLimitChange = (event: any): void => {
+    setPage(0);
     setLimit(parseInt(event.target.value));
   };
 
   const headers = headCells();
   console.log("selectedRow", selectedRow);
 
+  console.log(tableData);
+
   return (
-    <>
-      <Card>
-        <CardHeader title="Tasks" action={<TaskFilter />} />
-        <Divider />
-        <TableContainer>
-          <Table>
-            <TableHead>
+    <Card>
+      <CardHeader title="Tasks" action={<TaskFilter />} />
+      <Divider />
+      <TableContainer sx={{ height: "550px" }}>
+        <Table stickyHeader sx={{ height: "100%" }}>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox color="primary" />
+              </TableCell>
+              {headers.map((c) => (
+                <TableCell key={c.id}>{c.label}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
               <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    // checked={selectedAllAgents}
-                    // indeterminate={indeterminate}
-                    // onChange={handleSelectAll}F
-                  />
+                <TableCell colSpan={headers.length + 1} align="center">
+                  <CircularProgress size={30} />
                 </TableCell>
-                {headers.map((c) => (
-                  <TableCell key={c.id}>{c.label}</TableCell>
-                ))}
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={headers.length + 1}
-                    align="center"
-                    height="200px"
-                  >
-                    <CircularProgress size={30} />
+            ) : (
+              tableData.map((rows, index) => (
+                <TableRow key={index}>
+                  <TableCell padding="checkbox">
+                    <Checkbox color="primary" />
+                  </TableCell>
+                  <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
+                  {rows.dynamicDetails.map((dynamic) => (
+                    <TableCell key={dynamic.id}>{dynamic.value}</TableCell>
+                  ))}
+                  <TableCell key={rows.id + rows.status}>
+                    {getStatusLabel(rows.status)}
+                  </TableCell>
+                  <TableCell key={rows.id + rows.createdAt}>
+                    {rows.createdAt}
                   </TableCell>
                 </TableRow>
-              ) : (
-                tableData.map((rows, index) => (
-                  <TableRow
-                    key={index}
-                    sx={
-                      rows == selectedRow
-                        ? { backgroundColor: "aquamarine" }
-                        : {}
-                    }
-                    onClick={() =>
-                      rows == selectedRow
-                        ? setSelectedRow({})
-                        : setSelectedRow(rows)
-                    }
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={rows == selectedRow ? true : false}
-                        color="primary"
-                      />
-                    </TableCell>
-                    {rows.dynamicDetails.map((dynamic) => (
-                      <>
-                        {dynamic.showInTable ? (
-                          <TableCell key={dynamic.id}>
-                            {dynamic.value}
-                          </TableCell>
-                        ) : (
-                          <></>
-                        )}
-                      </>
-                    ))}
-                    <TableCell key={rows.id + rows.assignedTo}>
-                      {rows.assignedTo}
-                    </TableCell>
-                    <TableCell key={rows.id + rows.status}>
-                      {getStatusLabel(rows.status)}
-                    </TableCell>
-                    <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
-                    <TableCell key={rows.id + rows.createdAt}>
-                      {rows.createdAt}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box p={2}>
-          <TablePagination
-            component="div"
-            count={tableData.length}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleLimitChange}
-            page={page}
-            rowsPerPage={limit}
-            rowsPerPageOptions={[5, 10, 25, 30]}
-          />
-        </Box>
-      </Card>
-    </>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={total}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleLimitChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+        />
+      </Box>
+    </Card>
   );
-};
-
-TaskTable.propTypes = {
-  tasks: PropTypes.array.isRequired,
-};
-
-TaskTable.defaultProps = {
-  tasks: [],
 };
 
 export default TaskTable;

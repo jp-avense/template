@@ -1,5 +1,4 @@
 import { FC, ChangeEvent, useState, useCallback, useContext } from "react";
-import PropTypes from "prop-types";
 import {
   Divider,
   Box,

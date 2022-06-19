@@ -1,7 +1,7 @@
 import { apiService } from "./api.service";
 
-const GET_ALL_URL = "tasks";
-
+const ALL_TASKS_URL = "tasks";
+const ALL_DETAILS_URL = "task-details";
 
 export const taskService = {
   async getAll(page = 0, pageSize = 10) {
@@ -12,10 +12,12 @@ export const taskService = {
 
     // @ts-ignore
     const params = new URLSearchParams(data).toString();
-    const url = `${GET_ALL_URL}?${params}`;
+    const url = `${ALL_TASKS_URL}?${params}`;
 
     return apiService.get(url);
   },
+
+  async getDetails() {
+    return apiService.get(ALL_DETAILS_URL);
+  },
 };
-
-
