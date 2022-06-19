@@ -1,4 +1,4 @@
-import { Box, Container, Grid } from "@mui/material";
+import { Box, Card, CardContent, Container, Grid } from "@mui/material";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
@@ -14,28 +14,34 @@ const TaskPage = () => {
       <Helmet>
         <title>Task management - Tasks</title>
       </Helmet>
-      <PageTitleWrapper>
-        <TaskHeader />
-      </PageTitleWrapper>
+      <FilterProvider>
+        <PageTitleWrapper>
+          <TaskHeader />
+        </PageTitleWrapper>
 
-      <Container maxWidth="lg">
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="stretch"
-          spacing={3}
-        >
-          <FilterProvider>
-            <Box>
-              <DynamicFilter />
-            </Box>
-            <Grid item xs={12}>
-              <TaskTable tasks={[]} />
+        <Container maxWidth="lg">
+          <Grid
+            container
+            direction="column"
+            alignItems="stretch"
+            justifyItems="stretch"
+            spacing={3}
+          >
+            <Grid item>
+              <Card>
+                <CardContent>
+                  <Box>
+                    <DynamicFilter />
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
-          </FilterProvider>
-        </Grid>
-      </Container>
+            <Grid item>
+              <TaskTable />
+            </Grid>
+          </Grid>
+        </Container>
+      </FilterProvider>
     </>
   );
 };

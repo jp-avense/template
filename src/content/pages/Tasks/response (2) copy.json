@@ -1,0 +1,3434 @@
+[
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Eugine",
+        "key": "clientName"
+      },
+      {
+        "value": "Angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": "10000",
+        "key": "payment"
+      },
+      {
+        "value": "Yes",
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "Bank",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "new",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": null,
+    "status_id": "assigned",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": null
+  },
+  {
+    "task_details": [
+      {
+        "value": null,
+        "key": "clientName"
+      },
+      {
+        "value": null,
+        "key": "agentNotes"
+      },
+      {
+        "value": null,
+        "key": "payment"
+      },
+      {
+        "value": null,
+        "key": "paid"
+      },
+      {
+        "value": null,
+        "key": "paymentDate"
+      },
+      {
+        "value": null,
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "in_progress",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment method",
+            "key": "paymentMethod",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "paymentDate",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "task_details": [
+      {
+        "value": "Joe mama",
+        "key": "clientName"
+      },
+      {
+        "value": "Client was angry",
+        "key": "agentNotes"
+      },
+      {
+        "value": 10.99,
+        "key": "payment"
+      },
+      {
+        "value": true,
+        "key": "paid"
+      },
+      {
+        "value": 1654012800000,
+        "key": "paymentDate"
+      },
+      {
+        "value": "card",
+        "key": "paymentMethod"
+      }
+    ],
+    "assigned_to": {
+      "agent_name": "John Lopez",
+      "agent_sub": "sub12-00000-00000",
+      "agent_groups": ["agent"]
+    },
+    "status_id": "done",
+    "type_id": "debt",
+    "is_archived": 0,
+    "created_at": 1654012800000,
+    "archived_at": null,
+    "last_updated_at": 1654012800000,
+    "last_updated_by": {
+      "user_name": "Admin 1",
+      "user_sub": "sub00-00000-00000",
+      "user_groups": ["admin"]
+    },
+    "execution_start_date": null,
+    "execution_end_date": null,
+    "forms": {
+      "form1": {
+        "order": 1,
+        "fields": [
+          {
+            "input_type": "html",
+            "content": "First form"
+          },
+          {
+            "label": "Client name,",
+            "key": "clientName",
+            "input_type": "text",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": false
+            }
+          }
+        ]
+      },
+      "form2": {
+        "order": 2,
+        "fields": [
+          {
+            "label": "Has ,Paid?",
+            "key": "paid",
+            "input_type": "boolean",
+            "default_value": false,
+            "enum": [],
+            "rules": {}
+          },
+          {
+            "label": "Payment,",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "accept_float": true
+            }
+          },
+          {
+            "label": "Payment, method",
+            "key": "payment",
+            "input_type": "number",
+            "default_value": false,
+            "enum": ["card", "cash"],
+            "rules": {
+              "optional": true,
+              "multi_select": false
+            }
+          },
+          {
+            "label": "Payment date,",
+            "key": "payment_date",
+            "input_type": "date",
+            "default_value": null,
+            "enum": [],
+            "rules": {
+              "optional": true,
+              "min_date": 1654012800000
+            }
+          }
+        ]
+      }
+    }
+  }
+]

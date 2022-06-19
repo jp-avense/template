@@ -11,3 +11,14 @@ export const handleAxiosError = (error: AxiosError) => {
     console.log("Unable to send request to server. Please try again later");
   }
 };
+
+export const getAxiosErrorMessage = (error: AxiosError) => {
+  if (error.response) {
+    // @ts-ignore
+    return error.response.data.message;
+  } else if (error.request) {
+    return "no_response";
+  } else {
+    return "request_failed";
+  }
+};

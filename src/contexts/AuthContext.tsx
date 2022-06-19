@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
 
   const getUser = async (IdToken?: string) => {
     const { data } = await authService.getUser(IdToken);
-    console.log(data);
     apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
     setUser(data);
   };

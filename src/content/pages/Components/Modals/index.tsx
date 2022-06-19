@@ -12,6 +12,8 @@ import {
   CardContent,
   Divider,
   DialogContent,
+  IconButton,
+  Box,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
@@ -26,6 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Typography from "@mui/material/Typography";
 import { blue } from "@mui/material/colors";
 import Footer from "src/components/Footer";
+import CloseIcon from "@mui/icons-material/Close";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
@@ -42,7 +45,14 @@ function SimpleDialog(props) {
 
   return (
     <Dialog fullWidth maxWidth="sm" onClose={handleClose} open={open}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle variant="h3" sx={{ bgcolor: "#5569ff", mb: 2 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" color="white">
+          <span>{title}</span>
+          <IconButton aria-label="close" onClick={onClose}>
+            <CloseIcon sx={{ color: 'white' }} />
+          </IconButton>
+        </Box>
+      </DialogTitle>
       <DialogContent>{children}</DialogContent>
     </Dialog>
   );
