@@ -49,7 +49,7 @@ const TaskTable: FC<TaskTableProps> = () => {
   const [loading, setLoading] = useState(true);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
-  const [selectedRow, setSelectedRow] = useState({});
+  const [selectedRow, setSelectedRow] = useState([]);
   const {
     handleFilter: {
       total,
@@ -127,6 +127,25 @@ const TaskTable: FC<TaskTableProps> = () => {
   useEffect(() => {
     setTabsData(selectedRow);
   }, [selectedRow]);
+
+  const unSelectRow = (currentRow) => {
+    let rows = selectedRow.slice();
+    const index = rows.indexOf(currentRow);
+    rows.splice(index, 1);
+    setSelectedRow(rows);
+  };
+
+  const createSelectedRows = (currentRow) => {
+    let rows = selectedRow.slice();
+    rows.push(currentRow);
+    setSelectedRow(rows);
+  };
+
+  const selectAllRows = () => {
+    if (selectedRow == tableData) {
+      setSelectedRow([]);
+    } else setSelectedRow(tableData);
+  };
 
   const createRows = (data) => {
     let rows = [];
@@ -220,7 +239,14 @@ const TaskTable: FC<TaskTableProps> = () => {
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
-                <Checkbox color="primary" />
+                <Checkbox
+                  checked={selectedRow == tableData}
+                  indeterminate={
+                    selectedRow != tableData && selectedRow.length > 0
+                  }
+                  onClick={selectAllRows}
+                  color="primary"
+                />
               </TableCell>
               {headers.map((c) => (
                 <TableCell key={c.id}>{c.label}</TableCell>
@@ -238,18 +264,26 @@ const TaskTable: FC<TaskTableProps> = () => {
               tableData.map((rows, index) => (
                 <TableRow
                   key={index}
-                  sx={
-                    rows == selectedRow ? { backgroundColor: "aquamarine" } : {}
-                  }
+                  sx={[
+                    {
+                      "&:hover": {
+                        cursor: "pointer",
+                        backgroundColor: "aliceblue",
+                      },
+                    },
+                    selectedRow.indexOf(rows) >= 0
+                      ? { backgroundColor: "lavender" }
+                      : {},
+                  ]}
                   onClick={() =>
-                    rows == selectedRow
-                      ? setSelectedRow({})
-                      : setSelectedRow(rows)
+                    selectedRow.indexOf(rows) >= 0
+                      ? unSelectRow(rows)
+                      : createSelectedRows(rows)
                   }
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={rows == selectedRow ? true : false}
+                      checked={selectedRow.indexOf(rows) >= 0 ? true : false}
                       color="primary"
                     />
                   </TableCell>

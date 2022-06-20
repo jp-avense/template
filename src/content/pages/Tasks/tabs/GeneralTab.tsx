@@ -18,32 +18,30 @@ const GeneralTab = () => {
   const context = useContext(TabsContext);
 
   const {
-    handleTabs: { tabsData },
+    handleTabs: { currentRow },
   } = context;
 
   useEffect(() => {
-    setData(tabsData);
-  }, [tabsData]);
+    setData(currentRow);
+  }, [currentRow]);
 
 
   return (
     <List>
       {data?.dynamicDetails?.length > 1 ? (
         <>
-          <ListItem key={data.assignedTo}>
-            {data.assignedTo ? (
-              <>
-                <Typography variant="h5" color="primary">
-                  <span>Assigned to: </span>
-                </Typography>
-                <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
-                  <span>{data.assignedTo}</span>
-                </Typography>
-              </>
-            ) : (
-              <></>
-            )}
-          </ListItem>
+          {data.assignedTo ? (
+            <ListItem key={data.assignedTo}>
+              <Typography variant="h5" color="primary">
+                <span>Assigned to: </span>
+              </Typography>
+              <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
+                <span>{data.assignedTo}</span>
+              </Typography>
+            </ListItem>
+          ) : (
+            <></>
+          )}
 
           {data.dynamicDetails.map((c) => (
             <>

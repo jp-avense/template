@@ -13,16 +13,16 @@ const InfoTab = () => {
 
   return (
     <Grid container padding={1} bgcolor={"#ffffff"}>
-      <Grid item>
+      <Grid item width="100%">
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange}>
-              <Tab label="GENERAL" value="1" />
-              <Tab label="REAL TIME" value="2" />
-              <Tab label="AUDIT" value="3" />
+              <Tab sx={{ width: "34%" }} label="GENERAL" value="1" />
+              <Tab sx={{ width: "33%" }} label="REAL TIME" value="2" />
+              <Tab sx={{ width: "33%" }} label="AUDIT" value="3" />
             </TabList>
           </Box>
-          <TabPanel sx={{ padding: "0px" }} value="1">
+          <TabPanel sx={{ padding: "0px", height: "400px" }} value="1">
             <GeneralTab />
           </TabPanel>
           <TabPanel value="2">
