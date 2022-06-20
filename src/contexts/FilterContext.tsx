@@ -88,7 +88,7 @@ export const FilterProvider = ({ children }) => {
     if (filter !== "clear_filters") finalFilters["status_id"] = filter;
 
     dynamicFilters.forEach((x) => {
-      if (x.value && x.value !== "none" && x.selectedType !== "none")
+      if (x.value != null && x.value !== "none" && x.selectedType !== "none")
         finalFilters[x.selectedType] = parseValue(x.value, x.componentType);
     });
 

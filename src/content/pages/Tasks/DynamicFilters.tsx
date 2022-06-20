@@ -133,10 +133,7 @@ function DynamicFilter() {
     const clone = dynamicFilters.filter((a) => a != item);
 
     setDynamicFilters(clone);
-
-    if (clone.length === 0) {
-      submitFilter();
-    }
+    
   };
 
   const createValueComponent = (item) => {
@@ -154,7 +151,7 @@ function DynamicFilter() {
             defaultValue={1}
           >
             <MenuItem value={1}>True</MenuItem>
-            <MenuItem value={2}>False</MenuItem>
+            <MenuItem value={0}>False</MenuItem>
           </Select>
         );
       case "enum":

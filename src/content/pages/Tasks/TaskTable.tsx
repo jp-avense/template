@@ -1,5 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import { FC, useEffect, useState } from "react";
 
 import {
   Divider,
@@ -11,13 +10,11 @@ import {
   TableRow,
   TableContainer,
   CardHeader,
-  CardContent,
   Box,
   CircularProgress,
   Checkbox,
   TablePagination,
 } from "@mui/material";
-import { TableRowsTwoTone } from "@mui/icons-material";
 import Label from "src/components/Label";
 import { TaskStatus } from "src/models/tasks";
 import { useContext } from "react";
@@ -26,8 +23,6 @@ import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
-import { taskService } from "src/services/task.service";
-import { values } from "lodash";
 
 interface TaskTableProps {
   className?: string;
