@@ -19,6 +19,7 @@ import { useFormik } from "formik";
 import { AuthContext } from "src/contexts/AuthContext";
 import { useCookies } from "react-cookie";
 import * as yup from "yup";
+import { apiService } from "src/services/api.service";
 
 const validationSchema = yup.object({
   username: yup.string().required().email(),
@@ -36,6 +37,7 @@ const LoginPage = () => {
     handleAccess: { accessToken, setAccessToken },
     handleRefresh: { setRefreshToken },
     handleId: { idToken, setIdToken },
+    handleUser: { setUser },
   } = context;
 
   const formik = useFormik({
@@ -60,7 +62,13 @@ const LoginPage = () => {
           maxAge: DAYS * 30,
         });
 
-        navigate("/tasks");
+        const user = await authService.getUser(IdToken);
+
+        apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
+
+        setUser(user);
+        navigate("/dashboard");
+        
       } catch (error) {
         if (error.response) setError(error.response.data.message);
         else if (error.request) setError("No response from server");
@@ -72,7 +80,7 @@ const LoginPage = () => {
   });
 
   if (accessToken && idToken) {
-    return <Navigate to="/tasks" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return (

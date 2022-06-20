@@ -15,25 +15,26 @@ import { useCookies } from "react-cookie";
 function App() {
   const content = useRoutes(router);
   const context = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
   const [cookies, setCookie] = useCookies(["refreshToken"]);
 
   const {
     handleAccess: { accessToken, setAccessToken },
     handleId: { idToken, setIdToken },
     handleRefresh: { refreshToken, setRefreshToken },
+    handleLoading: { setLoading, loading },
+    handleUser: { getUser },
   } = context;
 
   useEffect(() => {
     const token = cookies.refreshToken;
 
-    if (token) setRefreshToken(token);
+    if (token) {
+      setRefreshToken(token);
+    }
   }, [cookies.refreshToken]);
 
   useEffect(() => {
-    if (accessToken && idToken) {
-      setLoading(false);
-    } else if (refreshToken) {
+    if (refreshToken) {
       setLoading(true);
       authService
         .refresh(refreshToken)
@@ -42,14 +43,20 @@ function App() {
 
           setAccessToken(AccessToken);
           setIdToken(IdToken);
+
+          return getUser(IdToken);
         })
-        .catch(() => {
-          setLoading(false);
-        });
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
-  }, [accessToken, idToken, refreshToken]);
+  }, [refreshToken]);
+
+  useEffect(() => {
+    if (accessToken && idToken) {
+      setLoading(false);
+    }
+  }, [accessToken, idToken]);
 
   return (
     <ThemeProvider>

@@ -1,11 +1,14 @@
-import { Container, Grid } from "@mui/material";
+import { Box, Card, CardContent, Container, Grid } from "@mui/material";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
 import TaskTable from "./TaskTable";
 import TaskFilter from "./TaskFilters";
+import DynamicFilter from "./DynamicFilters";
 import { FilterProvider } from "src/contexts/FilterContext";
+import { TabsProvider } from "src/contexts/TabsContext";
+import InfoTab from "./InfoTab";
 
 const TaskPage = () => {
   return (
@@ -13,26 +16,33 @@ const TaskPage = () => {
       <Helmet>
         <title>Task management - Tasks</title>
       </Helmet>
-      <PageTitleWrapper>
-        <TaskHeader />
-      </PageTitleWrapper>
+      <FilterProvider>
+        <TabsProvider>
+          <PageTitleWrapper>
+            <TaskHeader />
+          </PageTitleWrapper>
 
-      <Container maxWidth="lg">
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="stretch"
-          spacing={3}
-        >
-          <FilterProvider>
-            <TaskFilter />
-            <Grid item xs={12}>
-              <TaskTable tasks={[]} />
+          <Container maxWidth="xl">
+            <Grid container direction="row" alignItems="stretch" spacing={3}>
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <Box>
+                      <DynamicFilter />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={8}>
+                <TaskTable />
+              </Grid>
+              <Grid item xs={4}>
+                <InfoTab />
+              </Grid>
             </Grid>
-          </FilterProvider>
-        </Grid>
-      </Container>
+          </Container>
+        </TabsProvider>
+      </FilterProvider>
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { FC, ChangeEvent, useState, useCallback, useContext } from "react";
-import PropTypes from "prop-types";
 import {
   Divider,
   Box,
@@ -22,12 +21,6 @@ import {
 import { AgentContext, IAgent } from "src/contexts/AgentContext";
 import Label from "src/components/Label";
 import { agentService } from "src/services/agent.service";
-
-interface AgentTableProps {
-  className?: string;
-  Agents: IAgent[];
-  loading: boolean;
-}
 
 const headCells = [
   { id: "name", label: "Name" },
@@ -57,24 +50,25 @@ const applyPagination = (agents: IAgent[], page: number, limit: number) => {
   return agents.slice(page * limit, page * limit + limit);
 };
 
-const AgentTable: FC<AgentTableProps> = ({ Agents, loading }) => {
+const AgentTable: FC = () => {
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
-  const context = useContext(AgentContext)
-  const { getAgents } = context.handleAgents
-  const { setLoading } = context.handleLoading
+  const context = useContext(AgentContext);
+  const { getAgents, agents: Agents } = context.handleAgents;
+  const { setLoading, loading } = context.handleLoading;
 
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
 
-  const changeStatus = useCallback(async (status: "enable" | "disable") => {
-    try {
-      setLoading(true)
-      await agentService.changeStatus(selectedAgents, status);
-      await getAgents()
-    } catch (error) {
-
-    }
-  }, [selectedAgents]);
+  const changeStatus = useCallback(
+    async (status: "enable" | "disable") => {
+      try {
+        setLoading(true);
+        await agentService.changeStatus(selectedAgents, status);
+        await getAgents();
+      } catch (error) {}
+    },
+    [selectedAgents]
+  );
 
   const handleSelectAll = (event) => {
     const res = event.target.checked ? Agents.map((item) => item.email) : [];
@@ -83,10 +77,10 @@ const AgentTable: FC<AgentTableProps> = ({ Agents, loading }) => {
 
   const handleSelectOne = (event, agentEmail: string): void => {
     if (!selectedAgents.includes(agentEmail)) {
-      const res = [...selectedAgents, agentEmail]
+      const res = [...selectedAgents, agentEmail];
       setSelectedAgents(res);
     } else {
-      const res = selectedAgents.filter((id) => id !== agentEmail)
+      const res = selectedAgents.filter((id) => id !== agentEmail);
       setSelectedAgents(res);
     }
   };
@@ -111,12 +105,12 @@ const AgentTable: FC<AgentTableProps> = ({ Agents, loading }) => {
         title="Agents"
         action={
           selectedAgents.length ? (
-            <>
-              <Button onClick={() => changeStatus("enable")}>Enable</Button>
-              <Button color="error" onClick={() => changeStatus("disable")}>
+            <Box display="flex" gap={2}>
+              <Button variant="contained" onClick={() => changeStatus("enable")}>Enable</Button>
+              <Button variant="contained" color="warning" onClick={() => changeStatus("disable")}>
                 Disable
               </Button>
-            </>
+            </Box>
           ) : null
         }
         sx={{ height: "60px" }}
@@ -220,14 +214,6 @@ const AgentTable: FC<AgentTableProps> = ({ Agents, loading }) => {
       </Box>
     </Card>
   );
-};
-
-AgentTable.propTypes = {
-  Agents: PropTypes.array.isRequired,
-};
-
-AgentTable.defaultProps = {
-  Agents: [],
 };
 
 export default AgentTable;

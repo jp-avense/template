@@ -13,12 +13,12 @@ function AgentsData() {
   } = context;
 
   useEffect(() => {
-    getAgents().finally(() => setLoading(false));
+    getAgents()
   }, []);
 
   return (
     <Card>
-      <AgentsTable Agents={agents} loading={loading} />
+      <AgentsTable/>
     </Card>
   );
 }
