@@ -26,7 +26,9 @@ type FilterContextT = {
     page: number;
     limit: number;
     setLimit: React.Dispatch<React.SetStateAction<number>>;
+    loading: boolean;
     setPage: React.Dispatch<React.SetStateAction<number>>;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   };
 };
 
@@ -41,6 +43,7 @@ export const FilterProvider = ({ children }) => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   const [filter, setFilter] = useState("clear_filters");
   const [dynamicFilters, setDynamicFilters] = useState([]);
@@ -117,8 +120,12 @@ export const FilterProvider = ({ children }) => {
     total,
     setTotal,
     getDataByFilters,
-    page, setPage,
-    limit, setLimit
+    page,
+    setPage,
+    limit,
+    setLimit,
+    loading,
+    setLoading,
   };
 
   return (

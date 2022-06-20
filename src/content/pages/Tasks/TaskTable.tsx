@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -46,10 +46,10 @@ interface Rows {
 
 const TaskTable: FC<TaskTableProps> = () => {
   const [tableData, setTableData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
   const [selectedRow, setSelectedRow] = useState([]);
+  const [headers, setHeaders] = useState([]);
   const {
     handleFilter: {
       total,
@@ -61,6 +61,8 @@ const TaskTable: FC<TaskTableProps> = () => {
       setPage,
       limit,
       setLimit,
+      loading,
+      setLoading,
     },
   } = filterContext;
 
@@ -98,6 +100,14 @@ const TaskTable: FC<TaskTableProps> = () => {
   useEffect(() => {
     createRows(originalData);
   }, [originalData]);
+
+  useEffect(() => {
+    const ceiling = Math.floor(total / limit);
+
+    if (page > ceiling) {
+      setPage(ceiling);
+    }
+  }, [originalData, total]);
 
   const getStatusLabel = (taskStatus: TaskStatus): JSX.Element => {
     const map = {
@@ -228,7 +238,10 @@ const TaskTable: FC<TaskTableProps> = () => {
     setLimit(parseInt(event.target.value));
   };
 
-  const headers = headCells();
+  useEffect(() => {
+    const temp = headCells();
+    if (temp.length != 0) setHeaders(temp);
+  }, [originalData]);
 
   return (
     <Card>
@@ -248,9 +261,11 @@ const TaskTable: FC<TaskTableProps> = () => {
                   color="primary"
                 />
               </TableCell>
-              {headers.map((c) => (
-                <TableCell key={c.id}>{c.label}</TableCell>
-              ))}
+              {headers.length
+                ? headers.map((c) => (
+                    <TableCell key={c.id}>{c.label}</TableCell>
+                  ))
+                : null}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -258,6 +273,12 @@ const TaskTable: FC<TaskTableProps> = () => {
               <TableRow>
                 <TableCell colSpan={headers.length + 1} align="center">
                   <CircularProgress size={30} />
+                </TableCell>
+              </TableRow>
+            ) : tableData.length == 0 ? (
+              <TableRow>
+                <TableCell colSpan={headers.length + 1} align="center">
+                  No data available
                 </TableCell>
               </TableRow>
             ) : (

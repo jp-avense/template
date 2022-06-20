@@ -55,7 +55,8 @@ function DynamicFilter() {
       dynamicFilters,
       setDynamicFilters,
       setTotal,
-      getDataByFilters
+      getDataByFilters,
+      setLoading,
     },
   } = context;
 
@@ -132,6 +133,10 @@ function DynamicFilter() {
     const clone = dynamicFilters.filter((a) => a != item);
 
     setDynamicFilters(clone);
+
+    if (clone.length === 0) {
+      submitFilter();
+    }
   };
 
   const createValueComponent = (item) => {
@@ -214,18 +219,15 @@ function DynamicFilter() {
   };
 
   const submitFilter = async () => {
-    const data = dynamicFilters.reduce((acc, x) => {
-      if (x.value && x.value !== "none" && x.selectedType !== "none")
-        acc[x.selectedType] = parseValue(x.value, x.componentType);
-      return acc;
-    }, {});
     try {
-      const { data: res } = await getDataByFilters()
-      console.log(res);
+      setLoading(true);
+      const { data: res } = await getDataByFilters();
       setOriginalData(res.tasks);
-      setTotal(res.totalDocuments)
+      setTotal(res.totalDocuments);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
