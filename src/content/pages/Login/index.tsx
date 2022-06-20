@@ -67,7 +67,7 @@ const LoginPage = () => {
         apiService.defaults.headers.common["x-tenant-name"] = `${data.tenant}`;
 
         setUser(user);
-        navigate("/tasks");
+        navigate("/dashboard");
         
       } catch (error) {
         if (error.response) setError(error.response.data.message);
@@ -80,7 +80,7 @@ const LoginPage = () => {
   });
 
   if (accessToken && idToken) {
-    return <Navigate to="/tasks" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return (
