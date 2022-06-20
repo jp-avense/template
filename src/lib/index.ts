@@ -22,3 +22,18 @@ export const getAxiosErrorMessage = (error: AxiosError) => {
     return "request_failed";
   }
 };
+
+export const parseValue = (value: string, type: string) => {
+  let res: any = value;
+  switch (type) {
+    case "number":
+      res = +value;
+      break;
+    case "date":
+    case "datetime":
+      res = new Date(value).toISOString();
+      break;
+  }
+
+  return res;
+};
