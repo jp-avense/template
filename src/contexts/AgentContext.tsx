@@ -32,6 +32,21 @@ type AgentContextT = {
   };
 };
 
+export const parseAgentResponse = (raw: any) => {
+  const res: IAgent[] = raw.map((item) => {
+    const init = {
+      status: +item.Enabled,
+    } as IAgent;
+
+    return item.Attributes.reduce((acc, curr) => {
+      acc[curr.Name] = curr.Value;
+      return acc;
+    }, init);
+  });
+
+  return res;
+};
+
 export const AgentContext = createContext<AgentContextT>({} as AgentContextT);
 
 export const AgentProvider = ({ children }) => {
@@ -43,17 +58,7 @@ export const AgentProvider = ({ children }) => {
     agentService
       .getAgents()
       .then(({ data }) => {
-        const res = data.map((item) => {
-          const init = {
-            status: +item.Enabled,
-          } as IAgent;
-
-          return item.Attributes.reduce((acc, curr) => {
-            acc[curr.Name] = curr.Value;
-            return acc;
-          }, init);
-        });
-
+        const res = parseAgentResponse(data);
         setAgents(res);
       })
       .catch(handleAxiosError)

@@ -13,7 +13,7 @@ function TaskFilter() {
   ];
   const context = useContext(FilterContext);
   const {
-    handleFilter: { filterTable, filter },
+    handleFilter: { filter, setFilter },
   } = context;
 
   return (
@@ -22,7 +22,7 @@ function TaskFilter() {
         <Grid item key={c.value}>
           <Button
             variant={filter == c.value ? "contained" : "text"}
-            onClick={() => filterTable(c.value)}
+            onClick={() => setFilter(c.value)}
           >
             {c.label}
           </Button>

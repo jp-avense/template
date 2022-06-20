@@ -3,17 +3,16 @@ import { apiService } from "./api.service";
 const ALL_TASKS_URL = "tasks";
 const ALL_DETAILS_URL = "task-details";
 
+interface IFilterParam {
+  [key: string]: any;
+}
+
 export const taskService = {
-  async getAll(page = 0, pageSize = 10) {
-    const data = {
-      page,
-      pageSize,
-    };
+  async getAll(filters: IFilterParam = {}) {
 
-    // @ts-ignore
-    const params = new URLSearchParams(data).toString();
+    const params = new URLSearchParams(filters).toString();
     const url = `${ALL_TASKS_URL}?${params}`;
-
+    
     return apiService.get(url);
   },
 

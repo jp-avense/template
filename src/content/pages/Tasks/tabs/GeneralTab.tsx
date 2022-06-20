@@ -25,6 +25,7 @@ const GeneralTab = () => {
     setData(tabsData);
   }, [tabsData]);
 
+
   return (
     <List>
       {data?.dynamicDetails?.length > 1 ? (
@@ -46,12 +47,12 @@ const GeneralTab = () => {
 
           {data.dynamicDetails.map((c) => (
             <>
-              {!c.showInTable && c.value ? (
-                <ListItem key={c.id}>
+              {!c.show_in_table && c.value ? (
+                <ListItem key={c.key}>
                   {c.value ? (
                     <>
                       <Typography variant="h5" color="primary">
-                        <span>{c.id + ":"}</span>
+                        <span>{c.label + ":"}</span>
                       </Typography>
                       <Typography
                         sx={{ ml: "10px" }}

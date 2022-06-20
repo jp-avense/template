@@ -1,26 +1,69 @@
 import { DatePicker } from "@mui/lab";
-import { Select, MenuItem, TextField, Grid, Button } from "@mui/material";
+import {
+  Select,
+  MenuItem,
+  TextField,
+  Grid,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import { useFormik } from "formik";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FilterContext } from "src/contexts/FilterContext";
 
-type Props = {};
+const defaultMapping = {
+  date: null,
+  datetime: null,
+  time: null,
+  file: null,
+  image: null,
+  number: 0,
+  boolean: false,
+  text: "",
+  textarea: "",
+  enum: "",
+};
 
-const CreateTaskForm = (props: Props) => {
+const CreateTaskForm = () => {
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const context = useContext(FilterContext);
 
   const {
     handleFilter: { details },
   } = context;
 
+  const initialValues = details
+    ? details.reduce((acc, x) => {
+        const { input_type, key } = x;
+
+        acc[key] = defaultMapping[input_type];
+
+        return acc;
+      }, {})
+    : {};
+
+
   const formik = useFormik({
-    initialValues: {},
-    onSubmit: async (values) => {
-      console.log(values);
+    enableReinitialize: true,
+    initialValues,
+    onSubmit: async (values, actions) => {
+      setError("");
+      setSuccess("Feature not implented yet :)");
+      actions.resetForm();
     },
   });
 
-  const createRows = () => {
+  const handleChange = (e) => {
+    setSuccess("");
+    setError("");
+    formik.handleChange(e);
+  };
+
+  const createRows = (formik) => {
     const d = details.slice();
     d.sort((a, b) => {
       if (a.order == null) return 1;
@@ -32,18 +75,17 @@ const CreateTaskForm = (props: Props) => {
     return d.map((item) => {
       const type = item.input_type;
 
-      switch (type) {
+      switch (type.toLowerCase()) {
         case "enum":
           return (
             <Select
-              label="Age"
               fullWidth
-              //   label={item.label}
+              label={item.label}
               name={item.key}
-              defaultValue=""
               value={formik.values[item.key]}
-              onChange={formik.handleChange}
+              onChange={handleChange}
             >
+              <MenuItem value="">None</MenuItem>
               {item.enum.map((a, idx) => (
                 <MenuItem key={idx} value={a}>
                   {a}
@@ -60,21 +102,17 @@ const CreateTaskForm = (props: Props) => {
               fullWidth
               value={formik.values[item.key]}
               name={item.key}
-              onChange={formik.handleChange}
+              onChange={handleChange}
             />
           );
         case "date":
           return (
             <DatePicker
-              value={formik.values[item.key] || ""}
+              value={formik.values[item.key] || null}
               label={item.label}
               onChange={(e) => formik.setFieldValue(item.key, e)}
               renderInput={(params) => (
-                <TextField
-                  fullWidth
-                  name={item.key}
-                  {...params}
-                />
+                <TextField {...params} name={item.key} fullWidth />
               )}
             />
           );
@@ -84,11 +122,38 @@ const CreateTaskForm = (props: Props) => {
               name={item.key}
               placeholder={item.label}
               value={formik.values[item.key]}
-              onChange={formik.handleChange}
+              onChange={handleChange}
               label={item.label}
               fullWidth
               defaultValue=""
               type="number"
+            />
+          );
+
+        case "boolean":
+          return (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked
+                  name={item.key}
+                  value={formik.values[item.key]}
+                  onChange={handleChange}
+                />
+              }
+              label={item.label}
+            />
+          );
+
+        case "textarea":
+          return (
+            <TextField
+              label={item.label}
+              multiline
+              maxRows={6}
+              fullWidth
+              value={formik.values[item.key]}
+              onChange={(e) => formik.setFieldValue(item.key, e.target.value)}
             />
           );
         default:
@@ -101,9 +166,7 @@ const CreateTaskForm = (props: Props) => {
     });
   };
 
-  const rows = useMemo(() => {
-    return createRows();
-  }, [details, formik]);
+  const rows = createRows(formik);
 
   if (!details) {
     return <>No details about the task yet.</>;
@@ -111,6 +174,8 @@ const CreateTaskForm = (props: Props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
+      {success ? <Alert severity="success">{success}</Alert> : null}
+      {error ? <Alert severity="error">{error}</Alert> : null}
       <Grid
         container
         spacing={2}
@@ -124,8 +189,13 @@ const CreateTaskForm = (props: Props) => {
           </Grid>
         ))}
         <Grid item>
-          <Button variant="contained" type="submit" fullWidth>
-            Submit
+          <Button
+            variant="contained"
+            type="submit"
+            fullWidth
+            disabled={formik.isSubmitting}
+          >
+            {formik.isSubmitting ? <CircularProgress size={19} /> : "Submit"}
           </Button>
         </Grid>
       </Grid>

@@ -17,31 +17,31 @@ const TaskPage = () => {
         <title>Task management - Tasks</title>
       </Helmet>
       <FilterProvider>
-        <PageTitleWrapper>
-          <TaskHeader />
-        </PageTitleWrapper>
+        <TabsProvider>
+          <PageTitleWrapper>
+            <TaskHeader />
+          </PageTitleWrapper>
 
-        <Container maxWidth="xl">
-          <Grid container direction="row" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <Card>
-                <CardContent>
-                  <Box>
-                    <DynamicFilter />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <TabsProvider>
+          <Container maxWidth="xl">
+            <Grid container direction="row" alignItems="stretch" spacing={3}>
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <Box>
+                      <DynamicFilter />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
               <Grid item xs={8}>
                 <TaskTable />
               </Grid>
               <Grid item xs={4}>
                 <InfoTab />
               </Grid>
-            </TabsProvider>
-          </Grid>
-        </Container>
+            </Grid>
+          </Container>
+        </TabsProvider>
       </FilterProvider>
     </>
   );

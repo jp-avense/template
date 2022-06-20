@@ -1,19 +1,19 @@
 import { useContext, useState, useEffect, useMemo } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-  Box,
-} from "@mui/material";
+import { Button, Grid, MenuItem, Select, TextField, Box } from "@mui/material";
 
 import { DatePicker } from "@mui/lab";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { taskService } from "src/services/task.service";
+import {
+  AgentContext,
+  IAgent,
+  parseAgentResponse,
+} from "src/contexts/AgentContext";
+import { agentService } from "src/services/agent.service";
+import { parseValue } from "src/lib";
 
 const width = {
   width: "200px",
@@ -23,20 +23,57 @@ const width2 = {
   width: "250px",
 };
 
+const insertAdditional = (data, agents: IAgent[]) => {
+  const dup = data.slice();
+  const subs = agents.map((item) => ({ value: item.sub, label: item.name }));
+  const additional = [
+    {
+      key: "assigned_to",
+      label: "Agent",
+      input_type: "enum",
+      enum: subs,
+    },
+  ];
+  const res = dup.concat(additional);
+  return res;
+};
+
 function DynamicFilter() {
   const [taskDetails, setTaskDetails] = useState([]);
-  const [filterGroup, setFilterGroup] = useState([]);
 
   const context = useContext(FilterContext);
+  const agentContext = useContext(AgentContext);
 
   const {
-    handleFilter: { setDetails },
+    handleAgents: { agents, setAgents },
+  } = agentContext;
+
+  const {
+    handleFilter: {
+      setDetails,
+      setOriginalData,
+      dynamicFilters,
+      setDynamicFilters,
+      setTotal,
+      getDataByFilters
+    },
   } = context;
 
   useEffect(() => {
     taskService.getDetails().then(({ data }) => {
-      setTaskDetails(data);
       setDetails(data);
+
+      if (agents.length == 0)
+        return agentService.getAgents().then(({ data: agentResponse }) => {
+          const agents = parseAgentResponse(agentResponse);
+          const taskData = insertAdditional(data, agents);
+
+          setTaskDetails(taskData);
+          setAgents(agents);
+        });
+
+      const res = insertAdditional(data, agents);
+      setTaskDetails(res);
     });
   }, []);
 
@@ -48,51 +85,53 @@ function DynamicFilter() {
   }, [taskDetails]);
 
   const addFilterGroup = () => {
-    if (filterGroup.length == taskDetails.length) return;
+    if (dynamicFilters.length == taskDetails.length) return;
 
     const group = {
       selectedType: "none",
       value: "",
     };
 
-    const res = [...filterGroup, group];
+    const res = [...dynamicFilters, group];
 
-    setFilterGroup(res);
+    setDynamicFilters(res);
   };
 
   const typeExists = (type) => {
-    return filterGroup.find((a) => a.selectedType === type);
+    return dynamicFilters.find((a) => a.selectedType === type);
   };
 
   const changeFilterGroupType = (e, item) => {
-    const exists = typeExists(e.target.value);
+    const { value } = e.target;
+    const exists = typeExists(value);
     if (exists) return;
 
-    const index = filterGroup.findIndex((a) => a == item);
+    const index = dynamicFilters.findIndex((a) => a == item);
 
-    const dup = filterGroup.slice().map((a) => ({ ...a }));
+    const dup = dynamicFilters.slice().map((a) => ({ ...a }));
 
-    dup[index].selectedType = e.target.value;
-    dup[index].componentType = e.target.value;
+    dup[index].selectedType = value;
+    dup[index].componentType =
+      value === "none" ? "none" : keyComponentMap[value].input_type;
 
-    setFilterGroup(dup);
+    setDynamicFilters(dup);
   };
 
   const changeFilterGroupValue = (e, item) => {
-    const index = filterGroup.findIndex((a) => a == item);
-    const dup = filterGroup.slice().map((a) => ({ ...a }));
+    const index = dynamicFilters.findIndex((a) => a == item);
+    const dup = dynamicFilters.slice().map((a) => ({ ...a }));
 
     const val = e?.target?.value ?? e;
 
     dup[index].value = val;
 
-    setFilterGroup(dup);
+    setDynamicFilters(dup);
   };
 
   const deleteFilterGroup = (item) => {
-    const clone = filterGroup.filter((a) => a != item);
+    const clone = dynamicFilters.filter((a) => a != item);
 
-    setFilterGroup(clone);
+    setDynamicFilters(clone);
   };
 
   const createValueComponent = (item) => {
@@ -100,6 +139,19 @@ function DynamicFilter() {
     const inputType = details ? details.input_type : "none";
 
     switch (inputType) {
+      case "boolean":
+        return (
+          <Select
+            value={item.value}
+            onChange={(e) => changeFilterGroupValue(e, item)}
+            sx={width2}
+            displayEmpty
+            defaultValue={1}
+          >
+            <MenuItem value={1}>True</MenuItem>
+            <MenuItem value={2}>False</MenuItem>
+          </Select>
+        );
       case "enum":
         return (
           <Select
@@ -109,14 +161,19 @@ function DynamicFilter() {
             displayEmpty
           >
             <MenuItem value="">None</MenuItem>
-            {details.enum.map((a, idx) => (
-              <MenuItem key={idx} value={a}>
-                {a}
-              </MenuItem>
-            ))}
+            {details.enum.map((a, idx) => {
+              if (typeof a === "string")
+                return (
+                  <MenuItem value={a} key={idx}>
+                    {a}
+                  </MenuItem>
+                );
+              else if (typeof a === "object")
+                return <MenuItem value={a.value}>{a.label}</MenuItem>;
+            })}
           </Select>
         );
-      case "string":
+      case "textarea":
       case "text":
         return (
           <TextField
@@ -156,6 +213,22 @@ function DynamicFilter() {
     }
   };
 
+  const submitFilter = async () => {
+    const data = dynamicFilters.reduce((acc, x) => {
+      if (x.value && x.value !== "none" && x.selectedType !== "none")
+        acc[x.selectedType] = parseValue(x.value, x.componentType);
+      return acc;
+    }, {});
+    try {
+      const { data: res } = await getDataByFilters()
+      console.log(res);
+      setOriginalData(res.tasks);
+      setTotal(res.totalDocuments)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Grid container direction="column" spacing={1}>
       <Grid item>
@@ -168,8 +241,8 @@ function DynamicFilter() {
         </Button>
       </Grid>
 
-      {filterGroup.map((item, index) => {
-        const { selectedType: type, value } = item;
+      {dynamicFilters.map((item, index) => {
+        const { selectedType: type } = item;
 
         const valueComponent = createValueComponent(item);
 
@@ -203,6 +276,13 @@ function DynamicFilter() {
           </Grid>
         );
       })}
+      {dynamicFilters.length ? (
+        <Grid item>
+          <Button variant="contained" onClick={submitFilter}>
+            Submit filter
+          </Button>
+        </Grid>
+      ) : null}
     </Grid>
   );
 }
