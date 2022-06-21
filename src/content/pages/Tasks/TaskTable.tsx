@@ -16,17 +16,23 @@ import {
   TablePagination,
 } from "@mui/material";
 import Label from "src/components/Label";
-import { TaskStatus } from "src/models/tasks";
+import { TaskStatus, TaskStatusEnum } from "src/models/tasks";
 import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
-
 interface TaskTableProps {
   className?: string;
 }
+
+// TODO just a dummy here
+const mapping = {
+  1: 'Registration',
+  2: 'Acting',
+}
+
 
 interface Rows {
   dynamicDetails: any[];
@@ -38,6 +44,7 @@ interface Rows {
   lastUpdate: string;
   updatedBy: string;
 }
+
 
 const TaskTable: FC<TaskTableProps> = () => {
   const [tableData, setTableData] = useState([]);
@@ -106,20 +113,20 @@ const TaskTable: FC<TaskTableProps> = () => {
 
   const getStatusLabel = (taskStatus: TaskStatus): JSX.Element => {
     const map = {
-      new: {
+      "new": {
         text: "New",
         color: "secondary",
       },
-      done: {
+      "done": {
         text: "Done",
         color: "success",
       },
-      assigned: {
+      "assigned": {
         text: "Assigned",
         color: "primary",
       },
-      in_progress: {
-        text: "Inprogress",
+      "inProgress": {
+        text: "In progress",
         color: "info",
       },
     };
@@ -168,10 +175,10 @@ const TaskTable: FC<TaskTableProps> = () => {
         lastUpdate: "",
         updatedBy: "",
       };
-      c.task_details.map((e) => {
+      c.taskDetails.map((e) => {
         let dynamicId = 1;
 
-        if (e.input_type === "date") {
+        if (e.inputType === "date") {
           dynamicDetails.push({
             ...e,
             value: e.value ? new Date(e.value).toLocaleDateString() : "",
@@ -190,12 +197,16 @@ const TaskTable: FC<TaskTableProps> = () => {
       });
       dynamicDetails.sort((a, b) => a.order - b.order);
       details.dynamicDetails = dynamicDetails;
-      details.status = c.status_id;
-      details.type = c.type_id.charAt(0).toUpperCase() + c.type_id.slice(1);
-      details.createdAt = new Date(c.created_at).toDateString();
-      details.assignedTo = c.assigned_to ? c.assigned_to.agent_name : "";
-      details.lastUpdate = new Date(c.last_updated_at).toDateString();
-      details.updatedBy = c.last_updated_by ? c.last_updated_by.user_name : "";
+      details.status = c.statusId;
+      
+      const type = mapping[c.taskType]
+
+      // details.type = c.taskType.charAt(0).toUpperCase() + type.slice(1);
+      details.type = type
+      details.createdAt = new Date(c.createdAt).toDateString();
+      details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
+      details.lastUpdate = new Date(c.lastUpdatedAt).toDateString();
+      details.updatedBy = c.lastUpdatedBy ? c.lastUpdatedBy.userName : "";
       details.id = id;
       id++;
       rows.push(details);
@@ -211,8 +222,8 @@ const TaskTable: FC<TaskTableProps> = () => {
 
     if (!originalData.length) return headers;
 
-    originalData[0].task_details.map((c) => {
-      if (c.show_in_table)
+    originalData[0].taskDetails.map((c) => {
+      if (c.showInTable)
         headers.push({ id: c.label, label: c.label, order: c.order });
     });
     headers.sort((a, b) => a.order - b.order);
@@ -305,7 +316,7 @@ const TaskTable: FC<TaskTableProps> = () => {
                   </TableCell>
                   <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
                   {rows.dynamicDetails.map((dynamic) => {
-                    if (dynamic.show_in_table)
+                    if (dynamic.showInTable)
                       return (
                         <TableCell key={dynamic.id}>{dynamic.value}</TableCell>
                       );

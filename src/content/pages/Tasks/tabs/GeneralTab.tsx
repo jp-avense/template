@@ -45,7 +45,7 @@ const GeneralTab = () => {
 
           {data.dynamicDetails.map((c) => (
             <>
-              {!c.show_in_table && c.value ? (
+              {!c.showInTable && c.value ? (
                 <ListItem key={c.key}>
                   {c.value ? (
                     <>

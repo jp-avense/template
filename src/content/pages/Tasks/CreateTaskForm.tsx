@@ -38,9 +38,9 @@ const CreateTaskForm = () => {
 
   const initialValues = details
     ? details.reduce((acc, x) => {
-        const { input_type, key } = x;
+        const { inputType, key } = x;
 
-        acc[key] = defaultMapping[input_type];
+        acc[key] = defaultMapping[inputType];
 
         return acc;
       }, {})
@@ -73,7 +73,7 @@ const CreateTaskForm = () => {
     });
 
     return d.map((item) => {
-      const type = item.input_type;
+      const type = item.inputType;
 
       switch (type.toLowerCase()) {
         case "enum":
