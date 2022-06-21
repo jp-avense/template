@@ -13,7 +13,6 @@ import {
   parseAgentResponse,
 } from "src/contexts/AgentContext";
 import { agentService } from "src/services/agent.service";
-import { parseValue } from "src/lib";
 
 const width = {
   width: "200px",
@@ -28,9 +27,9 @@ const insertAdditional = (data, agents: IAgent[]) => {
   const subs = agents.map((item) => ({ value: item.sub, label: item.name }));
   const additional = [
     {
-      key: "assigned_to",
+      key: "assignedTo",
       label: "Agent",
-      input_type: "enum",
+      inputType: "enum",
       enum: subs,
     },
   ];
@@ -113,7 +112,7 @@ function DynamicFilter() {
 
     dup[index].selectedType = value;
     dup[index].componentType =
-      value === "none" ? "none" : keyComponentMap[value].input_type;
+      value === "none" ? "none" : keyComponentMap[value].inputType;
 
     setDynamicFilters(dup);
   };
@@ -138,7 +137,7 @@ function DynamicFilter() {
 
   const createValueComponent = (item) => {
     const details = keyComponentMap[item.selectedType];
-    const inputType = details ? details.input_type : "none";
+    const inputType = details ? details.inputType : "none";
 
     switch (inputType) {
       case "boolean":

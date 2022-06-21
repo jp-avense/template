@@ -67,7 +67,7 @@ export const FilterProvider = ({ children }) => {
       dataTable = originalData;
     } else dataTable = filteredData;
 
-    if (details.filter == "created_at") {
+    if (details.filter == "createdAt") {
       data = _.filter(dataTable, function (o) {
         let date = new Date(o[details.filter] * 1000);
         return date == details.value;
@@ -85,7 +85,7 @@ export const FilterProvider = ({ children }) => {
   const getDataByFilters = async (parsedObject?: object) => {
     const finalFilters = {};
 
-    if (filter !== "clear_filters") finalFilters["status_id"] = filter;
+    if (filter !== "clear_filters") finalFilters["statusId"] = filter;
 
     dynamicFilters.forEach((x) => {
       if (x.value != null && x.value !== "none" && x.selectedType !== "none")

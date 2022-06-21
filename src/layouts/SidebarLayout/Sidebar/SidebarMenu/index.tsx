@@ -207,7 +207,7 @@ const logout = () => {
                   to="/dashboard"
                   startIcon={<DashboardIcon />}
                 >
-                  Status
+                  Dashboard
                 </Button>
               </ListItem>
             </List>

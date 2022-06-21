@@ -7,7 +7,7 @@ function TaskFilter() {
   const filters = [
     { label: "New", value: "new" },
     { label: "Assigned", value: "assigned" },
-    { label: "Inprogress", value: "in_progress" },
+    { label: "Inprogress", value: "inProgress" },
     { label: "Done", value: "done" },
     { label: "Clear Filters", value: "clear_filters" },
   ];
