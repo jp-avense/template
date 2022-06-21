@@ -70,7 +70,7 @@ const LoginPage = () => {
         navigate("/dashboard");
         
       } catch (error) {
-        if (error.response) setError(error.response.data.message);
+        if (error.response.data) setError(error.response.data.message);
         else if (error.request) setError("No response from server");
         else setError("Unable to submit data. Please try again later");
       } finally {
