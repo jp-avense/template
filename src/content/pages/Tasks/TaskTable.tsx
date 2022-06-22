@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Checkbox,
   TablePagination,
+  Button,
 } from "@mui/material";
 import Label from "src/components/Label";
 import { TaskStatus, TaskStatusEnum } from "src/models/tasks";
@@ -23,34 +24,33 @@ import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
+import AssignTaskForm from "./AssignTaskForm";
 interface TaskTableProps {
   className?: string;
 }
 
 // TODO just a dummy here
 const mapping = {
-  1: 'Registration',
-  2: 'Acting',
-}
-
+  1: "Registration",
+  2: "Acting",
+};
 
 interface Rows {
   dynamicDetails: any[];
   status: string;
   type: string;
   createdAt: string;
-  id: number;
+  id: string;
   assignedTo: string;
   lastUpdate: string;
   updatedBy: string;
+  executionStartDate: string;
 }
 
-
 const TaskTable: FC<TaskTableProps> = () => {
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
-  const [selectedRow, setSelectedRow] = useState([]);
   const [headers, setHeaders] = useState([]);
   const {
     handleFilter: {
@@ -65,6 +65,8 @@ const TaskTable: FC<TaskTableProps> = () => {
       setLimit,
       loading,
       setLoading,
+      selectedRows,
+      setSelectedRows,
     },
   } = filterContext;
 
@@ -86,6 +88,7 @@ const TaskTable: FC<TaskTableProps> = () => {
 
   useEffect(() => {
     setLoading(true);
+    setSelectedRows([]);
 
     getDataByFilters()
       .then(({ data }) => {
@@ -111,21 +114,27 @@ const TaskTable: FC<TaskTableProps> = () => {
     }
   }, [originalData, total]);
 
+  useEffect(() => {
+    const res = tableData.filter((item) => selectedRows.includes(item.id));
+
+    setTabsData(res);
+  }, [tableData, selectedRows]);
+
   const getStatusLabel = (taskStatus: TaskStatus): JSX.Element => {
     const map = {
-      "new": {
+      new: {
         text: "New",
         color: "secondary",
       },
-      "done": {
+      done: {
         text: "Done",
         color: "success",
       },
-      "assigned": {
+      assigned: {
         text: "Assigned",
         color: "primary",
       },
-      "inProgress": {
+      inProgress: {
         text: "In progress",
         color: "info",
       },
@@ -136,34 +145,28 @@ const TaskTable: FC<TaskTableProps> = () => {
     return <Label color={color}>{text}</Label>;
   };
 
-  useEffect(() => {
-    setTabsData(selectedRow);
-  }, [selectedRow]);
-
-  const unSelectRow = (currentRow) => {
-    let rows = selectedRow.slice();
-    const index = rows.indexOf(currentRow);
-    rows.splice(index, 1);
-    setSelectedRow(rows);
+  const unSelectRow = (currentRowId: string) => {
+    const filtered = selectedRows.filter((item) => item !== currentRowId);
+    console.log(filtered);
+    setSelectedRows(filtered);
   };
 
-  const createSelectedRows = (currentRow) => {
-    let rows = selectedRow.slice();
-    rows.push(currentRow);
-    setSelectedRow(rows);
+  const createSelectedRows = (currentRowId: string) => {
+    let rows = [...selectedRows, currentRowId];
+    setSelectedRows(rows);
   };
 
-  const selectAllRows = () => {
-    if (selectedRow == tableData) {
-      setSelectedRow([]);
-    } else setSelectedRow(tableData);
+  const selectAllRows = (e) => {
+    if (e.target.checked) {
+      const res = tableData.map((item) => item.id);
+      setSelectedRows(res);
+    } else setSelectedRows([]);
   };
 
   const createRows = (data) => {
     let rows = [];
 
     data.map((c) => {
-      let id = 0;
       let dynamicDetails: any[] = [];
       let details: Rows = {
         dynamicDetails: [],
@@ -174,10 +177,9 @@ const TaskTable: FC<TaskTableProps> = () => {
         assignedTo: "",
         lastUpdate: "",
         updatedBy: "",
+        executionStartDate: "",
       };
       c.taskDetails.map((e) => {
-        let dynamicId = 1;
-
         if (e.inputType === "date") {
           dynamicDetails.push({
             ...e,
@@ -192,23 +194,21 @@ const TaskTable: FC<TaskTableProps> = () => {
             id: e.label,
             order: e.order,
           });
-
-        dynamicId++;
       });
       dynamicDetails.sort((a, b) => a.order - b.order);
       details.dynamicDetails = dynamicDetails;
       details.status = c.statusId;
-      
-      const type = mapping[c.taskType]
+
+      const type = mapping[c.taskType];
 
       // details.type = c.taskType.charAt(0).toUpperCase() + type.slice(1);
-      details.type = type
+      details.type = type;
       details.createdAt = new Date(c.createdAt).toDateString();
       details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
       details.lastUpdate = new Date(c.lastUpdatedAt).toDateString();
       details.updatedBy = c.lastUpdatedBy ? c.lastUpdatedBy.userName : "";
-      details.id = id;
-      id++;
+      details.executionStartDate = c.executionStartDate;
+      details.id = c._id;
       rows.push(details);
     });
 
@@ -251,7 +251,24 @@ const TaskTable: FC<TaskTableProps> = () => {
 
   return (
     <Card>
-      <CardHeader title="Tasks" action={<TaskFilter />} />
+      <Box
+        alignItems="center"
+        justifyContent="space-between"
+        display="flex"
+        p={2}
+      >
+        <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
+          <Box>Task</Box>
+          {selectedRows.length == 1 ? (
+            <Box>
+              <AssignTaskForm selected={selectedRows[0]}></AssignTaskForm>
+            </Box>
+          ) : null}
+        </Box>
+        <Box>
+          <TaskFilter />
+        </Box>
+      </Box>
       <Divider />
       <TableContainer sx={{ height: "550px" }}>
         <Table stickyHeader sx={{ height: "100%" }}>
@@ -259,9 +276,10 @@ const TaskTable: FC<TaskTableProps> = () => {
             <TableRow>
               <TableCell padding="checkbox">
                 <Checkbox
-                  checked={selectedRow == tableData}
+                  checked={selectedRows.length == tableData.length}
                   indeterminate={
-                    selectedRow != tableData && selectedRow.length > 0
+                    selectedRows.length !== tableData.length &&
+                    selectedRows.length > 0
                   }
                   onClick={selectAllRows}
                   color="primary"
@@ -298,19 +316,21 @@ const TaskTable: FC<TaskTableProps> = () => {
                         backgroundColor: "aliceblue",
                       },
                     },
-                    selectedRow.indexOf(rows) >= 0
+                    selectedRows.indexOf(rows.id) >= 0
                       ? { backgroundColor: "lavender" }
                       : {},
                   ]}
                   onClick={() =>
-                    selectedRow.indexOf(rows) >= 0
-                      ? unSelectRow(rows)
-                      : createSelectedRows(rows)
+                    selectedRows.indexOf(rows.id) >= 0
+                      ? unSelectRow(rows.id)
+                      : createSelectedRows(rows.id)
                   }
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={selectedRow.indexOf(rows) >= 0 ? true : false}
+                      checked={
+                        selectedRows.indexOf(rows.id) >= 0 ? true : false
+                      }
                       color="primary"
                     />
                   </TableCell>
@@ -323,7 +343,7 @@ const TaskTable: FC<TaskTableProps> = () => {
                     else return null;
                   })}
                   <TableCell key={rows.id + rows.status}>
-                    {getStatusLabel(rows.status)}
+                    {getStatusLabel(rows.status as TaskStatus)}
                   </TableCell>
                   <TableCell key={rows.id + rows.createdAt}>
                     {rows.createdAt}

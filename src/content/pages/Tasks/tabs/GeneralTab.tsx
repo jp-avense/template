@@ -11,6 +11,7 @@ interface Rows {
   assignedTo: string;
   lastUpdate: string;
   updatedBy: string;
+  executionStartDate: string;
 }
 
 const GeneralTab = () => {
@@ -25,13 +26,14 @@ const GeneralTab = () => {
     setData(currentRow);
   }, [currentRow]);
 
+  console.log(data);
 
   return (
     <List>
       {data?.dynamicDetails?.length > 1 ? (
         <>
           {data.assignedTo ? (
-            <ListItem key={data.assignedTo}>
+            <ListItem key={data.id}>
               <Typography variant="h5" color="primary">
                 <span>Assigned to: </span>
               </Typography>
@@ -43,10 +45,10 @@ const GeneralTab = () => {
             <></>
           )}
 
-          {data.dynamicDetails.map((c) => (
+          {data.dynamicDetails.map((c, index) => (
             <>
               {!c.showInTable && c.value ? (
-                <ListItem key={c.key}>
+                <ListItem key={index}>
                   {c.value ? (
                     <>
                       <Typography variant="h5" color="primary">
@@ -70,7 +72,7 @@ const GeneralTab = () => {
             </>
           ))}
 
-          <ListItem key={data.createdAt}>
+          <ListItem>
             {data.createdAt ? (
               <>
                 <Typography variant="h5" color="primary">
@@ -85,7 +87,7 @@ const GeneralTab = () => {
             )}
           </ListItem>
 
-          <ListItem key={data.id}>
+          <ListItem>
             {data.lastUpdate ? (
               <>
                 <Typography variant="h5" color="primary">
@@ -100,7 +102,7 @@ const GeneralTab = () => {
             )}
           </ListItem>
 
-          <ListItem key={data.updatedBy}>
+          <ListItem>
             {data.lastUpdate ? (
               <>
                 <Typography variant="h5" color="primary">
@@ -108,6 +110,23 @@ const GeneralTab = () => {
                 </Typography>
                 <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                   <span>{data.updatedBy}</span>
+                </Typography>
+              </>
+            ) : (
+              <></>
+            )}
+          </ListItem>
+
+          <ListItem>
+            {data.executionStartDate ? (
+              <>
+                <Typography variant="h5" color="primary">
+                  <span>Execution date: </span>
+                </Typography>
+                <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
+                  <span>
+                    {new Date(data.executionStartDate).toLocaleDateString()}
+                  </span>
                 </Typography>
               </>
             ) : (
