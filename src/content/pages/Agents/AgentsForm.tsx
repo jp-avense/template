@@ -10,13 +10,14 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   agentService,
   RegisterDto,
   UserRoles,
 } from "src/services/agent.service";
 import { getAxiosErrorMessage } from "src/lib";
+import { AgentContext } from "src/contexts/AgentContext";
 
 const validationSchema = yup.object({
   email: yup
@@ -40,6 +41,11 @@ const AgentsForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [roles, setRoles] = useState<UserRoles[]>([]);
+  const context = useContext(AgentContext);
+
+  const {
+    handleAgents: { getAgents },
+  } = context;
 
   const addRole = (event, role: UserRoles) => {
     if (event.target.checked) {
@@ -70,7 +76,8 @@ const AgentsForm = () => {
         });
 
         setSuccess("Successfully created agent");
-        actions.resetForm()
+        actions.resetForm();
+        await getAgents();
       } catch (error) {
         const message = getAxiosErrorMessage(error);
         if (message === "no_response")

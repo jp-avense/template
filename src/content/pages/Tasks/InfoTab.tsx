@@ -22,7 +22,7 @@ const InfoTab = () => {
               <Tab sx={{ width: "33%" }} label="AUDIT" value="3" />
             </TabList>
           </Box>
-          <TabPanel sx={{ padding: "0px", height: "400px" }} value="1">
+          <TabPanel sx={{ padding: "0px", minHeight: "400px" }} value="1">
             <GeneralTab />
           </TabPanel>
           <TabPanel value="2">

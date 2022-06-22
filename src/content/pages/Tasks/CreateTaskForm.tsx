@@ -168,8 +168,8 @@ const CreateTaskForm = () => {
 
   const rows = createRows(formik);
 
-  if (!details) {
-    return <>No details about the task yet.</>;
+  if (!details.length) {
+    return <>No details about the task found.</>;
   }
 
   return (

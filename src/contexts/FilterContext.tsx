@@ -29,6 +29,8 @@ type FilterContextT = {
     loading: boolean;
     setPage: React.Dispatch<React.SetStateAction<number>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    selectedRows: string[];
+    setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   };
 };
 
@@ -44,6 +46,7 @@ export const FilterProvider = ({ children }) => {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const [filter, setFilter] = useState("clear_filters");
   const [dynamicFilters, setDynamicFilters] = useState([]);
@@ -126,6 +129,8 @@ export const FilterProvider = ({ children }) => {
     setLimit,
     loading,
     setLoading,
+    selectedRows,
+    setSelectedRows,
   };
 
   return (

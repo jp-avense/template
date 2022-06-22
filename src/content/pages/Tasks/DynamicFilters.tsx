@@ -22,6 +22,8 @@ const width2 = {
   width: "250px",
 };
 
+
+
 const insertAdditional = (data, agents: IAgent[]) => {
   const dup = data.slice();
   const subs = agents.map((item) => ({ value: item.sub, label: item.name }));
@@ -76,6 +78,12 @@ function DynamicFilter() {
       setTaskDetails(res);
     });
   }, []);
+
+  useEffect(() => {
+    if(dynamicFilters.length == 0) {
+      submitFilter()
+    }
+  }, [dynamicFilters])
 
   const keyComponentMap = useMemo(() => {
     return taskDetails.reduce((acc, item) => {
@@ -176,6 +184,7 @@ function DynamicFilter() {
         );
       case "textarea":
       case "text":
+      case "string":
         return (
           <TextField
             placeholder={details.label}
