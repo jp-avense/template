@@ -227,11 +227,15 @@ const TaskTable: FC<TaskTableProps> = () => {
         headers.push({ id: c.label, label: c.label, order: c.order });
     });
     headers.sort((a, b) => a.order - b.order);
-    headers.push(
-      { id: "status", label: "Status" },
-      { id: "createdAt", label: "Created" }
+    headers.push({ id: "createdAt", label: "Created" });
+    headers.unshift(
+      {
+        id: "status",
+        label: "Status",
+      },
+      { id: "type", label: "Type" },
+      { id: "agent", label: "Agent" }
     );
-    headers.unshift({ id: "type", label: "Type" });
     return headers;
   };
 
@@ -334,7 +338,12 @@ const TaskTable: FC<TaskTableProps> = () => {
                       color="primary"
                     />
                   </TableCell>
-                  <TableCell key={rows.id + rows.type}>{rows.type}</TableCell>
+                  <TableCell>
+                    {getStatusLabel(rows.status as TaskStatus)}
+                  </TableCell>
+                  <TableCell>{rows.type}</TableCell>
+                  <TableCell>{rows.assignedTo}</TableCell>
+
                   {rows.dynamicDetails.map((dynamic) => {
                     if (dynamic.showInTable)
                       return (
@@ -342,12 +351,8 @@ const TaskTable: FC<TaskTableProps> = () => {
                       );
                     else return null;
                   })}
-                  <TableCell key={rows.id + rows.status}>
-                    {getStatusLabel(rows.status as TaskStatus)}
-                  </TableCell>
-                  <TableCell key={rows.id + rows.createdAt}>
-                    {rows.createdAt}
-                  </TableCell>
+
+                  <TableCell>{rows.createdAt}</TableCell>
                 </TableRow>
               ))
             )}
