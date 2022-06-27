@@ -162,6 +162,7 @@ function DynamicFilter() {
           </Select>
         );
       case "enum":
+      case "dropdown":
         return (
           <Select
             value={item.value}
@@ -193,7 +194,8 @@ function DynamicFilter() {
             sx={width2}
           />
         );
-      case "date":
+      case "dateTimeButton":
+      case "dateTime":
         return (
           <DatePicker
             value={item.value}
