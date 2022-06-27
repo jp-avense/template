@@ -180,7 +180,7 @@ const TaskTable: FC<TaskTableProps> = () => {
         executionStartDate: "",
       };
       c.taskDetails.map((e) => {
-        if (e.inputType === "date") {
+        if (e.inputType === "date" || e.inputType === "datetime") {
           dynamicDetails.push({
             ...e,
             value: e.value ? new Date(e.value).toLocaleDateString() : "",
@@ -227,15 +227,7 @@ const TaskTable: FC<TaskTableProps> = () => {
         headers.push({ id: c.label, label: c.label, order: c.order });
     });
     headers.sort((a, b) => a.order - b.order);
-    headers.push({ id: "createdAt", label: "Created" });
-    headers.unshift(
-      {
-        id: "status",
-        label: "Status",
-      },
-      { id: "type", label: "Type" },
-      { id: "agent", label: "Agent" }
-    );
+
     return headers;
   };
 
@@ -338,11 +330,6 @@ const TaskTable: FC<TaskTableProps> = () => {
                       color="primary"
                     />
                   </TableCell>
-                  <TableCell>
-                    {getStatusLabel(rows.status as TaskStatus)}
-                  </TableCell>
-                  <TableCell>{rows.type}</TableCell>
-                  <TableCell>{rows.assignedTo}</TableCell>
 
                   {rows.dynamicDetails.map((dynamic) => {
                     if (dynamic.showInTable)
@@ -351,8 +338,6 @@ const TaskTable: FC<TaskTableProps> = () => {
                       );
                     else return null;
                   })}
-
-                  <TableCell>{rows.createdAt}</TableCell>
                 </TableRow>
               ))
             )}

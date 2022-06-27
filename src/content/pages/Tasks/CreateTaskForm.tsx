@@ -9,6 +9,8 @@ import {
   Checkbox,
   Alert,
   CircularProgress,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -46,7 +48,6 @@ const CreateTaskForm = () => {
       }, {})
     : {};
 
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues,
@@ -78,20 +79,25 @@ const CreateTaskForm = () => {
       switch (type.toLowerCase()) {
         case "enum":
           return (
-            <Select
-              fullWidth
-              label={item.label}
-              name={item.key}
-              value={formik.values[item.key]}
-              onChange={handleChange}
-            >
-              <MenuItem value="">None</MenuItem>
-              {item.enum.map((a, idx) => (
-                <MenuItem key={idx} value={a}>
-                  {a}
-                </MenuItem>
-              ))}
-            </Select>
+            <FormControl fullWidth>
+              <InputLabel id={item.key}>{item.label}</InputLabel>
+              <Select
+                fullWidth
+                labelId={item.key}
+                label={item.label}
+                id={item.key}
+                name={item.key}
+                value={formik.values[item.key]}
+                onChange={handleChange}
+              >
+                <MenuItem value="">None</MenuItem>
+                {item.enum.map((a, idx) => (
+                  <MenuItem key={idx} value={a}>
+                    {a}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           );
         case "string":
         case "text":
@@ -106,6 +112,7 @@ const CreateTaskForm = () => {
             />
           );
         case "date":
+        case "datetime":
           return (
             <DatePicker
               value={formik.values[item.key] || null}
