@@ -21,36 +21,21 @@ import {
 import { AgentContext, IAgent } from "src/contexts/AgentContext";
 import Label from "src/components/Label";
 import { agentService } from "src/services/agent.service";
+import { useTranslation } from "react-i18next";
 
 const headCells = [
-  { id: "name", label: "Name" },
-  { id: "phone_number", label: "Phone Number" },
-  { id: "email", label: "Email" },
-  { id: "status", label: "Status" },
+  { id: "name", label: "name" },
+  { id: "phone_number", label: "phoneNumber" },
+  { id: "email", label: "email" },
+  { id: "status", label: "status" },
 ];
-
-const getStatusLabel = (status: 0 | 1) => {
-  const map = {
-    1: {
-      text: "Enabled",
-      color: "success",
-    },
-    0: {
-      text: "Disabled",
-      color: "error",
-    },
-  };
-
-  const { text, color }: any = map[status];
-
-  return <Label color={color}>{text}</Label>;
-};
 
 const applyPagination = (agents: IAgent[], page: number, limit: number) => {
   return agents.slice(page * limit, page * limit + limit);
 };
 
 const AgentTable: FC = () => {
+  const { t } = useTranslation();
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const context = useContext(AgentContext);
   const { getAgents, agents: Agents } = context.handleAgents;
@@ -58,6 +43,23 @@ const AgentTable: FC = () => {
 
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
+
+  const getStatusLabel = (status: 0 | 1) => {
+    const map = {
+      1: {
+        text: "enabled",
+        color: "success",
+      },
+      0: {
+        text: "disabled",
+        color: "error",
+      },
+    };
+
+    const { text, color }: any = map[status];
+
+    return <Label color={color}>{t(text)}</Label>;
+  };
 
   const changeStatus = useCallback(
     async (status: "enable" | "disable") => {
@@ -102,13 +104,22 @@ const AgentTable: FC = () => {
   return (
     <Card>
       <CardHeader
-        title="Agents"
+        title={t("agents")}
         action={
           selectedAgents.length ? (
             <Box display="flex" gap={2}>
-              <Button variant="contained" onClick={() => changeStatus("enable")}>Enable</Button>
-              <Button variant="contained" color="warning" onClick={() => changeStatus("disable")}>
-                Disable
+              <Button
+                variant="contained"
+                onClick={() => changeStatus("enable")}
+              >
+                {t("enabled")}
+              </Button>
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={() => changeStatus("disable")}
+              >
+                {t("disabled")}
               </Button>
             </Box>
           ) : null
@@ -129,7 +140,7 @@ const AgentTable: FC = () => {
                 />
               </TableCell>
               {headCells.map((headCell: any) => (
-                <TableCell key={headCell.id}>{headCell.label}</TableCell>
+                <TableCell key={headCell.id}>{t(headCell.label)}</TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -210,6 +221,7 @@ const AgentTable: FC = () => {
           page={page}
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25, 30]}
+          labelRowsPerPage={t("rowsPerPage")}
         />
       </Box>
     </Card>

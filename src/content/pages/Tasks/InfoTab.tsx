@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import AuditTab from "./tabs/AuditTab";
 import GeneralTab from "./tabs/GeneralTab";
 import RealTimeTab from "./tabs/RealTimeTab";
+import { useTranslation } from "react-i18next";
 
 const InfoTab = () => {
+  const { t } = useTranslation();
   const [value, setValue] = useState("1");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -17,9 +19,9 @@ const InfoTab = () => {
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange}>
-              <Tab sx={{ width: "34%" }} label="GENERAL" value="1" />
-              <Tab sx={{ width: "33%" }} label="REAL TIME" value="2" />
-              <Tab sx={{ width: "33%" }} label="AUDIT" value="3" />
+              <Tab sx={{ width: "34%" }} label={t("general")} value="1" />
+              <Tab sx={{ width: "33%" }} label={t("realTime")} value="2" />
+              <Tab sx={{ width: "33%" }} label={t("audit")} value="3" />
             </TabList>
           </Box>
           <TabPanel sx={{ padding: "0px", minHeight: "400px" }} value="1">

@@ -2,14 +2,16 @@ import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { Button, Grid } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 function TaskFilter() {
+  const { t } = useTranslation();
   const filters = [
-    { label: "New", value: "new" },
-    { label: "Assigned", value: "assigned" },
-    { label: "Inprogress", value: "inProgress" },
-    { label: "Done", value: "done" },
-    { label: "Clear Filters", value: "clear_filters" },
+    { label: "new", value: "new" },
+    { label: "assigned", value: "assigned" },
+    { label: "inprogress", value: "inProgress" },
+    { label: "done", value: "done" },
+    { label: "clearFilters", value: "clear_filters" },
   ];
   const context = useContext(FilterContext);
   const {
@@ -24,7 +26,7 @@ function TaskFilter() {
             variant={filter == c.value ? "contained" : "text"}
             onClick={() => setFilter(c.value)}
           >
-            {c.label}
+            {t(c.label)}
           </Button>
         </Grid>
       ))}

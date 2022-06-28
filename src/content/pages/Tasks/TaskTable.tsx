@@ -25,6 +25,8 @@ import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
 import AssignTaskForm from "./AssignTaskForm";
+import { useTranslation } from "react-i18next";
+
 interface TaskTableProps {
   className?: string;
 }
@@ -69,6 +71,8 @@ const TaskTable: FC<TaskTableProps> = () => {
       setSelectedRows,
     },
   } = filterContext;
+
+  const { t } = useTranslation();
 
   const {
     handleTabs: { setTabsData },
@@ -123,26 +127,26 @@ const TaskTable: FC<TaskTableProps> = () => {
   const getStatusLabel = (taskStatus: TaskStatus): JSX.Element => {
     const map = {
       new: {
-        text: "New",
+        text: "new",
         color: "secondary",
       },
       done: {
-        text: "Done",
+        text: "done",
         color: "success",
       },
       assigned: {
-        text: "Assigned",
+        text: "assigned",
         color: "primary",
       },
       inProgress: {
-        text: "In progress",
+        text: "inprogress",
         color: "info",
       },
     };
 
     const { text, color }: any = map[taskStatus];
 
-    return <Label color={color}>{text}</Label>;
+    return <Label color={color}>{t(text)}</Label>;
   };
 
   const unSelectRow = (currentRowId: string) => {
@@ -227,14 +231,14 @@ const TaskTable: FC<TaskTableProps> = () => {
         headers.push({ id: c.label, label: c.label, order: c.order });
     });
     headers.sort((a, b) => a.order - b.order);
-    headers.push({ id: "createdAt", label: "Created" });
+    headers.push({ id: "createdAt", label: "created" });
     headers.unshift(
       {
         id: "status",
-        label: "Status",
+        label: "status",
       },
-      { id: "type", label: "Type" },
-      { id: "agent", label: "Agent" }
+      { id: "type", label: "type" },
+      { id: "agent", label: "agent" }
     );
     return headers;
   };
@@ -262,7 +266,7 @@ const TaskTable: FC<TaskTableProps> = () => {
         p={2}
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
-          <Box>Task</Box>
+          <Box>{t("task")}</Box>
           {selectedRows.length == 1 ? (
             <Box>
               <AssignTaskForm selected={selectedRows[0]}></AssignTaskForm>
@@ -291,7 +295,7 @@ const TaskTable: FC<TaskTableProps> = () => {
               </TableCell>
               {headers.length
                 ? headers.map((c) => (
-                    <TableCell key={c.id}>{c.label}</TableCell>
+                    <TableCell key={c.id}>{t(c.label)}</TableCell>
                   ))
                 : null}
             </TableRow>
@@ -306,7 +310,7 @@ const TaskTable: FC<TaskTableProps> = () => {
             ) : tableData.length == 0 ? (
               <TableRow>
                 <TableCell colSpan={headers.length + 1} align="center">
-                  No data available
+                  {t("noDataAvailable")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -368,6 +372,7 @@ const TaskTable: FC<TaskTableProps> = () => {
           page={page}
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25, 30]}
+          labelRowsPerPage={t("rowsPerPage")}
         />
       </Box>
     </Card>
