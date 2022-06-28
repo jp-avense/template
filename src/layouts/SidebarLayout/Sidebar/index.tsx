@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import Scrollbar from "src/components/Scrollbar";
 import { SidebarContext } from "src/contexts/SidebarContext";
+import { useTranslation } from "react-i18next";
 
 import {
   Box,
@@ -32,6 +33,8 @@ const SidebarWrapper = styled(Box)(
 function Sidebar() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const closeSidebar = () => toggleSidebar();
+  const { i18n } = useTranslation();
+  const direction = i18n.dir();
   const theme = useTheme();
 
   return (
@@ -44,6 +47,7 @@ function Sidebar() {
           },
           position: "fixed",
           left: 0,
+
           top: 0,
           background:
             theme.palette.mode === "dark"
@@ -53,21 +57,27 @@ function Sidebar() {
             theme.palette.mode === "dark" ? theme.sidebar.boxShadow : "none",
         }}
       >
-        <Scrollbar>
-          <Box mt={3}>
-            <Box mx={2} p={1} sx={{ backgroundColor: theme.colors.alpha.white[100] }} display="flex" justifyContent="center" alignItems="center" borderRadius={1}>
-              <img src={logo} alt="Milgam Logo" />
-            </Box>
+        <Box mt={3}>
+          <Box
+            mx={2}
+            p={1}
+            sx={{ backgroundColor: theme.colors.alpha.white[100] }}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            borderRadius={1}
+          >
+            <img src={logo} alt="Milgam Logo" />
           </Box>
-          <Divider
-            sx={{
-              mt: theme.spacing(3),
-              mx: theme.spacing(2),
-              background: theme.colors.alpha.trueWhite[10],
-            }}
-          />
-          <SidebarMenu />
-        </Scrollbar>
+        </Box>
+        <Divider
+          sx={{
+            mt: theme.spacing(3),
+            mx: theme.spacing(2),
+            background: theme.colors.alpha.trueWhite[10],
+          }}
+        />
+        <SidebarMenu />
       </SidebarWrapper>
       <Drawer
         sx={{

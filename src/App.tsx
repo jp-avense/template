@@ -11,8 +11,13 @@ import { AuthContext } from "./contexts/AuthContext";
 import { apiService } from "./services/api.service";
 import { authService } from "./services/auth.service";
 import { useCookies } from "react-cookie";
+import "./i18n/i18n.ts";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 function App() {
+  const { t, i18n } = useTranslation();
+  document.body.dir = i18n.dir();
   const content = useRoutes(router);
   const context = useContext(AuthContext);
   const [cookies, setCookie] = useCookies(["refreshToken"]);
@@ -40,7 +45,6 @@ function App() {
         .refresh(refreshToken)
         .then(({ data }) => {
           const { AccessToken, IdToken } = data.AuthenticationResult;
-
           setAccessToken(AccessToken);
           setIdToken(IdToken);
 
@@ -51,6 +55,37 @@ function App() {
       setLoading(false);
     }
   }, [refreshToken]);
+
+  useEffect(() => {
+    const requestIntercept = apiService.interceptors.request.use((request) => {
+      return request;
+    });
+
+    const responseIntercept = apiService.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const prevRequest = error?.config;
+        if (
+          error?.response?.status === 401 &&
+          !prevRequest?.sent &&
+          cookies.refreshToken
+        ) {
+          prevRequest.sent = true;
+          authService.refresh(cookies.refreshToken).then(({ data }) => {
+            const { AccessToken, IdToken } = data.AuthenticationResult;
+            setAccessToken(AccessToken);
+            setIdToken(IdToken);
+          });
+          return apiService(prevRequest);
+        }
+        return Promise.reject(error);
+      }
+    );
+    return () => {
+      apiService.interceptors.request.eject(requestIntercept);
+      apiService.interceptors.request.eject(responseIntercept);
+    };
+  }, []);
 
   useEffect(() => {
     if (accessToken && idToken) {

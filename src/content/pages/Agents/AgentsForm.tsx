@@ -18,6 +18,7 @@ import {
 } from "src/services/agent.service";
 import { getAxiosErrorMessage } from "src/lib";
 import { AgentContext } from "src/contexts/AgentContext";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
   email: yup
@@ -38,6 +39,7 @@ const validationSchema = yup.object({
 });
 
 const AgentsForm = () => {
+  const { t } = useTranslation();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [roles, setRoles] = useState<UserRoles[]>([]);
@@ -103,13 +105,13 @@ const AgentsForm = () => {
       ) : null}
       <form onSubmit={formik.handleSubmit} autoComplete="off">
         <Box color="#5569ff" fontSize="1rem">
-          Basic information
+          {t("basicInformation")}
         </Box>
         <Grid container spacing={3} direction="column" pt={2} mb={2}>
           <Grid item>
             <TextField
               fullWidth
-              label="Name"
+              label={t("name")}
               id="name"
               name="name"
               value={formik.values.name}
@@ -121,7 +123,7 @@ const AgentsForm = () => {
           <Grid item>
             <TextField
               fullWidth
-              label="Family name"
+              label={t("familyName")}
               id="name"
               name="familyName"
               value={formik.values.familyName}
@@ -134,7 +136,7 @@ const AgentsForm = () => {
             <TextField
               fullWidth
               id="phoneNumber"
-              label="Phone Number"
+              label={t("phoneNumber")}
               name="phoneNumber"
               value={formik.values.phoneNumber}
               onChange={formik.handleChange}
@@ -148,13 +150,13 @@ const AgentsForm = () => {
           </Grid>
         </Grid>
         <Box color="#5569ff" fontSize="1rem">
-          Account information
+          {t("accountInformation")}
         </Box>
         <Grid container spacing={3} direction="column" pt={2} mb={2}>
           <Grid item>
             <TextField
               fullWidth
-              label="Email"
+              label={t("email")}
               id="email"
               name="email"
               value={formik.values.email}
@@ -168,7 +170,7 @@ const AgentsForm = () => {
               fullWidth
               id="password"
               name="password"
-              label="Password"
+              label={t("password")}
               type="password"
               value={formik.values.password}
               onChange={formik.handleChange}
@@ -178,7 +180,7 @@ const AgentsForm = () => {
           </Grid>
           <Grid item>
             <Box display="flex" gap={2} alignItems="center">
-              <Box mr={2}>User Roles</Box>
+              <Box mr={2}>{t("userRoles")}</Box>
               <FormControlLabel
                 value="start"
                 control={
@@ -188,7 +190,7 @@ const AgentsForm = () => {
                     onChange={(e) => addRole(e, UserRoles.admin)}
                   />
                 }
-                label="Admin"
+                label={t("admin")}
                 labelPlacement="end"
               />
               <FormControlLabel
@@ -200,7 +202,7 @@ const AgentsForm = () => {
                     onChange={(e) => addRole(e, UserRoles.agent)}
                   />
                 }
-                label="Agent"
+                label={t("agent")}
                 labelPlacement="end"
               />
               <FormControlLabel
@@ -212,7 +214,7 @@ const AgentsForm = () => {
                     onChange={(e) => addRole(e, UserRoles.backoffice)}
                   />
                 }
-                label="Backoffice"
+                label={t("backOffice")}
                 labelPlacement="end"
               />
             </Box>
@@ -226,7 +228,7 @@ const AgentsForm = () => {
             type="submit"
             disabled={formik.isSubmitting}
           >
-            {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+            {formik.isSubmitting ? <CircularProgress size={18} /> : t("submit")}
           </Button>
         </div>
       </form>

@@ -4,12 +4,14 @@ import { Grid, Container } from "@mui/material";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import AgentsHeader from "./AgentsHeader";
 import AgentsData from "./AgentsData";
+import { useTranslation } from "react-i18next";
 
 const AgentsPage = () => {
+  const { t } = useTranslation();
   return (
     <>
       <Helmet>
-        <title>Agents</title>
+        <title>{t("agents")}</title>
       </Helmet>
       <PageTitleWrapper>
         <AgentsHeader />

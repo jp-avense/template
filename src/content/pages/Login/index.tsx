@@ -20,6 +20,7 @@ import { AuthContext } from "src/contexts/AuthContext";
 import { useCookies } from "react-cookie";
 import * as yup from "yup";
 import { apiService } from "src/services/api.service";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
   username: yup.string().required().email(),
@@ -27,6 +28,7 @@ const validationSchema = yup.object({
 });
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
@@ -68,7 +70,6 @@ const LoginPage = () => {
 
         setUser(user);
         navigate("/dashboard");
-        
       } catch (error) {
         if (error.response.data) setError(error.response.data.message);
         else if (error.request) setError("No response from server");
@@ -85,7 +86,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <Helmet>Login</Helmet>
+      <Helmet>{t("login")}</Helmet>
       <Grid
         container
         direction="column"
@@ -99,7 +100,7 @@ const LoginPage = () => {
         </Grid>
         <Grid item>
           <Card sx={{ width: 500 }}>
-            <CardHeader title="Login to the app"></CardHeader>
+            <CardHeader title={t("loginText")}></CardHeader>
             <CardContent>
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -116,7 +117,7 @@ const LoginPage = () => {
                 >
                   <TextField
                     id="outlined-basic"
-                    label="Email"
+                    label={t("email")}
                     variant="outlined"
                     type="email"
                     name="username"
@@ -128,7 +129,7 @@ const LoginPage = () => {
                   />
                   <TextField
                     id="outlined-basic"
-                    label="Password"
+                    label={t("password")}
                     variant="outlined"
                     type="password"
                     name="password"
@@ -146,7 +147,7 @@ const LoginPage = () => {
                     {formik.isSubmitting ? (
                       <CircularProgress size={24} />
                     ) : (
-                      "Login"
+                      t("login")
                     )}
                   </Button>
                 </Box>
