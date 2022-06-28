@@ -64,11 +64,12 @@ function DynamicFilter() {
   useEffect(() => {
     taskService.getDetails().then(({ data }) => {
       setDetails(data);
+      
 
       if (agents.length == 0)
         return agentService.getAgents().then(({ data: agentResponse }) => {
           const agents = parseAgentResponse(agentResponse);
-          const taskData = insertAdditional(data, agents);
+          let taskData = insertAdditional(data, agents);
 
           setTaskDetails(taskData);
           setAgents(agents);
@@ -231,7 +232,7 @@ function DynamicFilter() {
       setOriginalData(res.tasks);
       setTotal(res.totalDocuments);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
