@@ -17,12 +17,14 @@ import { FilterContext } from "src/contexts/FilterContext";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import Modals from "../Components/Modals";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   selected: string;
 };
 
 const AssignTaskForm = ({ selected }: Props) => {
+  const { t } = useTranslation();
   const [open, setOpenPopup] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | Date>("");
@@ -115,7 +117,7 @@ const AssignTaskForm = ({ selected }: Props) => {
   return (
     <>
       {/* @ts-ignore */}
-      <Modals open={open} onClose={handleClose} title="Assign task">
+      <Modals open={open} onClose={handleClose} title={t("assignTask")}>
         {loading ? (
           <span>Loading agents...</span>
         ) : (
@@ -124,12 +126,12 @@ const AssignTaskForm = ({ selected }: Props) => {
               {success && <Alert severity="success">{success}</Alert>}
               {error && <Alert severity="error">{error}</Alert>}
               <FormControl fullWidth>
-                <InputLabel id="agent">Agent</InputLabel>
+                <InputLabel id="agent">{t("agent")}</InputLabel>
                 <Select
                   onChange={(e) => selectAgent(e)}
                   id="agent"
                   labelId="agent"
-                  label="Agent"
+                  label={t("agent")}
                   fullWidth
                   value={selectedAgent}
                 >
@@ -148,14 +150,14 @@ const AssignTaskForm = ({ selected }: Props) => {
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
               <Button variant="contained" type="submit" disabled={submitting}>
-                {submitting ? <CircularProgress size={19} /> : "Submit"}
+                {submitting ? <CircularProgress size={19} /> : t("submit")}
               </Button>
             </Box>
           </form>
         )}
       </Modals>
       <Button variant="contained" onClick={handleOpen}>
-        Assign Task
+        {t("assignTask")}
       </Button>
     </>
   );

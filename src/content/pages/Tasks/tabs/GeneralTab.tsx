@@ -1,6 +1,7 @@
 import { TabsContext } from "src/contexts/TabsContext";
 import { useContext, useEffect, useState } from "react";
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface Rows {
   dynamicDetails: any[];
@@ -15,6 +16,7 @@ interface Rows {
 }
 
 const GeneralTab = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<Rows>();
   const context = useContext(TabsContext);
 
@@ -35,7 +37,7 @@ const GeneralTab = () => {
           {data.assignedTo ? (
             <ListItem key={data.id}>
               <Typography variant="h5" color="primary">
-                <span>Assigned to: </span>
+                <span>{t("assignedTo")}: </span>
               </Typography>
               <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                 <span>{data.assignedTo}</span>
@@ -52,7 +54,7 @@ const GeneralTab = () => {
                   {c.value ? (
                     <>
                       <Typography variant="h5" color="primary">
-                        <span>{c.label + ":"}</span>
+                        <span>{t(c.label) + ":"}</span>
                       </Typography>
                       <Typography
                         sx={{ ml: "10px" }}
@@ -76,7 +78,7 @@ const GeneralTab = () => {
             {data.createdAt ? (
               <>
                 <Typography variant="h5" color="primary">
-                  <span>Created at: </span>
+                  <span>{t("createdAt")}: </span>
                 </Typography>
                 <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                   <span>{data.createdAt}</span>
@@ -91,7 +93,7 @@ const GeneralTab = () => {
             {data.lastUpdate ? (
               <>
                 <Typography variant="h5" color="primary">
-                  <span>Last updated: </span>
+                  <span>{t("lastUpdated")}: </span>
                 </Typography>
                 <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                   <span>{data.lastUpdate}</span>
@@ -106,7 +108,7 @@ const GeneralTab = () => {
             {data.lastUpdate ? (
               <>
                 <Typography variant="h5" color="primary">
-                  <span>Updated by: </span>
+                  <span>{t("updatedBy")}: </span>
                 </Typography>
                 <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                   <span>{data.updatedBy}</span>
@@ -121,7 +123,7 @@ const GeneralTab = () => {
             {data.executionStartDate ? (
               <>
                 <Typography variant="h5" color="primary">
-                  <span>Execution date: </span>
+                  <span>{t("executionDate")}: </span>
                 </Typography>
                 <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
                   <span>

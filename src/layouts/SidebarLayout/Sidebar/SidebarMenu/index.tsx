@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from "react";
 
 import {
   ListSubheader,
@@ -7,20 +7,22 @@ import {
   List,
   styled,
   Button,
-  ListItem
-} from '@mui/material';
-import { NavLink as RouterLink } from 'react-router-dom';
-import { SidebarContext } from 'src/contexts/SidebarContext';
-import { authService } from 'src/services/auth.service';
-import { AuthContext } from 'src/contexts/AuthContext';
-import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
-import AssignmentIcon from '@mui/icons-material/AssignmentTwoTone';
-import PersonIcon from '@mui/icons-material/PersonTwoTone';
-import LogoutIcon from '@mui/icons-material/LogoutTwoTone';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+  ListItem,
+  Avatar,
+} from "@mui/material";
+import { NavLink as RouterLink } from "react-router-dom";
+import { SidebarContext } from "src/contexts/SidebarContext";
+import { authService } from "src/services/auth.service";
+import { AuthContext } from "src/contexts/AuthContext";
+import SettingsTwoToneIcon from "@mui/icons-material/SettingsTwoTone";
+import AssignmentIcon from "@mui/icons-material/AssignmentTwoTone";
+import PersonIcon from "@mui/icons-material/PersonTwoTone";
+import LogoutIcon from "@mui/icons-material/LogoutTwoTone";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
+import enFlag from "../../../../assets/images/icons/enFlag.svg";
+import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
-
-
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -73,7 +75,7 @@ const SubMenuWrapper = styled(Box)(
 
           .MuiButton-startIcon,
           .MuiButton-endIcon {
-            transition: ${theme.transitions.create(['color'])};
+            transition: ${theme.transitions.create(["color"])};
 
             .MuiSvgIcon-root {
               font-size: inherit;
@@ -137,8 +139,8 @@ const SubMenuWrapper = styled(Box)(
                 background: ${theme.colors.alpha.trueWhite[100]};
                 opacity: 0;
                 transition: ${theme.transitions.create([
-                  'transform',
-                  'opacity'
+                  "transform",
+                  "opacity",
                 ])};
                 width: 6px;
                 height: 6px;
@@ -164,36 +166,35 @@ const SubMenuWrapper = styled(Box)(
 `
 );
 
-
-
 function SidebarMenu() {
   const { closeSidebar } = useContext(SidebarContext);
+  const { t, i18n } = useTranslation();
   const context = useContext(AuthContext);
-  const [cookies, setCookie , removeCookie] = useCookies(["refreshToken"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["refreshToken"]);
   const {
     handleAccess: { accessToken, setAccessToken },
     handleId: { idToken, setIdToken },
     handleRefresh: { refreshToken, setRefreshToken },
   } = context;
 
+  const handleDirection = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
 
-
-
-const logout = () => {
-  authService.logout(refreshToken)
-  removeCookie('refreshToken');
-  setAccessToken(null)
-  setIdToken(null)
-}
-
+  const logout = () => {
+    authService.logout(refreshToken);
+    removeCookie("refreshToken");
+    setAccessToken(null);
+    setIdToken(null);
+  };
   return (
     <>
       <MenuWrapper sx={{ pt: 2 }}>
-      <List
+        <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Dashboards
+              {t("dashboards")}
             </ListSubheader>
           }
         >
@@ -207,7 +208,7 @@ const logout = () => {
                   to="/dashboard"
                   startIcon={<DashboardIcon />}
                 >
-                  Dashboard
+                  {t("dashboard")}
                 </Button>
               </ListItem>
             </List>
@@ -217,7 +218,7 @@ const logout = () => {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Task management
+              {t("taskManagement")}
             </ListSubheader>
           }
         >
@@ -231,7 +232,7 @@ const logout = () => {
                   to="/tasks"
                   startIcon={<AssignmentIcon />}
                 >
-                  Tasks
+                  {t("tasks")}
                 </Button>
               </ListItem>
             </List>
@@ -241,7 +242,7 @@ const logout = () => {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Agent management
+              {t("agentManagement")}
             </ListSubheader>
           }
         >
@@ -255,7 +256,7 @@ const logout = () => {
                   to="/agents"
                   startIcon={<PersonIcon />}
                 >
-                  Agents
+                  {t("agents")}
                 </Button>
               </ListItem>
             </List>
@@ -265,7 +266,7 @@ const logout = () => {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Account
+              {t("account")}
             </ListSubheader>
           }
         >
@@ -279,7 +280,7 @@ const logout = () => {
                   to="/settings"
                   startIcon={<SettingsTwoToneIcon />}
                 >
-                  Settings
+                  {t("settings")}
                 </Button>
               </ListItem>
               <ListItem component="div">
@@ -290,7 +291,48 @@ const logout = () => {
                   to="/login"
                   startIcon={<LogoutIcon />}
                 >
-                  Logout
+                  {t("logout")}
+                </Button>
+              </ListItem>
+            </List>
+          </SubMenuWrapper>
+        </List>
+        <List
+          component="div"
+          subheader={
+            <ListSubheader component="div" disableSticky>
+              {t("language")}
+            </ListSubheader>
+          }
+        >
+          <SubMenuWrapper>
+            <List component="div">
+              <ListItem component="div">
+                <Button
+                  onClick={() => handleDirection("en")}
+                  startIcon={
+                    <Avatar
+                      sx={{ width: 24, height: 24 }}
+                      variant="square"
+                      src={enFlag}
+                    />
+                  }
+                >
+                  {t("english")}
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  onClick={() => handleDirection("he")}
+                  startIcon={
+                    <Avatar
+                      sx={{ width: 24, height: 24 }}
+                      variant="square"
+                      src={hebFlag}
+                    />
+                  }
+                >
+                  {t("hebrew")}
                 </Button>
               </ListItem>
             </List>

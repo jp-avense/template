@@ -4,8 +4,10 @@ import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
 import Modals from "../Components/Modals";
 import AgentsForm from "./AgentsForm";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function PageHeader() {
+  const { t } = useTranslation();
   const [open, setOpenPopup] = useState(false);
   const handleClose = () => {
     setOpenPopup(false);
@@ -15,12 +17,12 @@ function PageHeader() {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h3" component="h3" gutterBottom>
-          Agents
+          {t("agents")}
         </Typography>
-        <Typography variant="subtitle2">Users who uses the system</Typography>
+        <Typography variant="subtitle2">{t("agentDescription")}</Typography>
       </Grid>
       <Grid item>
-        <Modals open={open} onClose={handleClose} title="Add Agent">
+        <Modals open={open} onClose={handleClose} title={t("addAgent")}>
           <AgentsForm />
         </Modals>
 
@@ -30,7 +32,7 @@ function PageHeader() {
           startIcon={<AddTwoToneIcon fontSize="small" />}
           onClick={() => setOpenPopup(true)}
         >
-          Add Agent
+          {t("addAgent")}
         </Button>
       </Grid>
     </Grid>

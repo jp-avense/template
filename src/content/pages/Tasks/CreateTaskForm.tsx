@@ -15,6 +15,7 @@ import {
 import { useFormik } from "formik";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FilterContext } from "src/contexts/FilterContext";
+import { useTranslation } from "react-i18next";
 
 const defaultMapping = {
   date: null,
@@ -30,6 +31,7 @@ const defaultMapping = {
 };
 
 const CreateTaskForm = () => {
+  const { t } = useTranslation();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const context = useContext(FilterContext);
@@ -103,7 +105,7 @@ const CreateTaskForm = () => {
         case "text":
           return (
             <TextField
-              label={item.label}
+              label={t(item.label)}
               defaultValue=""
               fullWidth
               value={formik.values[item.key]}
@@ -116,7 +118,7 @@ const CreateTaskForm = () => {
           return (
             <DatePicker
               value={formik.values[item.key] || null}
-              label={item.label}
+              label={t(item.label)}
               onChange={(e) => formik.setFieldValue(item.key, e)}
               renderInput={(params) => (
                 <TextField {...params} name={item.key} fullWidth />
@@ -127,10 +129,10 @@ const CreateTaskForm = () => {
           return (
             <TextField
               name={item.key}
-              placeholder={item.label}
+              placeholder={t(item.label)}
               value={formik.values[item.key]}
               onChange={handleChange}
-              label={item.label}
+              label={t(item.label)}
               fullWidth
               defaultValue=""
               type="number"
@@ -148,14 +150,14 @@ const CreateTaskForm = () => {
                   onChange={handleChange}
                 />
               }
-              label={item.label}
+              label={t(item.label)}
             />
           );
 
         case "textarea":
           return (
             <TextField
-              label={item.label}
+              label={t(item.label)}
               multiline
               maxRows={6}
               fullWidth
@@ -202,7 +204,7 @@ const CreateTaskForm = () => {
             fullWidth
             disabled={formik.isSubmitting}
           >
-            {formik.isSubmitting ? <CircularProgress size={19} /> : "Submit"}
+            {formik.isSubmitting ? <CircularProgress size={19} /> : t("submit")}
           </Button>
         </Grid>
       </Grid>

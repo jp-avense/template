@@ -13,6 +13,7 @@ import {
   parseAgentResponse,
 } from "src/contexts/AgentContext";
 import { agentService } from "src/services/agent.service";
+import { useTranslation } from "react-i18next";
 
 const width = {
   width: "200px",
@@ -21,8 +22,6 @@ const width = {
 const width2 = {
   width: "250px",
 };
-
-
 
 const insertAdditional = (data, agents: IAgent[]) => {
   const dup = data.slice();
@@ -40,6 +39,7 @@ const insertAdditional = (data, agents: IAgent[]) => {
 };
 
 function DynamicFilter() {
+  const { t } = useTranslation();
   const [taskDetails, setTaskDetails] = useState([]);
 
   const context = useContext(FilterContext);
@@ -80,10 +80,10 @@ function DynamicFilter() {
   }, []);
 
   useEffect(() => {
-    if(dynamicFilters.length == 0) {
-      submitFilter()
+    if (dynamicFilters.length == 0) {
+      submitFilter();
     }
-  }, [dynamicFilters])
+  }, [dynamicFilters]);
 
   const keyComponentMap = useMemo(() => {
     return taskDetails.reduce((acc, item) => {
@@ -140,7 +140,6 @@ function DynamicFilter() {
     const clone = dynamicFilters.filter((a) => a != item);
 
     setDynamicFilters(clone);
-    
   };
 
   const createValueComponent = (item) => {
@@ -170,7 +169,7 @@ function DynamicFilter() {
             sx={width2}
             displayEmpty
           >
-            <MenuItem value="">None</MenuItem>
+            <MenuItem value="">{t("none")}</MenuItem>
             {details.enum.map((a, idx) => {
               if (typeof a === "string")
                 return (
@@ -179,7 +178,7 @@ function DynamicFilter() {
                   </MenuItem>
                 );
               else if (typeof a === "object")
-                return <MenuItem value={a.value}>{a.label}</MenuItem>;
+                return <MenuItem value={a.value}>{t(a.label)}</MenuItem>;
             })}
           </Select>
         );
@@ -188,7 +187,7 @@ function DynamicFilter() {
       case "string":
         return (
           <TextField
-            placeholder={details.label}
+            placeholder={t(details.label)}
             value={item.value}
             onChange={(e) => changeFilterGroupValue(e, item)}
             sx={width2}
@@ -209,7 +208,7 @@ function DynamicFilter() {
       case "number":
         return (
           <TextField
-            placeholder={details.label}
+            placeholder={t(details.label)}
             value={item.value}
             type="number"
             onChange={(e) => changeFilterGroupValue(e, item)}
@@ -219,7 +218,7 @@ function DynamicFilter() {
       default:
         return (
           <Select displayEmpty sx={width2}>
-            <MenuItem>None</MenuItem>
+            <MenuItem>{t("none")}</MenuItem>
           </Select>
         );
     }
@@ -246,7 +245,7 @@ function DynamicFilter() {
           startIcon={<AddIcon />}
           onClick={addFilterGroup}
         >
-          Add filter
+          {t("addFilter")}
         </Button>
       </Grid>
 
@@ -269,14 +268,14 @@ function DynamicFilter() {
                 sx={width}
                 displayEmpty
               >
-                <MenuItem value="none">None</MenuItem>
+                <MenuItem value="none">{t("none")}</MenuItem>
                 {taskDetails.map((c) => (
                   <MenuItem
                     key={c.key}
                     value={c.key}
                     disabled={typeExists(c.key)}
                   >
-                    {c.label}
+                    {t(c.label)}
                   </MenuItem>
                 ))}
               </Select>
@@ -288,7 +287,7 @@ function DynamicFilter() {
       {dynamicFilters.length ? (
         <Grid item>
           <Button variant="contained" onClick={submitFilter}>
-            Submit filter
+            {t("submitFilter")}
           </Button>
         </Grid>
       ) : null}
