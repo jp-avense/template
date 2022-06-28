@@ -335,11 +335,17 @@ const TaskTable: FC<TaskTableProps> = () => {
                   </TableCell>
 
                   {rows.dynamicDetails.map((dynamic) => {
-                    if (dynamic.showInTable)
-                      return (
-                        <TableCell key={dynamic.id}>{dynamic.value}</TableCell>
-                      );
-                    else return null;
+                    if (dynamic.showInTable) {
+                      let value = dynamic.value;
+                      let id = dynamic.id;
+
+                      if (typeof value === "object") {
+                        id = value.id;
+                        value = value.value;
+                      }
+
+                      return <TableCell key={id}>{value}</TableCell>;
+                    } else return null;
                   })}
                 </TableRow>
               ))

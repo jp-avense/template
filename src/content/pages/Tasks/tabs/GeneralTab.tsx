@@ -28,8 +28,6 @@ const GeneralTab = () => {
     setData(currentRow);
   }, [currentRow]);
 
-  console.log(data);
-
   return (
     <List>
       {data?.dynamicDetails?.length > 1 ? (
