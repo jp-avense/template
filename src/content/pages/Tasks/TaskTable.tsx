@@ -60,6 +60,7 @@ const TaskTable: FC<TaskTableProps> = () => {
 
   const isAdmin = roles.includes("admin");
 
+
   const {
     handleFilter: {
       total,
@@ -149,7 +150,6 @@ const TaskTable: FC<TaskTableProps> = () => {
 
   const unSelectRow = (currentRowId: string) => {
     const filtered = selectedRows.filter((item) => item !== currentRowId);
-    console.log(filtered);
     setSelectedRows(filtered);
   };
 
@@ -256,6 +256,11 @@ const TaskTable: FC<TaskTableProps> = () => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
+          {selectedRows.length > 0 && isAdmin ? (
+            <Box>
+              <AssignTaskForm selected={selectedRows}></AssignTaskForm>
+            </Box>
+          ) : null}
           {selectedRows.length == 1 && isAdmin ? (
             <Box>
               <UpdateTaskForm selected={selectedRows[0]}></UpdateTaskForm>
