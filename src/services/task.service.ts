@@ -21,7 +21,7 @@ export const taskService = {
 
   async assign({ taskIds, agent, admin }) {
     return apiService.post(`tasks/assign`, {
-      tasksIds: taskIds,
+      taskIds: taskIds,
       agentSub: agent,
       adminSub: admin,
     });

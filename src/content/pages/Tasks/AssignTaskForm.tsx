@@ -65,6 +65,7 @@ const AssignTaskForm = ({ selected }: Props) => {
 
   useEffect(() => {
     let res = originalData.filter((item) => selected.includes(item._id));
+    console.log("selected", selected);
     setSelectedTasks(res);
   }, [selected]);
 
@@ -100,7 +101,7 @@ const AssignTaskForm = ({ selected }: Props) => {
 
     try {
       await taskService.assign({
-        taskIds: selectedTasks,
+        taskIds: selected,
         agent: selectedAgent,
         admin: user.sub,
       });
