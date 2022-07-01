@@ -25,6 +25,7 @@ import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
 import AssignTaskForm from "./AssignTaskForm";
+import UpdateTaskForm from "./UpdateTaskForm";
 import { useTranslation } from "react-i18next";
 
 interface TaskTableProps {
@@ -258,9 +259,14 @@ const TaskTable: FC<TaskTableProps> = () => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
+          {selectedRows.length > 0 ? (
+            <Box>
+              <AssignTaskForm selected={selectedRows}></AssignTaskForm>
+            </Box>
+          ) : null}
           {selectedRows.length == 1 ? (
             <Box>
-              <AssignTaskForm selected={selectedRows[0]}></AssignTaskForm>
+              <UpdateTaskForm selected={selectedRows[0]}></UpdateTaskForm>
             </Box>
           ) : null}
         </Box>

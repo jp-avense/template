@@ -19,11 +19,11 @@ export const taskService = {
     return apiService.get(ALL_DETAILS_URL);
   },
 
-  async assign({ taskId, agent, admin, executionDate }) {
-    return apiService.post(`tasks/${taskId}/assign`, {
+  async assign({ taskIds, agent, admin }) {
+    return apiService.post(`tasks/assign`, {
+      tasksIds: taskIds,
       agentSub: agent,
       adminSub: admin,
-      executionDate
     });
   },
 };
