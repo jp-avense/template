@@ -26,6 +26,7 @@ import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
 import AssignTaskForm from "./AssignTaskForm";
 import { useTranslation } from "react-i18next";
+import useRoles from "src/hooks/useRole";
 
 interface TaskTableProps {
   className?: string;
@@ -54,6 +55,10 @@ const TaskTable: FC<TaskTableProps> = () => {
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
   const [headers, setHeaders] = useState([]);
+  const roles = useRoles();
+
+  const isAdmin = roles.includes("admin");
+
   const {
     handleFilter: {
       total,
@@ -81,14 +86,6 @@ const TaskTable: FC<TaskTableProps> = () => {
   const {
     handleFilter: { getDataByFilters },
   } = filterContext;
-
-  // const jsonData = require("./trueresponse.json");
-
-  // useEffect(() => {
-  //   setOriginalData(jsonData);
-  //   createRows(jsonData);
-  //   setLoading(false);
-  // }, [originalData]);
 
   useEffect(() => {
     setLoading(true);
@@ -258,7 +255,7 @@ const TaskTable: FC<TaskTableProps> = () => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
-          {selectedRows.length == 1 ? (
+          {selectedRows.length == 1 && isAdmin ? (
             <Box>
               <AssignTaskForm selected={selectedRows[0]}></AssignTaskForm>
             </Box>

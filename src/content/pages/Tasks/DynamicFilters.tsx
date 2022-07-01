@@ -25,7 +25,9 @@ const width2 = {
 
 const insertAdditional = (data, agents: IAgent[]) => {
   const dup = data.slice();
-  const subs = agents.map((item) => ({ value: item.sub, label: item.name }));
+  const subs = agents
+    .filter((item) => item["custom:role"] === "agent")
+    .map((item) => ({ value: item.sub, label: item.name }));
   const additional = [
     {
       key: "assignedTo",
@@ -64,7 +66,6 @@ function DynamicFilter() {
   useEffect(() => {
     taskService.getDetails().then(({ data }) => {
       setDetails(data);
-      
 
       if (agents.length == 0)
         return agentService.getAgents().then(({ data: agentResponse }) => {
@@ -77,7 +78,7 @@ function DynamicFilter() {
 
       const res = insertAdditional(data, agents);
       setTaskDetails(res);
-    });
+    }).catch(console.log);
   }, []);
 
   useEffect(() => {
@@ -122,6 +123,7 @@ function DynamicFilter() {
     dup[index].selectedType = value;
     dup[index].componentType =
       value === "none" ? "none" : keyComponentMap[value].inputType;
+    dup[index].value = "";
 
     setDynamicFilters(dup);
   };
@@ -147,7 +149,7 @@ function DynamicFilter() {
     const details = keyComponentMap[item.selectedType];
     const inputType = details ? details.inputType : "none";
 
-    switch (inputType) {
+    switch (inputType.toLowerCase()) {
       case "boolean":
         return (
           <Select
@@ -163,6 +165,7 @@ function DynamicFilter() {
         );
       case "enum":
       case "dropdown":
+      case "select":
         return (
           <Select
             value={item.value}
@@ -194,8 +197,9 @@ function DynamicFilter() {
             sx={width2}
           />
         );
-      case "dateTimeButton":
-      case "dateTime":
+      case "datetimebutton":
+      case "datetime":
+      case "date":
         return (
           <DatePicker
             value={item.value}

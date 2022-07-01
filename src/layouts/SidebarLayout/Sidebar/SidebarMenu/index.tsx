@@ -23,6 +23,7 @@ import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
 import enFlag from "../../../../assets/images/icons/enFlag.svg";
 import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
+import useRoles from "src/hooks/useRole";
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -171,21 +172,27 @@ function SidebarMenu() {
   const { t, i18n } = useTranslation();
   const context = useContext(AuthContext);
   const [cookies, setCookie, removeCookie] = useCookies(["refreshToken"]);
+  const roles = useRoles();
+
+  const isAdmin = roles.includes("admin");
+
   const {
-    handleAccess: { accessToken, setAccessToken },
-    handleId: { idToken, setIdToken },
+    handleAccess: { setAccessToken },
+    handleId: { setIdToken },
     handleRefresh: { refreshToken, setRefreshToken },
+    handleUser: { setUser },
   } = context;
 
   const handleDirection = (lang: string) => {
     i18n.changeLanguage(lang);
   };
 
-  const logout = () => {
-    authService.logout(refreshToken);
-    removeCookie("refreshToken");
+  const logout = async () => {
+    await authService.logout(refreshToken);
     setAccessToken(null);
     setIdToken(null);
+    setUser(null);
+    removeCookie("refreshToken");
   };
   return (
     <>
@@ -238,30 +245,32 @@ function SidebarMenu() {
             </List>
           </SubMenuWrapper>
         </List>
-        <List
-          component="div"
-          subheader={
-            <ListSubheader component="div" disableSticky>
-              {t("agentManagement")}
-            </ListSubheader>
-          }
-        >
-          <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/agents"
-                  startIcon={<PersonIcon />}
-                >
-                  {t("agents")}
-                </Button>
-              </ListItem>
-            </List>
-          </SubMenuWrapper>
-        </List>
+        {isAdmin ? (
+          <List
+            component="div"
+            subheader={
+              <ListSubheader component="div" disableSticky>
+                {t("agentManagement")}
+              </ListSubheader>
+            }
+          >
+            <SubMenuWrapper>
+              <List component="div">
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/agents"
+                    startIcon={<PersonIcon />}
+                  >
+                    {t("agents")}
+                  </Button>
+                </ListItem>
+              </List>
+            </SubMenuWrapper>
+          </List>
+        ) : null}
         <List
           component="div"
           subheader={

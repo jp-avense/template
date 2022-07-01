@@ -1,10 +1,10 @@
-import { useRoutes } from "react-router-dom";
+import { useNavigate, useRoutes } from "react-router-dom";
 import router from "src/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
-import { Box, CircularProgress, CssBaseline, setRef } from "@mui/material";
+import { Box, CircularProgress, CssBaseline } from "@mui/material";
 import ThemeProvider from "./theme/ThemeProvider";
 import { useContext } from "react";
 import { AuthContext } from "./contexts/AuthContext";
@@ -12,7 +12,6 @@ import { apiService } from "./services/api.service";
 import { authService } from "./services/auth.service";
 import { useCookies } from "react-cookie";
 import "./i18n/i18n.ts";
-import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 
 function App() {
@@ -20,29 +19,24 @@ function App() {
   document.body.dir = i18n.dir();
   const content = useRoutes(router);
   const context = useContext(AuthContext);
-  const [cookies, setCookie] = useCookies(["refreshToken"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["refreshToken"]);
+  const navigate = useNavigate();
 
   const {
     handleAccess: { accessToken, setAccessToken },
     handleId: { idToken, setIdToken },
     handleRefresh: { refreshToken, setRefreshToken },
     handleLoading: { setLoading, loading },
-    handleUser: { getUser },
+    handleUser: { getUser, user },
   } = context;
 
   useEffect(() => {
-    const token = cookies.refreshToken;
+    const tokenFromCookie = cookies.refreshToken;
 
-    if (token) {
-      setRefreshToken(token);
-    }
-  }, [cookies.refreshToken]);
-
-  useEffect(() => {
-    if (refreshToken) {
-      setLoading(true);
+    if (tokenFromCookie && !refreshToken) {
+      setRefreshToken(tokenFromCookie);
       authService
-        .refresh(refreshToken)
+        .refresh(tokenFromCookie)
         .then(({ data }) => {
           const { AccessToken, IdToken } = data.AuthenticationResult;
           setAccessToken(AccessToken);
@@ -50,11 +44,17 @@ function App() {
 
           return getUser(IdToken);
         })
-        .finally(() => setLoading(false));
+        .catch(() => {
+          removeCookie("refreshToken");
+          navigate("/login");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       setLoading(false);
     }
-  }, [refreshToken]);
+  }, [cookies.refreshToken]);
 
   useEffect(() => {
     const requestIntercept = apiService.interceptors.request.use((request) => {
@@ -88,10 +88,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (accessToken && idToken) {
+    if (accessToken && idToken && user) {
       setLoading(false);
     }
-  }, [accessToken, idToken]);
+  }, [accessToken, idToken, user]);
 
   return (
     <ThemeProvider>
