@@ -14,6 +14,7 @@ import {
 } from "src/contexts/AgentContext";
 import { agentService } from "src/services/agent.service";
 import { useTranslation } from "react-i18next";
+import { TaskDefaultColumns } from "src/consts";
 
 const width = {
   width: "200px",
@@ -28,16 +29,12 @@ const insertAdditional = (data, agents: IAgent[]) => {
   const subs = agents
     .filter((item) => item["custom:role"] === "agent")
     .map((item) => ({ value: item.sub, label: item.name }));
-  const additional = [
-    {
-      key: "assignedTo",
-      label: "Agent",
-      inputType: "enum",
-      enum: subs,
-    },
-  ];
-  const res = dup.concat(additional);
-  return res;
+
+  const agentDetail = dup.find((item) => item.key === TaskDefaultColumns.AGENT);
+
+  agentDetail.enum = subs;
+
+  return dup;
 };
 
 function DynamicFilter() {
@@ -64,21 +61,24 @@ function DynamicFilter() {
   } = context;
 
   useEffect(() => {
-    taskService.getDetails().then(({ data }) => {
-      setDetails(data);
+    taskService
+      .getDetails()
+      .then(({ data }) => {
+        setDetails(data);
 
-      if (agents.length == 0)
-        return agentService.getAgents().then(({ data: agentResponse }) => {
-          const agents = parseAgentResponse(agentResponse);
-          let taskData = insertAdditional(data, agents);
+        if (agents.length == 0)
+          return agentService.getAgents().then(({ data: agentResponse }) => {
+            const agents = parseAgentResponse(agentResponse);
+            let taskData = insertAdditional(data, agents);
 
-          setTaskDetails(taskData);
-          setAgents(agents);
-        });
+            setTaskDetails(taskData);
+            setAgents(agents);
+          });
 
-      const res = insertAdditional(data, agents);
-      setTaskDetails(res);
-    }).catch(console.log);
+        const res = insertAdditional(data, agents);
+        setTaskDetails(res);
+      })
+      .catch(console.log);
   }, []);
 
   useEffect(() => {
