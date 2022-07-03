@@ -24,7 +24,7 @@ type AgentContextT = {
   handleAgents: {
     agents: IAgent[];
     setAgents: React.Dispatch<React.SetStateAction<IAgent[]>>;
-    getAgents: () => Promise<void>;
+    getAgents: () => Promise<IAgent[]>;
   };
   handleLoading: {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,14 +55,16 @@ export const AgentProvider = ({ children }) => {
 
   const getAgents = async () => {
     setLoading(true);
-    agentService
-      .getAgents()
-      .then(({ data }) => {
-        const res = parseAgentResponse(data);
-        setAgents(res);
-      })
-      .catch(handleAxiosError)
-      .finally(() => setLoading(false));
+    try {
+      const { data } = await agentService.getAgents();
+      const res = parseAgentResponse(data);
+      setAgents(res);
+      return res;
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAgents = { agents, setAgents, getAgents };

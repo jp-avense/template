@@ -26,4 +26,12 @@ export const taskService = {
       adminSub: admin,
     });
   },
+
+  async getStatuses() {
+    return apiService.get("task-statuses");
+  },
+
+  async getTypes() {
+    return apiService.get("task-types");
+  },
 };
