@@ -68,7 +68,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
             },
           }}
         >
-          <Box display="block">
+          <Box display="block" height="100vh">
             <Outlet />
           </Box>
         </Box>

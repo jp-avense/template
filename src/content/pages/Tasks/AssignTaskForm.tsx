@@ -18,9 +18,10 @@ import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import Modals from "../Components/Modals";
 import { useTranslation } from "react-i18next";
+import { ShutterSpeedSharp } from "@mui/icons-material";
 
 type Props = {
-  selected: string;
+  selected: string[];
 };
 
 const AssignTaskForm = ({ selected }: Props) => {
@@ -31,6 +32,7 @@ const AssignTaskForm = ({ selected }: Props) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState([]);
 
   const context = useContext(AgentContext);
   const auth = useContext(AuthContext);
@@ -49,6 +51,7 @@ const AssignTaskForm = ({ selected }: Props) => {
     handleFilter: {
       setSelectedRows,
       getDataByFilters,
+      originalData,
       setOriginalData,
       setTotal,
     },
@@ -59,6 +62,14 @@ const AssignTaskForm = ({ selected }: Props) => {
       getAgents();
     }
   }, []);
+
+  useEffect(() => {
+    let res = originalData.filter((item) => selected.includes(item._id));
+    console.log("selected", selected);
+    setSelectedTasks(res);
+  }, [selected]);
+
+  const isValid = selectedTasks.every((item) => item.statusId === "new");
 
   const handleClose = () => {
     setOpenPopup(false);
@@ -90,13 +101,9 @@ const AssignTaskForm = ({ selected }: Props) => {
 
     try {
       await taskService.assign({
-        taskId: selected,
+        taskIds: selected,
         agent: selectedAgent,
         admin: user.sub,
-        executionDate:
-          typeof selectedDate === "string"
-            ? selectedDate
-            : selectedDate.toISOString(),
       });
       setSuccess("Successfully assigned agent");
       setSelectedRows([]);
@@ -125,6 +132,11 @@ const AssignTaskForm = ({ selected }: Props) => {
             <Box gap={2} display="flex" flexDirection="column">
               {success && <Alert severity="success">{success}</Alert>}
               {error && <Alert severity="error">{error}</Alert>}
+              {!isValid && (
+                <Alert severity="warning">
+                  You can only assign tasks that are new
+                </Alert>
+              )}
               <FormControl fullWidth>
                 <InputLabel id="agent">{t("agent")}</InputLabel>
                 <Select
@@ -149,7 +161,11 @@ const AssignTaskForm = ({ selected }: Props) => {
                 minDate={new Date()}
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
-              <Button variant="contained" type="submit" disabled={submitting}>
+              <Button
+                variant="contained"
+                type="submit"
+                disabled={submitting || !isValid}
+              >
                 {submitting ? <CircularProgress size={19} /> : t("submit")}
               </Button>
             </Box>

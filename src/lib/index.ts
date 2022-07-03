@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import { TaskDefaultColumns } from "src/consts";
 
 export const handleAxiosError = (error: AxiosError) => {
   if (error.response) {
@@ -37,3 +38,10 @@ export const parseValue = (value: string, type: string) => {
 
   return res;
 };
+
+
+export const isDefaultColumn = (string: string) => {
+  const defaults = Object.values(TaskDefaultColumns)
+  
+  return defaults.includes(string as TaskDefaultColumns)
+}

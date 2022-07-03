@@ -5,6 +5,7 @@ import SidebarLayout from "src/layouts/SidebarLayout";
 import BaseLayout from "src/layouts/BaseLayout";
 
 import SuspenseLoader from "src/components/SuspenseLoader";
+import AdminOnlyRoute from "./components/AdminOnlyRoute";
 
 const Loader = (Component) => (props) =>
   (
@@ -20,7 +21,9 @@ const Status404 = Loader(
 const LoginPage = Loader(lazy(() => import("src/content/pages/Login")));
 const TaskPage = Loader(lazy(() => import("src/content/pages/Tasks")));
 
-const DashboardPage = Loader(lazy(()=> import("src/content/dashboards/Crypto")))
+const DashboardPage = Loader(
+  lazy(() => import("src/content/dashboards/Crypto"))
+);
 
 const AgentsPage = Loader(lazy(() => import("src/content/pages/Agents")));
 
@@ -69,7 +72,11 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: <AgentsPage />,
+        element: (
+          <AdminOnlyRoute>
+            <AgentsPage />
+          </AdminOnlyRoute>
+        ),
       },
     ],
   },

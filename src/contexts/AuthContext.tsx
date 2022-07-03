@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const [idToken, setIdToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const getUser = async (IdToken?: string) => {
     const { data } = await authService.getUser(IdToken);

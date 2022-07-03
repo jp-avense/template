@@ -25,17 +25,9 @@ import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
 import { handleAxiosError } from "src/lib";
 import AssignTaskForm from "./AssignTaskForm";
+import UpdateTaskForm from "./UpdateTaskForm";
 import { useTranslation } from "react-i18next";
-
-interface TaskTableProps {
-  className?: string;
-}
-
-// TODO just a dummy here
-const mapping = {
-  1: "Registration",
-  2: "Acting",
-};
+import useRoles from "src/hooks/useRole";
 
 interface Rows {
   dynamicDetails: any[];
@@ -49,16 +41,18 @@ interface Rows {
   executionStartDate: string;
 }
 
-const TaskTable: FC<TaskTableProps> = () => {
+const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
   const [headers, setHeaders] = useState([]);
+  const roles = useRoles();
+
+  const isAdmin = roles.includes("admin");
+
   const {
     handleFilter: {
       total,
-      setTotal,
-      setOriginalData,
       originalData,
       filter,
       page,
@@ -69,6 +63,7 @@ const TaskTable: FC<TaskTableProps> = () => {
       setLoading,
       selectedRows,
       setSelectedRows,
+      getDataAndSet,
     },
   } = filterContext;
 
@@ -78,28 +73,11 @@ const TaskTable: FC<TaskTableProps> = () => {
     handleTabs: { setTabsData },
   } = tabsContext;
 
-  const {
-    handleFilter: { getDataByFilters },
-  } = filterContext;
-
-  // const jsonData = require("./trueresponse.json");
-
-  // useEffect(() => {
-  //   setOriginalData(jsonData);
-  //   createRows(jsonData);
-  //   setLoading(false);
-  // }, [originalData]);
-
   useEffect(() => {
     setLoading(true);
     setSelectedRows([]);
 
-    getDataByFilters()
-      .then(({ data }) => {
-        setTotal(data.totalDocuments);
-        setOriginalData(data.tasks);
-        createRows(data.tasks);
-      })
+    getDataAndSet()
       .catch(handleAxiosError)
       .finally(() => {
         setLoading(false);
@@ -124,34 +102,8 @@ const TaskTable: FC<TaskTableProps> = () => {
     setTabsData(res);
   }, [tableData, selectedRows]);
 
-  const getStatusLabel = (taskStatus: TaskStatus): JSX.Element => {
-    const map = {
-      new: {
-        text: "new",
-        color: "secondary",
-      },
-      done: {
-        text: "done",
-        color: "success",
-      },
-      assigned: {
-        text: "assigned",
-        color: "primary",
-      },
-      inProgress: {
-        text: "inprogress",
-        color: "info",
-      },
-    };
-
-    const { text, color }: any = map[taskStatus];
-
-    return <Label color={color}>{t(text)}</Label>;
-  };
-
   const unSelectRow = (currentRowId: string) => {
     const filtered = selectedRows.filter((item) => item !== currentRowId);
-    console.log(filtered);
     setSelectedRows(filtered);
   };
 
@@ -203,10 +155,7 @@ const TaskTable: FC<TaskTableProps> = () => {
       details.dynamicDetails = dynamicDetails;
       details.status = c.statusId;
 
-      const type = mapping[c.taskType];
-
-      // details.type = c.taskType.charAt(0).toUpperCase() + type.slice(1);
-      details.type = type;
+      details.type = c.taskType;
       details.createdAt = new Date(c.createdAt).toDateString();
       details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
       details.lastUpdate = new Date(c.lastUpdatedAt).toDateString();
@@ -234,13 +183,13 @@ const TaskTable: FC<TaskTableProps> = () => {
     return headers;
   };
 
-  const handlePageChange = (event: any, newPage: number): void => {
+  const handlePageChange = (e: any, newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleLimitChange = (event: any): void => {
+  const handleLimitChange = (e: any): void => {
     setPage(0);
-    setLimit(parseInt(event.target.value));
+    setLimit(parseInt(e.target.value));
   };
 
   useEffect(() => {
@@ -258,9 +207,14 @@ const TaskTable: FC<TaskTableProps> = () => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
-          {selectedRows.length == 1 ? (
+          {selectedRows.length > 0 && isAdmin ? (
             <Box>
-              <AssignTaskForm selected={selectedRows[0]}></AssignTaskForm>
+              <AssignTaskForm selected={selectedRows}></AssignTaskForm>
+            </Box>
+          ) : null}
+          {selectedRows.length == 1 && isAdmin ? (
+            <Box>
+              <UpdateTaskForm selected={selectedRows[0]}></UpdateTaskForm>
             </Box>
           ) : null}
         </Box>

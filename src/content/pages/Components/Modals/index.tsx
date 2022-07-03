@@ -41,7 +41,6 @@ SimpleDialog.propTypes = {
   title: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
 };
 
 export default SimpleDialog;

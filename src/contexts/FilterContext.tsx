@@ -3,6 +3,7 @@ import _ from "lodash";
 import { parseValue } from "src/lib";
 import { taskService } from "src/services/task.service";
 import { AxiosResponse } from "axios";
+import { TaskDefaultColumns } from "src/consts";
 
 type FilterContextT = {
   handleFilter: {
@@ -10,8 +11,6 @@ type FilterContextT = {
     setFilteredData: React.Dispatch<any>;
     originalData: any;
     setOriginalData: React.Dispatch<any>;
-    filterTable: React.Dispatch<any>;
-    filterDynamicTable: React.Dispatch<any>;
     filter: string;
     setDetails: React.Dispatch<React.SetStateAction<any[]>>;
     details: any[];
@@ -31,6 +30,13 @@ type FilterContextT = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     selectedRows: string[];
     setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+    status: any[];
+    setStatus: React.Dispatch<React.SetStateAction<any[]>>;
+    types: any[];
+    setTypes: React.Dispatch<React.SetStateAction<any[]>>;
+    getDataAndSet: (filterObject?: object) => Promise<void>;
+    getTypesAndSet: () => Promise<any>;
+    getStatusAndSet: () => Promise<any>;
   };
 };
 
@@ -48,42 +54,11 @@ export const FilterProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+  const [types, setTypes] = useState([]);
+  const [status, setStatus] = useState([]);
+
   const [filter, setFilter] = useState("clear_filters");
   const [dynamicFilters, setDynamicFilters] = useState([]);
-
-  const filterTable = (filter: string) => {
-    setFilter(filter);
-    if (filter == "clear_filters") {
-      setFilteredData(originalData);
-    } else {
-      const data = _.filter(originalData, function (o) {
-        return o.status_id == filter;
-      });
-      setFilteredData(data);
-    }
-  };
-
-  const filterDynamicTable = (details: any) => {
-    let dataTable = [];
-    let data = [];
-    if (filter == "clear_filters") {
-      dataTable = originalData;
-    } else dataTable = filteredData;
-
-    if (details.filter == "createdAt") {
-      data = _.filter(dataTable, function (o) {
-        let date = new Date(o[details.filter] * 1000);
-        return date == details.value;
-      });
-    } else
-      data = _.filter(dataTable, function (o) {
-        return o[details.filter] == details.value;
-      });
-
-    setFilteredData(data);
-    console.log("InDynamic", details);
-    console.log("InDynamic", data);
-  };
 
   const getDataByFilters = async (parsedObject?: object) => {
     const finalFilters = {};
@@ -91,8 +66,20 @@ export const FilterProvider = ({ children }) => {
     if (filter !== "clear_filters") finalFilters["statusId"] = filter;
 
     dynamicFilters.forEach((x) => {
-      if (x.value != null && x.value !== "none" && x.selectedType !== "none")
+      if (x.value != null && x.value !== "none" && x.selectedType !== "none") {
+        if (x.selectedType === TaskDefaultColumns.CREATED_AT) {
+          finalFilters["createdAtStart"] = parseValue(
+            x.value[0],
+            x.componentType
+          );
+          finalFilters["createdAtEnd"] = parseValue(
+            x.value[1],
+            x.componentType
+          );
+          return;
+        }
         finalFilters[x.selectedType] = parseValue(x.value, x.componentType);
+      }
     });
 
     finalFilters["page"] = page;
@@ -107,11 +94,28 @@ export const FilterProvider = ({ children }) => {
     return taskService.getAll(finalFilters);
   };
 
+  const getDataAndSet = async (filterObject?: object) => {
+    const { data } = await getDataByFilters(filterObject);
+
+    setTotal(data.totalDocuments);
+    setOriginalData(data.tasks);
+  };
+
+  const getTypesAndSet = async () => {
+    const { data } = await taskService.getTypes();
+    setTypes(data);
+    return data;
+  };
+
+  const getStatusAndSet = async () => {
+    const { data } = await taskService.getStatuses();
+    setStatus(data);
+    return data;
+  };
+
   const handleFilter = {
     filteredData,
     setFilteredData,
-    filterTable,
-    filterDynamicTable,
     originalData,
     setOriginalData,
     filter,
@@ -131,6 +135,13 @@ export const FilterProvider = ({ children }) => {
     setLoading,
     selectedRows,
     setSelectedRows,
+    status,
+    setStatus,
+    types,
+    setTypes,
+    getDataAndSet,
+    getStatusAndSet,
+    getTypesAndSet,
   };
 
   return (
