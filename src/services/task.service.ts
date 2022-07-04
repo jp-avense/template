@@ -9,7 +9,15 @@ interface IFilterParam {
 
 export const taskService = {
   async getAll(filters: IFilterParam = {}) {
-    const params = new URLSearchParams(filters).toString();
+    const finalFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+      if (value != null) {
+        acc[key] = value;
+      }
+
+      return acc;
+    }, {});
+    
+    const params = new URLSearchParams(finalFilters).toString();
     const url = `${ALL_TASKS_URL}?${params}`;
 
     return apiService.get(url);

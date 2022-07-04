@@ -26,6 +26,10 @@ const DashboardPage = Loader(
 );
 
 const AgentsPage = Loader(lazy(() => import("src/content/pages/Agents")));
+const TaskTypePage = Loader(lazy(() => import("src/content/pages/TaskType")));
+const TaskStatusPage = Loader(
+  lazy(() => import("src/content/pages/TaskStatus"))
+);
 
 const routes: RouteObject[] = [
   {
@@ -75,6 +79,34 @@ const routes: RouteObject[] = [
         element: (
           <AdminOnlyRoute>
             <AgentsPage />
+          </AdminOnlyRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "task-type",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AdminOnlyRoute>
+            <TaskTypePage />
+          </AdminOnlyRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "task-status",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AdminOnlyRoute>
+            <TaskStatusPage />
           </AdminOnlyRoute>
         ),
       },

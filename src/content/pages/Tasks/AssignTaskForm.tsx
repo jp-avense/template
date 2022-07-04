@@ -65,7 +65,6 @@ const AssignTaskForm = ({ selected }: Props) => {
 
   useEffect(() => {
     let res = originalData.filter((item) => selected.includes(item._id));
-    console.log("selected", selected);
     setSelectedTasks(res);
   }, [selected]);
 

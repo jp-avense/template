@@ -1,5 +1,5 @@
-import { Box, Card, CardContent, Container, Grid } from "@mui/material";
-import React, { useContext, useEffect } from "react";
+import { Container, Grid, Paper } from "@mui/material";
+import { useContext, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
@@ -9,9 +9,11 @@ import { FilterContext, FilterProvider } from "src/contexts/FilterContext";
 import { TabsProvider } from "src/contexts/TabsContext";
 import InfoTab from "./InfoTab";
 import { taskService } from "src/services/task.service";
+import { AgentContext } from "src/contexts/AgentContext";
 
 const TaskPage = () => {
   const context = useContext(FilterContext);
+  const agentctx = useContext(AgentContext);
 
   const {
     handleFilter: {
@@ -25,6 +27,10 @@ const TaskPage = () => {
     },
   } = context;
 
+  const {
+    handleAgents: { getAgents },
+  } = agentctx;
+
   useEffect(() => {
     setLoading(true);
     const promise = Promise.all([
@@ -32,6 +38,7 @@ const TaskPage = () => {
       taskService.getDetails(),
       taskService.getStatuses(),
       taskService.getTypes(),
+      getAgents() as any,
     ]);
 
     promise
@@ -62,13 +69,9 @@ const TaskPage = () => {
         <Container maxWidth="xl">
           <Grid container direction="row" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              <Card>
-                <CardContent>
-                  <Box>
-                    <DynamicFilter />
-                  </Box>
-                </CardContent>
-              </Card>
+              <Paper>
+                <DynamicFilter />
+              </Paper>
             </Grid>
             <Grid item xs={8}>
               <TaskTable />

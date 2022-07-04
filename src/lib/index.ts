@@ -16,11 +16,11 @@ export const handleAxiosError = (error: AxiosError) => {
 export const getAxiosErrorMessage = (error: AxiosError) => {
   if (error.response) {
     // @ts-ignore
-    return error.response.data.message;
+    return error.response.data.message || "Bad request";
   } else if (error.request) {
-    return "no_response";
+    return "No response from server";
   } else {
-    return "request_failed";
+    return "Request failed. Please try again later";
   }
 };
 
@@ -34,14 +34,15 @@ export const parseValue = (value: string, type: string) => {
     case "datetime":
       res = new Date(value).toISOString();
       break;
+    case "none":
+      res = "null";
   }
 
   return res;
 };
 
-
 export const isDefaultColumn = (string: string) => {
-  const defaults = Object.values(TaskDefaultColumns)
-  
-  return defaults.includes(string as TaskDefaultColumns)
-}
+  const defaults = Object.values(TaskDefaultColumns);
+
+  return defaults.includes(string as TaskDefaultColumns);
+};
