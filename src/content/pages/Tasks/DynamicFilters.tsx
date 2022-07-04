@@ -1,7 +1,15 @@
 import { useContext, useState, useEffect, useMemo } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
-import { Button, Grid, MenuItem, Select, TextField, Box } from "@mui/material";
+import {
+  Button,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 
 import { DatePicker } from "@mui/lab";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,8 +17,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { AgentContext } from "src/contexts/AgentContext";
 import { useTranslation } from "react-i18next";
 import { TaskDefaultColumns } from "src/consts";
-import { isDefaultColumn } from "src/lib";
+import { getAxiosErrorMessage, isDefaultColumn } from "src/lib";
 import { startOfDay } from "date-fns";
+import swal from "sweetalert2";
+import { taskService } from "src/services/task.service";
 
 const width = {
   width: "200px",
@@ -38,39 +48,37 @@ function DynamicFilter() {
       setLoading,
       getDataAndSet,
       types,
-      getTypesAndSet,
       status,
-      getStatusAndSet,
       details,
+      loading,
+      filter,
+      setTotal,
+      page,
+      limit,
+      setOriginalData,
     },
   } = context;
 
   useEffect(() => {
-    init(details).then((data) => {
-      setTaskDetails(data);
-    });
-  }, [details]);
+    const deets = init(details);
+    setTaskDetails(deets);
+  }, [details, types, status, agents]);
 
-  const init = async (initialDetails: any[]) => {
-    const map = initialDetails.map(async (item) => {
+  const init = (initialDetails: any[]) => {
+    const map = initialDetails.map((item) => {
       const isDefault = isDefaultColumn(item.key);
 
       if (!isDefault) return item;
 
-      const enums = await getPossibleValues(item.key);
+      const enums = getPossibleValues(item.key);
 
       return {
         ...item,
         enum: enums,
       };
     });
-
-    return Promise.all(map);
+    return map;
   };
-
-  useEffect(() => {
-    if (dynamicFilters.length == 0) submitFilter();
-  }, [dynamicFilters]);
 
   const keyComponentMap = useMemo(() => {
     return taskDetails.reduce((acc, item) => {
@@ -113,35 +121,26 @@ function DynamicFilter() {
     setDynamicFilters(dup);
   };
 
-  const getPossibleValues = async (column: TaskDefaultColumns) => {
-    switch (column) {
-      case TaskDefaultColumns.AGENT:
-        if (agents.length) return agents;
-        const agentResponse = await getAgents();
-        const mapped = agentResponse
-          .filter((item) => {
-            const roles = item["custom:role"]?.split(",");
+  const getPossibleValues = (column: TaskDefaultColumns) => {
+    if (column === TaskDefaultColumns.AGENT) {
+      const filtered = agents
+        .filter((item) => {
+          const roles = item["custom:role"]?.split(",");
 
-            if (!roles) return false;
+          if (!roles) return false;
 
-            return roles.length === 1 && roles.includes("agent");
-          })
-          .map((item) => ({
-            key: item.sub,
-            label: `${item.name} ${item.family_name}`,
-          }));
-        return mapped;
-      case TaskDefaultColumns.TYPE:
-        if (types.length) return types;
-        const typeResponse = await getTypesAndSet();
-        return typeResponse;
-      case TaskDefaultColumns.STATUS:
-        if (status.length) return status;
-        const statusResponse = await getStatusAndSet();
-        return statusResponse;
-      default:
-        return [];
+          return roles.length === 1 && roles.includes("agent");
+        })
+        .map((item) => ({
+          key: item.sub,
+          label: `${item.name} ${item.family_name}`,
+        }));
+
+      return filtered;
     }
+    if (column === TaskDefaultColumns.TYPE) return types;
+    if (column === TaskDefaultColumns.STATUS) return status;
+    return [];
   };
 
   const changeFilterGroupValue = (e, item) => {
@@ -205,6 +204,38 @@ function DynamicFilter() {
     const clone = dynamicFilters.filter((a) => a != item);
 
     setDynamicFilters(clone);
+
+    if (clone.length === 0) {
+      setLoading(true);
+      taskService
+        .getAll({
+          statusId: filter === "clear_filters" ? undefined : filter,
+          page,
+          pageSize: limit,
+        })
+        .then(({ data }) => {
+          setTotal(data.totalDocuments);
+          setOriginalData(data.tasks);
+        })
+        .catch((err) => {
+          let msg;
+
+          if (err.response) {
+            msg = err.response.data.message;
+          } else if (err.request) {
+            msg = "No response from server";
+          } else {
+            msg = "Request failed. Please try again later";
+          }
+
+          swal.fire({
+            icon: "error",
+            title: "Error",
+            text: msg,
+          });
+        })
+        .finally(() => setLoading(false));
+    }
   };
 
   const createValueComponent = (item) => {
@@ -227,16 +258,20 @@ function DynamicFilter() {
           <DatePicker
             value={item.value[0]}
             onChange={(e) => setStartRange(e, item)}
-            renderInput={(params) => <TextField {...params} />}
             InputProps={{
               style: width2,
             }}
+            renderInput={(params) => (
+              <TextField {...params} label="Start date" />
+            )}
           />
           {Array.isArray(item.value) && item.value[0] ? (
             <DatePicker
               value={item.value[1]}
               onChange={(e) => setEndRange(e, item)}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => (
+                <TextField {...params} label="End Date" />
+              )}
               InputProps={{
                 style: width2,
               }}
@@ -290,7 +325,7 @@ function DynamicFilter() {
                 );
               else if (typeof a === "object")
                 return (
-                  <MenuItem value={a.key} key={a.key}>
+                  <MenuItem value={a.key || a.Key} key={a.key || a.Key}>
                     {t(a.label)}
                   </MenuItem>
                 );
@@ -340,24 +375,35 @@ function DynamicFilter() {
     }
   };
 
-  const submitFilter = async () => {
+  const submitFilter = async (e?: any, filterObject?: object) => {
     try {
       setLoading(true);
-      await getDataAndSet();
+      await getDataAndSet(filterObject);
     } catch (error) {
-      console.log(error);
+      swal.fire({
+        title: "Error",
+        icon: "error",
+        text: error.message,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Grid container direction="column" spacing={1}>
+    <Grid
+      container
+      direction="column"
+      spacing={1}
+      paddingBottom={1}
+      paddingLeft={1}
+    >
       <Grid item>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={addFilterGroup}
+          disabled={loading}
         >
           {t("addFilter")}
         </Button>
@@ -400,8 +446,8 @@ function DynamicFilter() {
       })}
       {dynamicFilters.length ? (
         <Grid item>
-          <Button variant="contained" onClick={submitFilter}>
-            {t("submitFilter")}
+          <Button variant="contained" onClick={submitFilter} disabled={loading}>
+            {loading ? <CircularProgress size={18} /> : t("submitFilter")}
           </Button>
         </Grid>
       ) : null}

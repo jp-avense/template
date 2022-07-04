@@ -9,25 +9,22 @@ import {
   TableHead,
   TableRow,
   TableContainer,
-  CardHeader,
   Box,
   CircularProgress,
   Checkbox,
   TablePagination,
-  Button,
 } from "@mui/material";
-import Label from "src/components/Label";
-import { TaskStatus, TaskStatusEnum } from "src/models/tasks";
 import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
 import TaskFilter from "./TaskFilters";
-import { handleAxiosError } from "src/lib";
 import AssignTaskForm from "./AssignTaskForm";
 import UpdateTaskForm from "./UpdateTaskForm";
 import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
+import swal from "sweetalert2";
+import { getAxiosErrorMessage } from "src/lib";
 
 interface Rows {
   dynamicDetails: any[];
@@ -72,17 +69,6 @@ const TaskTable = () => {
   const {
     handleTabs: { setTabsData },
   } = tabsContext;
-
-  useEffect(() => {
-    setLoading(true);
-    setSelectedRows([]);
-
-    getDataAndSet()
-      .catch(handleAxiosError)
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [page, limit, filter]);
 
   useEffect(() => {
     createRows(originalData);
@@ -183,13 +169,48 @@ const TaskTable = () => {
     return headers;
   };
 
-  const handlePageChange = (e: any, newPage: number): void => {
-    setPage(newPage);
+  const handlePageChange = async (e: any, newPage: number) => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      setPage(newPage);
+
+      await getDataAndSet({
+        page: newPage,
+      });
+    } catch (error) {
+      const msg = getAxiosErrorMessage(error);
+      swal.fire({
+        icon: "error",
+        title: "Error",
+        text: msg,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLimitChange = (e: any): void => {
-    setPage(0);
-    setLimit(parseInt(e.target.value));
+  const handleLimitChange = async (e: any) => {
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      setPage(0);
+      setLimit(parseInt(e.target.value));
+
+      await getDataAndSet({
+        limit: e.target.value,
+      });
+    } catch (error) {
+      const msg = getAxiosErrorMessage(error);
+      swal.fire({
+        icon: "error",
+        title: "Error",
+        text: msg,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

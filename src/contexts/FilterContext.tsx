@@ -65,8 +65,9 @@ export const FilterProvider = ({ children }) => {
 
     if (filter !== "clear_filters") finalFilters["statusId"] = filter;
 
+    const errors = [];
     dynamicFilters.forEach((x) => {
-      if (x.value != null && x.value !== "none" && x.selectedType !== "none") {
+      if (x.value != null && x.selectedType !== "none") {
         if (x.selectedType === TaskDefaultColumns.CREATED_AT) {
           finalFilters["createdAtStart"] = parseValue(
             x.value[0],
@@ -76,11 +77,16 @@ export const FilterProvider = ({ children }) => {
             x.value[1],
             x.componentType
           );
+
+          if (finalFilters["createdAtEnd"] < finalFilters["createdAtStart"])
+            errors.push("Start date must be greated than end date");
           return;
         }
         finalFilters[x.selectedType] = parseValue(x.value, x.componentType);
       }
     });
+
+    if (errors.length) throw new Error(errors[0]);
 
     finalFilters["page"] = page;
     finalFilters["pageSize"] = limit;
@@ -99,6 +105,7 @@ export const FilterProvider = ({ children }) => {
 
     setTotal(data.totalDocuments);
     setOriginalData(data.tasks);
+    return data;
   };
 
   const getTypesAndSet = async () => {
