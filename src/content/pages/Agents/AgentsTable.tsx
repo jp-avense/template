@@ -99,7 +99,6 @@ const AgentTable: FC = () => {
   const indeterminate =
     selectedAgents.length > 0 && selectedAgents.length < Agents.length;
   const selectedAllAgents = selectedAgents.length === Agents.length;
-  const theme = useTheme();
 
   return (
     <Card>
@@ -159,7 +158,13 @@ const AgentTable: FC = () => {
               paginatedAgents.map((item) => {
                 const agentSelected = selectedAgents.includes(item.email);
                 return (
-                  <TableRow hover key={item.sub} selected={agentSelected}>
+                  <TableRow
+                    hover
+                    key={item.sub}
+                    selected={agentSelected}
+                    onClick={(e) => handleSelectOne(e, item.email)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell padding="checkbox">
                       <Checkbox
                         color="primary"

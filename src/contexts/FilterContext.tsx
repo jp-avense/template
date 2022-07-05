@@ -61,6 +61,7 @@ export const FilterProvider = ({ children }) => {
   const [dynamicFilters, setDynamicFilters] = useState([]);
 
   const getDataByFilters = async (parsedObject?: object) => {
+    setSelectedRows([])
     const finalFilters = {};
 
     if (filter !== "clear_filters") finalFilters["statusId"] = filter;
