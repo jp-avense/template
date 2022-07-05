@@ -199,7 +199,7 @@ const TaskTable = () => {
       setLimit(parseInt(e.target.value));
 
       await getDataAndSet({
-        limit: e.target.value,
+        pageSize: e.target.value,
       });
     } catch (error) {
       const msg = getAxiosErrorMessage(error);

@@ -7,7 +7,7 @@ const REGISTER_URL = "agents"
 export enum UserRoles {
   admin = "admin",
   backoffice = "backoffice",
-  agent = "admin"
+  agent = "agent"
 }
 export interface RegisterDto {
   email: string,
