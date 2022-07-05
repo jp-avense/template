@@ -1,4 +1,11 @@
-import { FC, ChangeEvent, useState, useCallback, useContext } from "react";
+import {
+  FC,
+  ChangeEvent,
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
 import {
   Divider,
   Box,
@@ -19,6 +26,7 @@ import {
 } from "@mui/material";
 
 import { AgentContext, IAgent } from "src/contexts/AgentContext";
+import { AuthContext } from "src/contexts/AuthContext";
 import Label from "src/components/Label";
 import { agentService } from "src/services/agent.service";
 import { useTranslation } from "react-i18next";
@@ -38,11 +46,18 @@ const AgentTable: FC = () => {
   const { t } = useTranslation();
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const context = useContext(AgentContext);
+  const authContext = useContext(AuthContext);
   const { getAgents, agents: Agents } = context.handleAgents;
   const { setLoading, loading } = context.handleLoading;
-
+  const {
+    handleId: { idToken },
+  } = authContext;
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
+
+  useEffect(() => {
+    getAgents();
+  }, [idToken]);
 
   const getStatusLabel = (status: 0 | 1) => {
     const map = {
