@@ -1,7 +1,15 @@
-import { Box, Card } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Button, Card } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import PageTitleWrapper from "src/components/PageTitleWrapper";
+import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
+import Swal from "sweetalert2";
 import DynamicTable from "../Components/DynamicTable";
+import CreateStatus from "./CreateStatus";
+import CreateStatusForm from "./CreateStatus/CreateStatusForm";
+import UpdateStatus from "./UpdateStatus";
+import UpdateStatusForm from "./UpdateStatus/UpdateStatusForm";
 
 const TaskStatusPage = () => {
   const [status, setStatus] = useState([]);
@@ -10,6 +18,7 @@ const TaskStatusPage = () => {
   const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
+    setLoading(true);
     taskService
       .getStatuses()
       .then(({ data }) => {
@@ -46,25 +55,62 @@ const TaskStatusPage = () => {
     }
   };
 
+  const updateStatusObject = useMemo(() => {
+    if (selected.length > 1) return null;
+
+    return status.find((item) => item._id === selected[0]);
+  }, [selected, status]);
+
+  const onDone = async () => {
+    setLoading(true);
+    try {
+      const { data } = await taskService.getStatuses();
+      setStatus(data);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div>
-      {loading ? (
-        "loading..."
-      ) : (
-        <Box display="flex" justifyContent="center">
-          <Card sx={{ width: "80%" }}>
-            <DynamicTable
-              data={status}
-              headers={headers}
-              selected={selected}
-              title="Status"
-              loading={loading}
-              handleSelectOne={handleSelectOne}
-              handleSelectAll={handleSelectAll}
-            ></DynamicTable>
-          </Card>
-        </Box>
-      )}
+      <Helmet>
+        <title>System - Task Status</title>
+      </Helmet>
+      <PageTitleWrapper>
+        <CreateStatus>
+          <CreateStatusForm onDone={onDone} />
+        </CreateStatus>
+      </PageTitleWrapper>
+      <Box display="flex" justifyContent="center">
+        <Card sx={{ width: "80%" }}>
+          <DynamicTable
+            data={status}
+            headers={headers}
+            selected={selected}
+            title="Status"
+            loading={loading}
+            handleSelectOne={handleSelectOne}
+            handleSelectAll={handleSelectAll}
+            action={
+              selected.length === 1 ? (
+                <Box display="flex" flexDirection="row" gap={2}>
+                  <UpdateStatus>
+                    <UpdateStatusForm
+                      selectedStatus={updateStatusObject}
+                      onDone={onDone}
+                    />
+                  </UpdateStatus>
+                </Box>
+              ) : null
+            }
+          ></DynamicTable>
+        </Card>
+      </Box>
     </div>
   );
 };

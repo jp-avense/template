@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { t } from "i18next";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ReactNode } from "react";
 
 interface IHeader {
   key: string;
@@ -27,6 +27,7 @@ type Props = {
   handleSelectAll: (event: any) => void;
   title: string;
   selected: string[];
+  action?: ReactNode | null;
 };
 
 const DynamicTable = ({
@@ -37,6 +38,7 @@ const DynamicTable = ({
   handleSelectOne,
   title,
   selected,
+  action,
 }: Props) => {
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
@@ -45,7 +47,7 @@ const DynamicTable = ({
 
   return (
     <Card>
-      <CardHeader title={t(title)} sx={{ height: "60px" }} />
+      <CardHeader title={t(title)} sx={{ height: "60px" }} action={action} />
       <Divider />
       <TableContainer>
         <Table>
