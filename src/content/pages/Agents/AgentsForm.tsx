@@ -20,30 +20,27 @@ import { getAxiosErrorMessage } from "src/lib";
 import { AgentContext } from "src/contexts/AgentContext";
 import { useTranslation } from "react-i18next";
 
-const validationSchema = yup.object({
-  email: yup
-    .string()
-    .email("Enter a valid email")
-    .required("Email is required"),
-  name: yup.string().required("Name is required"),
-  familyName: yup.string().required("Family name is required"),
-  phoneNumber: yup.string().required("Phone number is required"),
-  password: yup
-    .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
-      "Password should contain one uppercase, one Lowercase and one Number"
-    ),
-});
-
 const AgentsForm = () => {
   const { t } = useTranslation();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [roles, setRoles] = useState<UserRoles[]>([]);
   const context = useContext(AgentContext);
+
+  const validationSchema = yup.object({
+    email: yup
+      .string()
+      .email(t("emailUserValidText"))
+      .required(t("emailRequiredText")),
+    name: yup.string().required(t("nameRequiredText")),
+    familyName: yup.string().required(t("familyNameRequiredText")),
+    phoneNumber: yup.string().required(t("phoneNumberRequiredText")),
+    password: yup
+      .string()
+      .min(8, t("passwordLengthText"))
+      .required(t("passwordRequiredText"))
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, t("passwordMatchText")),
+  });
 
   const {
     handleAgents: { getAgents },
@@ -77,16 +74,14 @@ const AgentsForm = () => {
           roles,
         });
 
-        setSuccess("Successfully created agent");
+        setSuccess(t("successAgent"));
         actions.resetForm();
         await getAgents();
       } catch (error) {
         const message = getAxiosErrorMessage(error);
-        if (message === "no_response")
-          setError("Server did not respond. Try again later");
-        else if (message === "request_failed")
-          setError("Request failed. Try again later");
-        else setError(message || "Invalid request");
+        if (message === "no_response") setError(t("noResponse"));
+        else if (message === "request_failed") setError(t("requestFailed"));
+        else setError(message || t("invalidRequest"));
       }
     },
   });
@@ -124,12 +119,14 @@ const AgentsForm = () => {
             <TextField
               fullWidth
               label={t("familyName")}
-              id="name"
+              id="familyName"
               name="familyName"
               value={formik.values.familyName}
               onChange={formik.handleChange}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+              error={
+                formik.touched.familyName && Boolean(formik.errors.familyName)
+              }
+              helperText={formik.touched.familyName && formik.errors.familyName}
             />
           </Grid>
           <Grid item>

@@ -18,6 +18,7 @@ import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
+import { AuthContext } from "src/contexts/AuthContext";
 import TaskFilter from "./TaskFilters";
 import AssignTaskForm from "./AssignTaskForm";
 import UpdateTaskForm from "./UpdateTaskForm";
@@ -42,10 +43,15 @@ const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
+  const authContext = useContext(AuthContext);
   const [headers, setHeaders] = useState([]);
   const roles = useRoles();
 
   const isAdmin = roles.includes("admin");
+
+  const {
+    handleId: { idToken },
+  } = authContext;
 
   const {
     handleFilter: {
@@ -69,6 +75,17 @@ const TaskTable = () => {
   const {
     handleTabs: { setTabsData },
   } = tabsContext;
+
+  useEffect(() => {
+    setLoading(true);
+    setSelectedRows([]);
+
+    getDataAndSet()
+      .catch()
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [idToken]);
 
   useEffect(() => {
     createRows(originalData);

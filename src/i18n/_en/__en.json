@@ -83,6 +83,20 @@
   "language": "Language",
   "english": "English",
   "hebrew": "Hebrew",
-  "updateTask": "Update Task"
-
+  "updateTask": "Update Task",
+  "Incorrect username or password.": "Incorrect username or password.",
+  "noResponse": "No response from server",
+  "requestFailed": "Request failed. Try again later",
+  "invalidRequest": "Invalid Request",
+  "unableToSubmit": "Unable to submit data. Please try again later",
+  "successAgent": "Successfully created agent",
+  "emailUserValidText": "Username must be a valid email",
+  "passwordRequiredText": "Password is required",
+  "userNameRequiredText": "Username is required",
+  "nameRequiredText": "Name is required",
+  "familyNameRequiredText": "Family Name is required",
+  "phoneNumberRequiredText": "Phone number is required",
+  "emailRequiredText": "Email is required",
+  "passwordLengthText": "Password should be of minimum 8 characters length",
+  "passwordMatchText": "Password should contain one uppercase, one Lowercase and one Number"
 }

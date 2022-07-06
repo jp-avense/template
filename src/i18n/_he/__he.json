@@ -83,5 +83,20 @@
   "language": "שפה",
   "english": "אנגלית",
   "hebrew": "עִברִית",
-  "updateTask": "עדכון משימה"
+  "updateTask": "עדכון משימה",
+  "Incorrect username or password.": "שם משתמש או סיסמא שגוי.",
+  "noResponse": "אין תגובה מהשרת",
+  "requestFailed": "בקשה נכשלה. נסה שוב מאוחר יותר",
+  "invalidRequest": "בקשה שגויה ",
+  "unableToSubmit": "לא ניתן לשלוח נתונים. בבקשה נסה שוב מאוחר יותר ",
+  "successAgent": "סוכן נוצר בהצלחה",
+  "emailUserValidText": "שם המשתמש חייב להיות אימייל חוקי",
+  "passwordRequiredText": "דרושה סיסמא",
+  "userNameRequiredText": "נדרש שם משתמש",
+  "nameRequiredText": "דרוש שם",
+  "familyNameRequiredText": "נדרש שם משפחה",
+  "phoneNumberRequiredText": "נדרש מספר טלפון",
+  "emailRequiredText": "יש צורך באימייל",
+  "passwordLengthText": "הסיסמה חייבת להיות באורך 8 תווים לפחות",
+  "passwordMatchText": "הסיסמה צריכה להכיל אות אחת גדולה, אות קטנה ומספר אחד"
 }

@@ -21,14 +21,17 @@ import { useCookies } from "react-cookie";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 
-const validationSchema = yup.object({
-  username: yup.string().required().email(),
-  password: yup.string().required(),
-});
-
 const LoginPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const validationSchema = yup.object({
+    username: yup
+      .string()
+      .required(t("userNameRequiredText"))
+      .email(t("emailUserValidText")),
+    password: yup.string().required(t("passwordRequiredText")),
+  });
 
   const [error, setError] = useState("");
   const context = useContext(AuthContext);
@@ -63,13 +66,13 @@ const LoginPage = () => {
           maxAge: DAYS * 30,
         });
 
-        await getUser(IdToken)
+        await getUser(IdToken);
 
         navigate("/dashboard");
       } catch (error) {
-        if (error.response.data) setError(error.response.data.message);
-        else if (error.request) setError("No response from server");
-        else setError("Unable to submit data. Please try again later");
+        if (error.response.data) setError(t(error.response.data.message));
+        else if (error.request) setError(t("noResponse"));
+        else setError(t("unableToSubmit"));
       } finally {
         setSubmitting(false);
       }
