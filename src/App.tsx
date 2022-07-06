@@ -70,13 +70,15 @@ function App() {
           !prevRequest?.sent &&
           cookies.refreshToken
         ) {
-          prevRequest.sent = true;
-          authService.refresh(cookies.refreshToken).then(({ data }) => {
+          await authService.refresh(cookies.refreshToken).then(({ data }) => {
             const { AccessToken, IdToken } = data.AuthenticationResult;
             setAccessToken(AccessToken);
             setIdToken(IdToken);
+            prevRequest.sent = true;
+            prevRequest.headers["Authorization"] = `Bearer ${IdToken}`;
+            prevRequest.headers["x-access-token"] = AccessToken;
+            return apiService(prevRequest);
           });
-          return apiService(prevRequest);
         }
         return Promise.reject(error);
       }
