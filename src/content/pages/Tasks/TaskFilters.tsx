@@ -10,19 +10,13 @@ function TaskFilter() {
   const filters = [
     { label: "new", value: "new" },
     { label: "assigned", value: "assigned" },
-    { label: "inprogress", value: "inProgress" },
+    { label: "inProgress", value: "inProgress" },
     { label: "done", value: "done" },
     { label: "clearFilters", value: "clear_filters" },
   ];
   const context = useContext(FilterContext);
   const {
-    handleFilter: {
-      filter,
-      setFilter,
-      setLoading,
-      loading,
-      getDataAndSet,
-    },
+    handleFilter: { filter, setFilter, setLoading, loading, getDataAndSet },
   } = context;
 
   const handleChange = async (value: string) => {

@@ -131,11 +131,7 @@ const AssignTaskForm = ({ selected }: Props) => {
             <Box gap={2} display="flex" flexDirection="column">
               {success && <Alert severity="success">{success}</Alert>}
               {error && <Alert severity="error">{error}</Alert>}
-              {!isValid && (
-                <Alert severity="warning">
-                  You can only assign tasks that are new
-                </Alert>
-              )}
+              {!isValid && <Alert severity="warning">{t("taskWarning")}</Alert>}
               <FormControl fullWidth>
                 <InputLabel id="agent">{t("agent")}</InputLabel>
                 <Select

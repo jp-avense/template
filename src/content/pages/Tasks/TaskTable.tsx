@@ -328,7 +328,10 @@ const TaskTable = () => {
 
                   {rows.dynamicDetails.map((dynamic) => {
                     if (dynamic.showInTable) {
-                      let value = dynamic.value;
+                      let value =
+                        dynamic.id == "Status"
+                          ? t(dynamic.value)
+                          : dynamic.value;
                       let id = dynamic.id;
 
                       if (typeof value === "object") {
