@@ -22,7 +22,6 @@ const TaskTypePage = () => {
     taskService
       .getTaskTypes()
       .then(({ data }) => {
-        console.log(data);
         const h = Object.keys(data[0])
           .filter((item) => item !== "_id")
           .map((item) => {
@@ -37,10 +36,11 @@ const TaskTypePage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSelectOne = (e, id: string) => {
+  
+  const handleSelectOne = (id: string) => {
     let res = [];
 
-    if (e.target.checked && !selected.includes(id)) res = [...selected, id];
+    if (!selected.includes(id)) res = [...selected, id];
     else res = selected.filter((item) => item !== id);
 
     setSelected(res);

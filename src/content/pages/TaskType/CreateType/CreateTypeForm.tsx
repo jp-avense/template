@@ -13,14 +13,10 @@ import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
   key: yup
-    .string()
-    .required()
-    .matches(/^[a-zA-Z]+$/, "Must only contain lowercase and uppercase letters")
-    .min(3, "Must have atleast 3 minimum characters"),
-  // .number()
-  // .required("required")
-  // .positive()
-  // .min(1, "Must be at least 1 minimum number"),
+    .number()
+    .required("required")
+    .positive()
+    .min(1, "Must be at least 1 minimum number"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
 });
