@@ -38,7 +38,10 @@ const CreateTaskTypeForm = ({ onFinish }) => {
         setSuccess("");
         setError("");
 
-        await taskService.createTaskTypes(values);
+        await taskService.createTaskTypes({
+          ...values,
+          key: values.key.toString()
+        });
         actions.resetForm();
         setSuccess("Added new task type");
         await onFinish();
@@ -71,6 +74,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
               value={formik.values.key}
               helperText={formik.touched.key && formik.errors.key}
               fullWidth
+              type="number"
             />
           </Grid>
           <Grid item>
