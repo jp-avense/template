@@ -68,4 +68,16 @@ export const taskService = {
   async bulkChangeStatusOrder(data: { id: string; newOrder: number }[]) {
     return apiService.patch(`${TASK_STATUS_URL}/bulk/order`, data);
   },
+  
+  async createTaskTypes(values) {
+    return apiService.post(TASK_TYPE_URL, values);
+  },
+
+  async getTaskTypes() {
+    return apiService.get(TASK_TYPE_URL);
+  },
+
+  async updateTaskType(id: string, values) {
+    return apiService.patch(`${TASK_TYPE_URL}/${id}`, values);
+  },
 };
