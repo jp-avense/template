@@ -36,7 +36,7 @@
   "assigned": "Assigned",
   "enabled": "Enabled",
   "disabled": "Disabled",
-  "inprogress": "Inprogress",
+  "inProgress": "Inprogress",
   "done": "Done",
   "clearFilters": "Clear Filters",
   "general": "General",
@@ -98,5 +98,6 @@
   "phoneNumberRequiredText": "Phone number is required",
   "emailRequiredText": "Email is required",
   "passwordLengthText": "Password should be of minimum 8 characters length",
-  "passwordMatchText": "Password should contain one uppercase, one Lowercase and one Number"
+  "passwordMatchText": "Password should contain one uppercase, one Lowercase and one Number",
+  "taskWarning": "You can only assign tasks that are new"
 }

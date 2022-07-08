@@ -13,7 +13,7 @@ import * as yup from "yup";
 
 interface ITaskStatus {
   _id: string;
-  key: string;
+  Key: string;
   label: string;
   description?: string;
 }
@@ -70,7 +70,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
           <TextField
             name="key"
             label="Key"
-            defaultValue={selectedStatus.key}
+            defaultValue={selectedStatus.Key}
             disabled
             fullWidth
             helperText="You cannot change this field"

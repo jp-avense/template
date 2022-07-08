@@ -55,7 +55,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
           },
         }}
       >
-        {/* <Header /> */}
+        <Header />
         <Sidebar />
         <Box
           sx={{

@@ -18,14 +18,14 @@ import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
-  key: yup
+  Key: yup
     .string()
     .required("required")
     .matches(/^[a-zA-Z]+$/, "Must only contain lowercase and uppercase letters")
     .min(3, "Must be at least 3 characters long"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
-  systemStatus: yup.string().required(),
+  systemStatusKey: yup.string().required(),
 });
 
 const CreateStatusForm = ({ onDone }) => {
@@ -38,10 +38,10 @@ const CreateStatusForm = ({ onDone }) => {
     enableReinitialize: true,
     validationSchema,
     initialValues: {
-      key: "",
+      Key: "",
       label: "",
       description: "",
-      systemStatus: "none",
+      systemStatusKey: "none",
     },
     onSubmit: async (values, actions) => {
       try {
@@ -51,8 +51,7 @@ const CreateStatusForm = ({ onDone }) => {
         await taskService.createTaskStatus(values);
         actions.resetForm();
         setSuccess("Added new status");
-        await onDone()
-        
+        await onDone();
       } catch (error) {
         setError(getAxiosErrorMessage(error));
       }
@@ -75,11 +74,11 @@ const CreateStatusForm = ({ onDone }) => {
         <Grid item>
           <TextField
             label="Key"
-            name="key"
+            name="Key"
             onChange={(e) => handleChange(e)}
-            error={formik.touched.key && Boolean(formik.errors.key)}
-            value={formik.values.key}
-            helperText={formik.touched.key && formik.errors.key}
+            error={formik.touched.Key && Boolean(formik.errors.Key)}
+            value={formik.values.Key}
+            helperText={formik.touched.Key && formik.errors.Key}
             fullWidth
           />
         </Grid>
@@ -113,26 +112,27 @@ const CreateStatusForm = ({ onDone }) => {
             <InputLabel id="select">System Status</InputLabel>
             <Select
               label="System status"
-              name="systemStatus"
-              value={formik.values.systemStatus}
+              name="systemStatusKey"
+              value={formik.values.systemStatusKey}
               fullWidth
               labelId="select"
               onChange={(e) => handleChange(e)}
               error={
-                formik.touched.systemStatus &&
-                Boolean(formik.errors.systemStatus)
+                formik.touched.systemStatusKey &&
+                Boolean(formik.errors.systemStatusKey)
               }
             >
               <MenuItem value="none">None</MenuItem>
               <MenuItem value="new">New</MenuItem>
               <MenuItem value="assigned">Assigned</MenuItem>
-              <MenuItem value="inProgress">In Progres</MenuItem>
+              <MenuItem value="inProgress">In Progress</MenuItem>
               <MenuItem value="done">Done</MenuItem>
             </Select>
             <FormHelperText>
-              {formik.touched.systemStatus &&
-              Boolean(formik.errors.systemStatus)
-                ? formik.touched.systemStatus && formik.errors.systemStatus
+              {formik.touched.systemStatusKey &&
+              Boolean(formik.errors.systemStatusKey)
+                ? formik.touched.systemStatusKey &&
+                  formik.errors.systemStatusKey
                 : "Choose a system status that is related to this new status"}
             </FormHelperText>
           </FormControl>

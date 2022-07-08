@@ -1,0 +1,8 @@
+.drag-target {
+  background: #b4bbf3;
+  color: white !important;
+}
+
+.drag-source {
+  background: #5569ff !important;
+}

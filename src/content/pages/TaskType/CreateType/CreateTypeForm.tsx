@@ -13,14 +13,10 @@ import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
   key: yup
-    .string()
-    .required()
-    .matches(/^[a-zA-Z]+$/, "Must only contain lowercase and uppercase letters")
-    .min(3, "Must have atleast 3 minimum characters"),
-  // .number()
-  // .required("required")
-  // .positive()
-  // .min(1, "Must be at least 1 minimum number"),
+    .number()
+    .required("required")
+    .positive()
+    .min(1, "Must be at least 1 minimum number"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
 });
@@ -42,7 +38,10 @@ const CreateTaskTypeForm = ({ onFinish }) => {
         setSuccess("");
         setError("");
 
-        await taskService.createTaskTypes(values);
+        await taskService.createTaskTypes({
+          ...values,
+          key: values.key.toString()
+        });
         actions.resetForm();
         setSuccess("Added new task type");
         await onFinish();
@@ -75,6 +74,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
               value={formik.values.key}
               helperText={formik.touched.key && formik.errors.key}
               fullWidth
+              type="number"
             />
           </Grid>
           <Grid item>
