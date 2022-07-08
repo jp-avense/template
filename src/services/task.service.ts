@@ -1,3 +1,4 @@
+import { TaskStatusState } from "src/content/pages/TaskStatus/status.interface";
 import { apiService } from "./api.service";
 
 const TASK_URL = "tasks";
@@ -51,5 +52,32 @@ export const taskService = {
 
   async updateStatus(id: string, values) {
     return apiService.patch(`${TASK_STATUS_URL}/${id}`, values);
+  },
+
+  async disableStatus(ids: string[]) {
+    return apiService.delete(`${TASK_STATUS_URL}`, { data: { ids } });
+  },
+
+  async changeState(ids: string[], newState: TaskStatusState) {
+    return apiService.patch(`${TASK_STATUS_URL}/bulk`, {
+      ids,
+      state: newState,
+    });
+  },
+
+  async bulkChangeStatusOrder(data: { id: string; newOrder: number }[]) {
+    return apiService.patch(`${TASK_STATUS_URL}/bulk/order`, data);
+  },
+  
+  async createTaskTypes(values) {
+    return apiService.post(TASK_TYPE_URL, values);
+  },
+
+  async getTaskTypes() {
+    return apiService.get(TASK_TYPE_URL);
+  },
+
+  async updateTaskType(id: string, values) {
+    return apiService.patch(`${TASK_TYPE_URL}/${id}`, values);
   },
 };
