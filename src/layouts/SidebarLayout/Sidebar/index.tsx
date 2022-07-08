@@ -57,27 +57,29 @@ function Sidebar() {
             theme.palette.mode === "dark" ? theme.sidebar.boxShadow : "none",
         }}
       >
-        <Box mt={3}>
-          <Box
-            mx={2}
-            p={1}
-            sx={{ backgroundColor: theme.colors.alpha.white[100] }}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            borderRadius={1}
-          >
-            <img src={logo} alt="Milgam Logo" />
+        <Scrollbar>
+          <Box mt={3}>
+            <Box
+              mx={2}
+              p={1}
+              sx={{ backgroundColor: theme.colors.alpha.white[100] }}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              borderRadius={1}
+            >
+              <img src={logo} alt="Milgam Logo" />
+            </Box>
           </Box>
-        </Box>
-        <Divider
-          sx={{
-            mt: theme.spacing(3),
-            mx: theme.spacing(2),
-            background: theme.colors.alpha.trueWhite[10],
-          }}
-        />
-        <SidebarMenu />
+          <Divider
+            sx={{
+              mt: theme.spacing(3),
+              mx: theme.spacing(2),
+              background: theme.colors.alpha.trueWhite[10],
+            }}
+          />
+          <SidebarMenu />
+        </Scrollbar>
       </SidebarWrapper>
       <Drawer
         sx={{
@@ -101,13 +103,14 @@ function Sidebar() {
             <Box mt={3}>
               <Box
                 mx={2}
-                sx={{
-                  width: 52,
-                }}
+                p={1}
+                sx={{ backgroundColor: theme.colors.alpha.white[100] }}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={1}
               >
-                <Box sx={{ backgroundColor: "white" }}>
-                  <img src={logo} alt="Milgam Logo" />
-                </Box>
+                <img src={logo} alt="Milgam Logo" />
               </Box>
             </Box>
             <Divider
