@@ -17,7 +17,7 @@ const UpdateStatus = ({ children }: Props) => {
       <Modals open={open} onClose={handleClose} title="Update task status">
         <>{children}</>
       </Modals>
-      <Button onClick={() => setOpen(true)} variant="contained">Update status</Button>
+      <Button onClick={() => setOpen(true)} variant="contained">Update</Button>
     </>
   );
 };
