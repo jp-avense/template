@@ -43,6 +43,8 @@ function Header() {
     handleUser: { user },
   } = context;
 
+  let roles = user["custom:role"].split(",");
+
   const theme = useTheme();
 
   return (
@@ -85,7 +87,8 @@ function Header() {
         </Box>
       </Box>
       <Stack direction="row" alignItems="center" spacing={2}>
-        Logged in as: {user.name + " " + user.family_name}
+        Logged in as: {user.name + " " + user.family_name} - Roles:{" "}
+        {roles.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(" | ")}
       </Stack>
     </HeaderWrapper>
   );
