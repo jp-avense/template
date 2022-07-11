@@ -16,7 +16,7 @@ export const handleAxiosError = (error: AxiosError) => {
 export const getAxiosErrorMessage = (error: AxiosError) => {
   if (error.response) {
     // @ts-ignore
-    return error.response.data.message || "Bad request";
+    return error.response.data?.message || "Bad request";
   } else if (error.request) {
     return "No response from server";
   } else {

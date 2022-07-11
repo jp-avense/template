@@ -11,6 +11,7 @@ import CreateStatusForm from "./CreateStatus/CreateStatusForm";
 import { ITaskStatus, TaskStatusState } from "./status.interface";
 import UpdateStatus from "./UpdateStatus";
 import UpdateStatusForm from "./UpdateStatus/UpdateStatusForm";
+import ConfirmModal from "src/components/ConfirmModal";
 
 const tableHeaders = [
   {
@@ -196,8 +197,29 @@ const TaskStatusPage = () => {
             handleDragDrop={handleDragDrop}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
+                {selected.length === 1 ? (
+                  <>
+                    <UpdateStatus>
+                      <UpdateStatusForm
+                        selectedStatus={updateStatusObject}
+                        onDone={onDone}
+                      />
+                    </UpdateStatus>
+                  </>
+                ) : null}
                 {selected.length > 0 ? (
                   <>
+                    <ConfirmModal
+                      buttonText="Delete"
+                      title="Delete tasks"
+                      handleConfirm={() => console.log("ok")}
+                      confirmMessage="You are about to delete some types. Continue?"
+                      confirmText="Confirm"
+                      buttonProps={{
+                        variant: "contained",
+                        color: "warning"
+                      }}
+                    />
                     <Button
                       type="button"
                       variant="contained"
@@ -215,14 +237,6 @@ const TaskStatusPage = () => {
                       Disable
                     </Button>
                   </>
-                ) : null}
-                {selected.length === 1 ? (
-                  <UpdateStatus>
-                    <UpdateStatusForm
-                      selectedStatus={updateStatusObject}
-                      onDone={onDone}
-                    />
-                  </UpdateStatus>
                 ) : null}
               </Box>
             }
