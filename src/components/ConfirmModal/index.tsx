@@ -1,5 +1,5 @@
 import { Alert, Box, Button } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import ModalButton from "../ModalButton";
 
 type Props = {
@@ -21,8 +21,22 @@ const ConfirmModal = ({
   confirmText,
   buttonText,
 }: Props) => {
+
+  const [open, setOpen] = useState(false);
+
+  const confirm = () => {
+    setOpen(false)
+    handleConfirm()
+  }
+
   return (
-    <ModalButton title={title} text={buttonText} buttonProps={buttonProps}>
+    <ModalButton
+      title={title}
+      text={buttonText}
+      buttonProps={buttonProps}
+      forceOpen={open}
+      setForceOpen={setOpen}
+    >
       <Box marginBottom={2}>
         <Alert severity="warning">{confirmMessage}</Alert>
       </Box>
@@ -31,7 +45,7 @@ const ConfirmModal = ({
         variant="contained"
         fullWidth
         {...confirmButtonProps}
-        onClick={handleConfirm}
+        onClick={confirm}
       >
         {confirmText}
       </Button>

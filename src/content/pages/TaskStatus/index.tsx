@@ -123,6 +123,25 @@ const TaskStatusPage = () => {
     }
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await taskService.bulkDeleteStatus(selected);
+
+      const filtered = status.filter((item) => !selected.includes(item._id));
+      setSelected([]);
+      setStatus(filtered);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDisable = () => changeState(TaskStatusState.DISABLED);
   const handleEnable = () => changeState(TaskStatusState.ENABLED);
 
@@ -211,13 +230,13 @@ const TaskStatusPage = () => {
                   <>
                     <ConfirmModal
                       buttonText="Delete"
-                      title="Delete tasks"
-                      handleConfirm={() => console.log("ok")}
-                      confirmMessage="You are about to delete some types. Continue?"
+                      title="Delete status"
+                      handleConfirm={() => handleDelete()}
+                      confirmMessage="You are about to delete some status. Continue?"
                       confirmText="Confirm"
                       buttonProps={{
                         variant: "contained",
-                        color: "warning"
+                        color: "warning",
                       }}
                     />
                     <Button
