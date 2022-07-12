@@ -9,6 +9,7 @@ import {
   Typography,
   Checkbox,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import { t } from "i18next";
 
@@ -16,10 +17,14 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
+import { formService } from "src/services/form.service";
+import { getAxiosErrorMessage } from "src/lib";
 
 function FormFieldForm() {
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
@@ -59,12 +64,25 @@ function FormFieldForm() {
       placeholder: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      const res = { ...values } as any;
-      res.type = type;
-      if (type === "radios" || type === "checkboxes" || type === "dropdown")
-        res.options = options;
-      if (type === "textarea") res.rows = rows;
+    onSubmit: async (values) => {
+      try {
+        setError("");
+        setSuccess("");
+
+        const res = { ...values } as any;
+        res.inputType = type;
+
+        if (type === "radios" || type === "checkboxes" || type === "dropdown")
+          res.options = options;
+
+        if (type === "textarea") res.rows = rows;
+
+        await formService.createField(res);
+
+        setSuccess("Success");
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
     },
   });
 
@@ -113,6 +131,8 @@ function FormFieldForm() {
       >
         <Grid item>
           <form onSubmit={formik.handleSubmit} style={{ paddingTop: "1rem" }}>
+            { error ? <Alert severity="error" sx={{ mb: 2 }}>{ error }</Alert> : null}
+            { success ? <Alert severity="success" sx={{ mb: 2 }}>{ success  }</Alert> : null}
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{t("type")}</InputLabel>
               <Select
