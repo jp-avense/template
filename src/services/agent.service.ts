@@ -8,6 +8,8 @@ export enum UserRoles {
   admin = "admin",
   backoffice = "backoffice",
   agent = "agent",
+  manager = "manager",
+  guest = "guest",
 }
 export interface RegisterDto {
   email: string;
@@ -41,6 +43,6 @@ export const agentService = {
   },
 
   async update(values: UpdateDto) {
-    return apiService.patch(ALL_URL, values)
+    return apiService.patch(ALL_URL, values);
   },
 };

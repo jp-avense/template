@@ -27,6 +27,7 @@ import {
 
 import { AgentContext, IAgent } from "src/contexts/AgentContext";
 import { AuthContext } from "src/contexts/AuthContext";
+import { TabsContext } from "src/contexts/TabsContext";
 import Label from "src/components/Label";
 import { agentService } from "src/services/agent.service";
 import { useTranslation } from "react-i18next";
@@ -49,6 +50,7 @@ const AgentTable: FC = () => {
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const context = useContext(AgentContext);
   const authContext = useContext(AuthContext);
+  const tabsContext = useContext(TabsContext);
   const { getAgents, agents: Agents } = context.handleAgents;
   const { setLoading, loading } = context.handleLoading;
   const {
@@ -60,6 +62,10 @@ const AgentTable: FC = () => {
   useEffect(() => {
     getAgents();
   }, [idToken]);
+
+  const {
+    handleTabs: { setTabsData },
+  } = tabsContext;
 
   const getStatusLabel = (status: 0 | 1) => {
     const map = {
@@ -92,15 +98,18 @@ const AgentTable: FC = () => {
   const handleSelectAll = (event) => {
     const res = event.target.checked ? Agents.map((item) => item.email) : [];
     setSelectedAgents(res);
+    setTabsData(res);
   };
 
   const handleSelectOne = (event, agentEmail: string): void => {
     if (!selectedAgents.includes(agentEmail)) {
       const res = [...selectedAgents, agentEmail];
       setSelectedAgents(res);
+      setTabsData(res);
     } else {
       const res = selectedAgents.filter((id) => id !== agentEmail);
       setSelectedAgents(res);
+      setTabsData(res);
     }
   };
 

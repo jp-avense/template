@@ -214,6 +214,30 @@ const AgentsForm = () => {
                 label={t("backOffice")}
                 labelPlacement="end"
               />
+              <FormControlLabel
+                value="start"
+                control={
+                  <Checkbox
+                    size="medium"
+                    sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                    onChange={(e) => addRole(e, UserRoles.manager)}
+                  />
+                }
+                label={t("manager")}
+                labelPlacement="end"
+              />
+              <FormControlLabel
+                value="start"
+                control={
+                  <Checkbox
+                    size="medium"
+                    sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                    onChange={(e) => addRole(e, UserRoles.guest)}
+                  />
+                }
+                label={t("guest")}
+                labelPlacement="end"
+              />
             </Box>
           </Grid>
         </Grid>
