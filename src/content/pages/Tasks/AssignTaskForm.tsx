@@ -103,6 +103,7 @@ const AssignTaskForm = ({ selected }: Props) => {
         taskIds: selected,
         agent: selectedAgent,
         admin: user.sub,
+        assignDate: selectedDate,
       });
       setSuccess("Successfully assigned agent");
       setSelectedRows([]);
