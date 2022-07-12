@@ -31,6 +31,8 @@ import { TabsContext } from "src/contexts/TabsContext";
 import Label from "src/components/Label";
 import { agentService } from "src/services/agent.service";
 import { useTranslation } from "react-i18next";
+import ModalButton from "src/components/ModalButton";
+import UpdateAgentForm from "./UpdateAgentForm";
 
 const headCells = [
   { id: "name", label: "name" },
@@ -131,6 +133,17 @@ const AgentTable: FC = () => {
         action={
           selectedAgents.length ? (
             <Box display="flex" gap={2}>
+              {selectedAgents.length === 1 ? (
+                <ModalButton
+                  text="Update"
+                  buttonProps={{
+                    variant: "contained",
+                  }}
+                  title="Update agent"
+                >
+                  <UpdateAgentForm selected={selectedAgents[0]} />
+                </ModalButton>
+              ) : null}
               <Button
                 variant="contained"
                 onClick={() => changeStatus("enable")}

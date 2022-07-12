@@ -20,6 +20,15 @@ export interface RegisterDto {
   phoneNumber: string;
 }
 
+export interface UpdateDto {
+  id: string;
+  email: string;
+  roles: string[];
+  name: string;
+  familyName: string;
+  phoneNumber: string;
+}
+
 export const agentService = {
   async getAgents() {
     return apiService.get(ALL_URL);
@@ -31,5 +40,9 @@ export const agentService = {
 
   async register(values: RegisterDto) {
     return apiService.post(REGISTER_URL, values);
+  },
+
+  async update(values: UpdateDto) {
+    return apiService.patch(ALL_URL, values);
   },
 };
