@@ -24,9 +24,9 @@ function FormFieldForm() {
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
     "text",
-    "textArea",
+    "textarea",
     "markup",
-    "registerDateTimeButton",
+    "dateTimeRegister",
     "attachButton",
     "cameraButton",
     "radios",
@@ -35,6 +35,7 @@ function FormFieldForm() {
     "dateTimePicker",
     "button",
     "signature",
+    "geo",
   ];
 
   const validationSchema = yup.object({
@@ -62,7 +63,7 @@ function FormFieldForm() {
       const res = { ...values } as any;
       if (type === "radios" || type === "checkboxes" || type === "dropdown")
         res.options = options;
-      if (type === "textArea") res.rows = rows;
+      if (type === "textarea") res.rows = rows;
     },
   });
 
@@ -221,7 +222,7 @@ function FormFieldForm() {
                     }
                     fullWidth
                   ></TextField>
-                  {type === "textArea" ? (
+                  {type === "textarea" ? (
                     <>
                       {" "}
                       <Typography sx={{ mt: 2 }} variant="h5">

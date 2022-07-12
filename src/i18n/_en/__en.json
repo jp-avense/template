@@ -116,9 +116,9 @@
   "rows": "Rows",
   "options": "Options",
   "text": "Text",
-  "textArea": "Text Area",
+  "textarea": "Text Area",
   "markup": "Markup",
-  "registerDateTimeButton": "Register DateTime Button",
+  "dateTimeRegister": "Datetime Register",
   "attachButton": "Attach Button",
   "cameraButton": "Camera Button",
   "radios": "Radios",
@@ -131,5 +131,6 @@
   "values": "Values",
   "createField": "Create field",
   "addField": "Add field",
-  "formFields": "Form Fields"
+  "formFields": "Form Fields",
+  "geo": "Geo"
 }

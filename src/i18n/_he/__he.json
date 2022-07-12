@@ -116,9 +116,9 @@
   "rows": "שׁוּרָה",
   "options": "אפשרויות",
   "text": "טֶקסט",
-  "textArea": "אזור טקסט",
+  "textarea": "אזור טקסט",
   "markup": "Markup",
-  "registerDateTimeButton": "כפתור הרשמה תאריך ושעה",
+  "dateTimeRegister": "רישום תאריך ושעה",
   "attachButton": "כפתור צרף",
   "cameraButton": "כפתור מצלמה",
   "radios": "רדיו",
@@ -131,5 +131,6 @@
   "values": "ערכים",
   "createField": "צור שדה",
   "addField": "הוסף שדה",
-  "formFields": "שדות טפסים"
+  "formFields": "שדות טפסים",
+  "geo": "גיאוגרפי"
 }
