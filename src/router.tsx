@@ -6,6 +6,8 @@ import BaseLayout from "src/layouts/BaseLayout";
 
 import SuspenseLoader from "src/components/SuspenseLoader";
 import AdminOnlyRoute from "./components/AdminOnlyRoute";
+import FormFields from "./content/pages/FormFields";
+import FormBuilder from "./content/pages/FormBuilder";
 
 const Loader = (Component) => (props) =>
   (
@@ -109,6 +111,26 @@ const routes: RouteObject[] = [
             <TaskStatusPage />
           </AdminOnlyRoute>
         ),
+      },
+    ],
+  },
+  {
+    path: "form-field",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "",
+        element: <FormFields />,
+      },
+    ],
+  },
+  {
+    path: "form-builder",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "",
+        element: <FormBuilder />,
       },
     ],
   },
