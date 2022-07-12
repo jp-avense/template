@@ -1,3 +1,5 @@
+import { useFormik } from "formik";
+import { getAxiosErrorMessage } from "src/lib";
 import {
   Grid,
   Button,
@@ -13,18 +15,46 @@ import {
 } from "@mui/material";
 import { t } from "i18next";
 
-import { useFormik } from "formik";
-import * as yup from "yup";
 import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
-import { getAxiosErrorMessage } from "src/lib";
 
-function FormFieldForm({ onDone }) {
+import * as yup from "yup";
+
+interface KeyValuePair {
+  key: string;
+  value: any;
+}
+
+interface IFormType {
+  _id: string;
+  key: string;
+  label?: string;
+  description?: string;
+  inputType: string;
+  rows?: number;
+  options?: KeyValuePair[];
+  placeholder?: string;
+  defaultValue?: string;
+  validation?: string;
+  note?: string;
+}
+
+type Props = {
+  selectedForm: IFormType;
+  onFinish: () => Promise<any>;
+};
+
+const validationSchema = yup.object({
+  label: yup.string().required("required"),
+  description: yup.string().optional(),
+});
+
+const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
@@ -43,8 +73,17 @@ function FormFieldForm({ onDone }) {
     "geo",
   ];
 
+  useEffect(() => {
+    setType(selectedForm.inputType);
+    if (selectedForm.rows) setRows(selectedForm.rows);
+
+    if (selectedForm.options) {
+      console.log("selected", selectedForm.options);
+      setOptions(selectedForm.options);
+    }
+  }, [selectedForm]);
+
   const validationSchema = yup.object({
-    key: yup.string().required(t("keyIsRequred")),
     label: yup.string(),
     description: yup.string(),
     note: yup.string(),
@@ -55,13 +94,12 @@ function FormFieldForm({ onDone }) {
 
   const formik = useFormik({
     initialValues: {
-      label: "",
-      key: "",
-      description: "",
-      note: "",
-      validation: "",
-      defaultValue: "",
-      placeholder: "",
+      label: selectedForm.label,
+      description: selectedForm.description,
+      note: selectedForm.note,
+      validation: selectedForm.validation,
+      defaultValue: selectedForm.defaultValue,
+      placeholder: selectedForm.placeholder,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -77,8 +115,10 @@ function FormFieldForm({ onDone }) {
 
         if (type === "textarea") res.rows = rows;
 
-        await formService.createField(res);
-        await onDone();
+        delete res.key;
+
+        await formService.updateField(res);
+        await onFinish();
 
         setSuccess("Success");
       } catch (error) {
@@ -86,11 +126,6 @@ function FormFieldForm({ onDone }) {
       }
     },
   });
-
-  useEffect(() => {
-    setRows(5);
-    setOptions([{ key: "", value: "" }]);
-  }, [type]);
 
   const optionsValue = (e, index) => {
     let current = options.slice().map((item) => {
@@ -106,6 +141,8 @@ function FormFieldForm({ onDone }) {
 
   const setSelectedForm = (e) => {
     setType(e.target.value);
+    setRows(5);
+    setOptions([{ key: "", value: "" }]);
   };
 
   const addOption = () => {
@@ -165,11 +202,9 @@ function FormFieldForm({ onDone }) {
                     id="key"
                     name="key"
                     label={t("key")}
-                    value={formik.values.key}
-                    onChange={formik.handleChange}
-                    error={formik.touched.key && Boolean(formik.errors.key)}
-                    helperText={formik.touched.key && formik.errors.key}
+                    value={selectedForm.key}
                     fullWidth
+                    disabled
                   ></TextField>
                   <TextField
                     sx={{ mt: 2 }}
@@ -272,6 +307,7 @@ function FormFieldForm({ onDone }) {
                       </Typography>
                       <div>
                         <Button
+                          sx={{ mr: 1 }}
                           disabled={options.length < 2}
                           onClick={removeOption}
                           variant="contained"
@@ -282,16 +318,17 @@ function FormFieldForm({ onDone }) {
                           +
                         </Button>
                       </div>
-                      <div style={{ display: "inline-grid" }}>
+                      <div>
                         {options.map((c, index) => (
                           <>
                             <TextField
+                              sx={{ mt: 1 }}
                               key={index}
                               id="option"
                               name="option"
                               value={c.value}
-                              defaultValue={c.value}
                               onChange={(e) => optionsValue(e, index)}
+                              fullWidth
                               required
                             ></TextField>
                           </>
@@ -338,6 +375,6 @@ function FormFieldForm({ onDone }) {
       </Grid>
     </>
   );
-}
+};
 
-export default FormFieldForm;
+export default UpdateFormField;
