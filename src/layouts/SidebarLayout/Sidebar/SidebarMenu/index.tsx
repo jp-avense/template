@@ -306,12 +306,24 @@ function SidebarMenu() {
                     </Button>
                   </ListItem>
                   <ListItem component="div">
-                    <Button disableRipple startIcon={<TextFieldsIcon />}>
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/form-field"
+                      startIcon={<TextFieldsIcon />}
+                    >
                       Form Fields
                     </Button>
                   </ListItem>
                   <ListItem component="div">
-                    <Button disableRipple startIcon={<BuildIcon />}>
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/form-builder"
+                      startIcon={<BuildIcon />}
+                    >
                       Form Builder
                     </Button>
                   </ListItem>
