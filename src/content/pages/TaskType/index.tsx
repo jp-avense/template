@@ -1,6 +1,7 @@
 import { Box, Card } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import ConfirmModal from "src/components/ConfirmModal";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
@@ -58,6 +59,25 @@ const TaskTypePage = () => {
     return types.find((item) => item._id === selected[0]);
   }, [selected, types]);
 
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await taskService.bulkDeleteType(selected);
+
+      const filtered = types.filter((item) => !selected.includes(item._id));
+      setSelected([]);
+      setTypes(filtered);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onFinish = async () => {
     setLoading(true);
     try {
@@ -95,16 +115,29 @@ const TaskTypePage = () => {
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
             action={
-              selected.length === 1 ? (
-                <Box display="flex" flexDirection="row" gap={2}>
+              <Box display="flex" flexDirection="row" gap={1}>
+                {selected.length === 1 ? (
                   <UpdateType>
                     <UpdateTypeForm
                       selectedType={updateType}
                       onFinish={onFinish}
                     />
                   </UpdateType>
-                </Box>
-              ) : null
+                ) : null}
+                {selected.length ? (
+                  <ConfirmModal
+                    buttonText="Delete"
+                    title="Delete types"
+                    handleConfirm={() => handleDelete()}
+                    confirmMessage="You are about to delete some types. Continue?"
+                    confirmText="Confirm"
+                    buttonProps={{
+                      variant: "contained",
+                      color: "warning",
+                    }}
+                  />
+                ) : null}
+              </Box>
             }
           ></DynamicTable>
         </Card>

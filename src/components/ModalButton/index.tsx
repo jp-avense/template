@@ -8,17 +8,34 @@ type Props = {
   buttonProps?: {
     [key: string]: any;
   };
-  title: string
+  title: string;
+  forceOpen?: boolean;
+  setForceOpen?: (state) => any;
 };
 
-const ModalButton = ({ text, children, buttonProps, title }: Props) => {
+const ModalButton = ({
+  text,
+  children,
+  buttonProps,
+  title,
+  forceOpen,
+  setForceOpen
+}: Props) => {
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    if (setForceOpen) setForceOpen(false);
+
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    if (setForceOpen) setForceOpen(true);
+    setOpen(true);
+  };
+
   return (
     <>
-      <Modals onClose={handleClose} open={open} title={title}>
+      <Modals onClose={handleClose} open={forceOpen ?? open} title={title}>
         <>{children}</>
       </Modals>
       <Button {...buttonProps} onClick={handleOpen}>
