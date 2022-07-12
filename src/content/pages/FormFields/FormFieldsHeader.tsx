@@ -5,6 +5,7 @@ import Modals from "../Components/Modals";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
+import CreateFormFieldForm from "./CreateFormFieldForm";
 
 function PageHeader() {
   const { t } = useTranslation();
@@ -20,16 +21,13 @@ function PageHeader() {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h3" component="h3" gutterBottom>
-          {t("Field Forms")}
-        </Typography>
-        <Typography variant="subtitle2">
-          {t("fields to be used on form builder")}
+          {t("formFields")}
         </Typography>
       </Grid>
       {isAdmin ? (
         <Grid item>
           <Modals open={open} onClose={handleClose} title={t("createField")}>
-            <span>create field here</span>
+            <CreateFormFieldForm />
           </Modals>
 
           <Button
@@ -38,7 +36,7 @@ function PageHeader() {
             startIcon={<AddTwoToneIcon fontSize="small" />}
             onClick={() => setOpenPopup(true)}
           >
-            {t("add field")}
+            {t("addField")}
           </Button>
         </Grid>
       ) : null}

@@ -9,7 +9,7 @@ const FormFields = () => {
   return (
     <>
       <Helmet>
-        <title>{t("Form fields")}</title>
+        <title>{t("formFields")}</title>
       </Helmet>
       <PageTitleWrapper>
         <FormFieldHeader />
