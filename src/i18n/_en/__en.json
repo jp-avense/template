@@ -99,5 +99,10 @@
   "emailRequiredText": "Email is required",
   "passwordLengthText": "Password should be of minimum 8 characters length",
   "passwordMatchText": "Password should contain one uppercase, one Lowercase and one Number",
-  "taskWarning": "You can only assign tasks that are new"
+  "taskWarning": "You can only assign tasks that are new",
+  "manager": "Manager",
+  "guest": "Guest",
+  "emailVerified": "Email Verified",
+  "phoneNumberVerified": "Phone Number Verified",
+  "userName": "Username"
 }
