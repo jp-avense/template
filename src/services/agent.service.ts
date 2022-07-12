@@ -2,20 +2,22 @@ import { apiService } from "./api.service";
 
 const ALL_URL = "agents";
 const CHANGE_STATUS_URL = "agents/change-status";
-const REGISTER_URL = "agents"
+const REGISTER_URL = "agents";
 
 export enum UserRoles {
   admin = "admin",
   backoffice = "backoffice",
-  agent = "agent"
+  agent = "agent",
+  manager = "manager",
+  guest = "guest",
 }
 export interface RegisterDto {
-  email: string,
-  password: string,
-  roles: string[],
-  name: string,
-  familyName: string,
-  phoneNumber: string
+  email: string;
+  password: string;
+  roles: string[];
+  name: string;
+  familyName: string;
+  phoneNumber: string;
 }
 
 export const agentService = {
@@ -28,6 +30,6 @@ export const agentService = {
   },
 
   async register(values: RegisterDto) {
-    return apiService.post(REGISTER_URL, values)
-  }
+    return apiService.post(REGISTER_URL, values);
+  },
 };
