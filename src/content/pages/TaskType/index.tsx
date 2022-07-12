@@ -36,7 +36,6 @@ const TaskTypePage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  
   const handleSelectOne = (id: string) => {
     let res = [];
 
