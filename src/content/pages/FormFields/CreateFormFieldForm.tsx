@@ -20,7 +20,7 @@ import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
 
-function FormFieldForm() {
+function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
   const [error, setError] = useState("");
@@ -78,6 +78,7 @@ function FormFieldForm() {
         if (type === "textarea") res.rows = rows;
 
         await formService.createField(res);
+        await onDone();
 
         setSuccess("Success");
       } catch (error) {
@@ -131,8 +132,16 @@ function FormFieldForm() {
       >
         <Grid item>
           <form onSubmit={formik.handleSubmit} style={{ paddingTop: "1rem" }}>
-            { error ? <Alert severity="error" sx={{ mb: 2 }}>{ error }</Alert> : null}
-            { success ? <Alert severity="success" sx={{ mb: 2 }}>{ success  }</Alert> : null}
+            {error ? (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            ) : null}
+            {success ? (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
+              </Alert>
+            ) : null}
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{t("type")}</InputLabel>
               <Select

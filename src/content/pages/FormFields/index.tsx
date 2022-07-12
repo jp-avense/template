@@ -11,11 +11,17 @@ import ConfirmModal from "src/components/ConfirmModal";
 import DynamicTable from "../Components/DynamicTable";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { formService } from "src/services/form.service";
+import FormFieldForm from "./CreateFormFieldForm";
 
 const headerKeys = [
   {
-    key: "Key",
+    key: "key",
     label: "Key",
+  },
+  {
+    key: "inputType",
+    label: "Input Type",
   },
   {
     key: "label",
@@ -25,6 +31,10 @@ const headerKeys = [
     key: "description",
     label: "Description",
   },
+  {
+    key: "note",
+    label: "Note",
+  }
 ];
 
 const FormFields = () => {
@@ -35,12 +45,9 @@ const FormFields = () => {
 
   useEffect(() => {
     setLoading(true);
-    // taskService
-    //   .getTaskTypes()
-    axios
-      .get("https://jsonplaceholder.typicode.com/todos")
+    formService
+      .getFields()
       .then(({ data }) => {
-        console.log(data);
         const h = Object.keys(data[0])
           .filter((item) => item !== "_id")
           .map((item) => {
@@ -49,9 +56,8 @@ const FormFields = () => {
               label: item.charAt(0).toUpperCase() + item.slice(1),
             };
           });
-        // data.sort((a, b) => a.order - b.order);
 
-        setHeaders(h);
+        setHeaders(headerKeys);
         setForms(data);
       })
       .finally(() => setLoading(false));
@@ -78,11 +84,27 @@ const FormFields = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      // await taskFormFields.bulkDeleteFormFields(selected);
+      await formService.bulkDeleteFormFields(selected);
 
       const filtered = forms.filter((item) => !selected.includes(item._id));
       setSelected([]);
       setForms(filtered);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onDone = async () => {
+    setLoading(true);
+    try {
+      const { data } = await formService.getFields();
+      setForms(data);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -100,7 +122,9 @@ const FormFields = () => {
         <title>{t("formFields")}</title>
       </Helmet>
       <PageTitleWrapper>
-        <FormFieldHeader />
+        <FormFieldHeader>
+          <FormFieldForm onDone={onDone} />
+        </FormFieldHeader>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center">
         <Card sx={{ width: "80%" }}>
@@ -131,35 +155,6 @@ const FormFields = () => {
               </Box>
             }
           ></DynamicTable>
-          {/* <FormFieldsTable
-            data={forms}
-            headers={headers}
-            selected={selected}
-            title="Field Forms"
-            loading={loading}
-            handleSelectOne={handleSelectOne}
-            handleSelectAll={handleSelectAll}
-            action={
-              <Box display="flex" flexDirection="row" gap={1}>
-                {selected.length === 1 ? <></> : null}
-                {selected.length > 0 ? (
-                  <>
-                    <ConfirmModal
-                      buttonText="Delete"
-                      title="Delete form field"
-                      handleConfirm={() => handleDelete()}
-                      confirmMessage="Are you sure you want to delete some form fields?"
-                      confirmText="Confirm"
-                      buttonProps={{
-                        variant: "contained",
-                        color: "warning",
-                      }}
-                    />
-                  </>
-                ) : null}
-              </Box>
-            }
-          ></FormFieldsTable> */}
         </Card>
       </Box>
     </>

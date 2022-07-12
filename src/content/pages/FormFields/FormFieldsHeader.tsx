@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
 import CreateFormFieldForm from "./CreateFormFieldForm";
 
-function PageHeader() {
+function PageHeader({ children }) {
   const { t } = useTranslation();
   const [open, setOpenPopup] = useState(false);
   const roles = useRoles();
@@ -27,7 +27,7 @@ function PageHeader() {
       {isAdmin ? (
         <Grid item>
           <Modals open={open} onClose={handleClose} title={t("createField")}>
-            <CreateFormFieldForm />
+            {children}
           </Modals>
 
           <Button
