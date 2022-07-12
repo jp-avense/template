@@ -19,7 +19,7 @@ import { Box } from "@mui/system";
 
 function FormFieldForm() {
   const [type, setType] = useState("");
-  const [rows, setRows] = useState("");
+  const [rows, setRows] = useState(5);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
@@ -61,6 +61,7 @@ function FormFieldForm() {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       const res = { ...values } as any;
+      res.type = type;
       if (type === "radios" || type === "checkboxes" || type === "dropdown")
         res.options = options;
       if (type === "textarea") res.rows = rows;
@@ -68,7 +69,7 @@ function FormFieldForm() {
   });
 
   useEffect(() => {
-    setRows("");
+    setRows(5);
     setOptions([{ key: "", value: "" }]);
   }, [type]);
 
@@ -131,34 +132,32 @@ function FormFieldForm() {
             {type ? (
               <>
                 <Box sx={{ mt: 2 }}>
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("key")}
-                  </Typography>
                   <TextField
                     id="key"
                     name="key"
+                    label={t("key")}
                     value={formik.values.key}
                     onChange={formik.handleChange}
                     error={formik.touched.key && Boolean(formik.errors.key)}
                     helperText={formik.touched.key && formik.errors.key}
                     fullWidth
                   ></TextField>
-                  <Typography variant="h5">{t("label")}</Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="label"
                     name="label"
+                    label={t("label")}
                     value={formik.values.label}
                     onChange={formik.handleChange}
                     error={formik.touched.label && Boolean(formik.errors.label)}
                     helperText={formik.touched.label && formik.errors.label}
                     fullWidth
                   ></TextField>
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("description")}
-                  </Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="description"
                     name="description"
+                    label={t("description")}
                     value={formik.values.description}
                     onChange={formik.handleChange}
                     error={
@@ -170,12 +169,11 @@ function FormFieldForm() {
                     }
                     fullWidth
                   ></TextField>
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("placeholder")}
-                  </Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="placeholder"
                     name="placeholder"
+                    label={t("placeholder")}
                     value={formik.values.placeholder}
                     onChange={formik.handleChange}
                     error={
@@ -187,12 +185,11 @@ function FormFieldForm() {
                     }
                     fullWidth
                   ></TextField>
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("defaultValue")}
-                  </Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="defaultValue"
                     name="defaultValue"
+                    label={t("defaultValue")}
                     value={formik.values.defaultValue}
                     onChange={formik.handleChange}
                     error={
@@ -204,13 +201,11 @@ function FormFieldForm() {
                     }
                     fullWidth
                   ></TextField>
-
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("validation")}
-                  </Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="validation"
                     name="validation"
+                    label={t("validation")}
                     value={formik.values.validation}
                     onChange={formik.handleChange}
                     error={
@@ -224,16 +219,14 @@ function FormFieldForm() {
                   ></TextField>
                   {type === "textarea" ? (
                     <>
-                      {" "}
-                      <Typography sx={{ mt: 2 }} variant="h5">
-                        {t("rows")}
-                      </Typography>
                       <TextField
+                        sx={{ mt: 2 }}
                         type="number"
-                        id="note"
                         name="note"
+                        inputProps={{ min: 1 }}
+                        label={t("rows")}
                         value={rows}
-                        onChange={(e) => setRows(e.target.value)}
+                        onChange={(e) => setRows(parseInt(e.target.value))}
                         fullWidth
                         required
                       ></TextField>
@@ -279,12 +272,11 @@ function FormFieldForm() {
                   ) : (
                     <></>
                   )}
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("note")}
-                  </Typography>
                   <TextField
+                    sx={{ mt: 2 }}
                     id="note"
                     name="note"
+                    label={t("note")}
                     value={formik.values.note}
                     onChange={formik.handleChange}
                     error={formik.touched.note && Boolean(formik.errors.note)}
