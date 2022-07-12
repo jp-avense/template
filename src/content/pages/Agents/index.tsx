@@ -5,30 +5,31 @@ import PageTitleWrapper from "src/components/PageTitleWrapper";
 import AgentsHeader from "./AgentsHeader";
 import AgentsData from "./AgentsData";
 import { useTranslation } from "react-i18next";
+import AgentInfo from "./AgentInfo";
+import { TabsProvider } from "src/contexts/TabsContext";
 
 const AgentsPage = () => {
   const { t } = useTranslation();
   return (
     <>
-      <Helmet>
-        <title>{t("agents")}</title>
-      </Helmet>
-      <PageTitleWrapper>
-        <AgentsHeader />
-      </PageTitleWrapper>
-      <Container maxWidth="lg">
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="stretch"
-          spacing={3}
-        >
-          <Grid item xs={12}>
-            <AgentsData />
+      <TabsProvider>
+        <Helmet>
+          <title>{t("agents")}</title>
+        </Helmet>
+        <PageTitleWrapper>
+          <AgentsHeader />
+        </PageTitleWrapper>
+        <Container maxWidth="xl">
+          <Grid container direction="row" alignItems="stretch" spacing={3}>
+            <Grid item xs={8}>
+              <AgentsData />
+            </Grid>
+            <Grid item xs={4}>
+              <AgentInfo />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </TabsProvider>
     </>
   );
 };

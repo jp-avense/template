@@ -159,9 +159,15 @@ const TaskTable = () => {
       details.status = c.statusId;
 
       details.type = c.taskType;
-      details.createdAt = new Date(c.createdAt).toDateString();
+      details.createdAt = c.createdAt?.replace(
+        /^(\d{4})-(\d\d)-(\d\d).+$/,
+        "$2/$3/$1"
+      );
       details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
-      details.lastUpdate = new Date(c.lastUpdatedAt).toDateString();
+      details.lastUpdate = c.lastUpdatedAt?.replace(
+        /^(\d{4})-(\d\d)-(\d\d).+$/,
+        "$2/$3/$1"
+      );
       details.updatedBy = c.lastUpdatedBy ? c.lastUpdatedBy.userName : "";
       details.executionStartDate = c.executionStartDate;
       details.id = c._id;
@@ -311,14 +317,14 @@ const TaskTable = () => {
                       ? { backgroundColor: "lavender" }
                       : {},
                   ]}
-                  onClick={() =>
-                    selectedRows.indexOf(rows.id) >= 0
-                      ? unSelectRow(rows.id)
-                      : createSelectedRows(rows.id)
-                  }
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
+                      onClick={() =>
+                        selectedRows.indexOf(rows.id) >= 0
+                          ? unSelectRow(rows.id)
+                          : createSelectedRows(rows.id)
+                      }
                       checked={
                         selectedRows.indexOf(rows.id) >= 0 ? true : false
                       }

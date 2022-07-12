@@ -77,6 +77,7 @@
   "userRoles": "תפקידי משתמש",
   "admin": "מנהל מערכת",
   "backOffice": "מערכת ניהול",
+  "backoffice": "מערכת ניהול",
   "submit": "שלח",
   "rowsPerPage": "שורות בעמוד",
   "noDataAvailable": "אין נתונים זמינים",
@@ -99,5 +100,10 @@
   "emailRequiredText": "יש צורך באימייל",
   "passwordLengthText": "הסיסמה חייבת להיות באורך 8 תווים לפחות",
   "passwordMatchText": "הסיסמה צריכה להכיל אות אחת גדולה, אות קטנה ומספר אחד",
-  "taskWarning": "אתה יכול להקצות רק משימות חדשות"
+  "taskWarning": "אתה יכול להקצות רק משימות חדשות",
+  "manager": "מנהל",
+  "guest": "אוֹרֵחַ",
+  "emailVerified": "אימייל מאומת",
+  "phoneNumberVerified": "מספר טלפון מאומת",
+  "userName": "שם משתמש"
 }

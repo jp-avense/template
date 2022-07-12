@@ -63,6 +63,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
             zIndex: 5,
             display: "block",
             flex: 1,
+            mt: "30px",
             [theme.breakpoints.up("lg")]: {
               ml: `${theme.sidebar.width}`,
             },

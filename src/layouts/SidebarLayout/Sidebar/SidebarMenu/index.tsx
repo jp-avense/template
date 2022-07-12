@@ -19,6 +19,8 @@ import AssignmentIcon from "@mui/icons-material/AssignmentTwoTone";
 import PersonIcon from "@mui/icons-material/PersonTwoTone";
 import LogoutIcon from "@mui/icons-material/LogoutTwoTone";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import BuildIcon from "@mui/icons-material/Build";
 import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
 import enFlag from "../../../../assets/images/icons/enFlag.svg";
 import { useTranslation } from "react-i18next";
@@ -301,6 +303,28 @@ function SidebarMenu() {
                       startIcon={<DashboardIcon />}
                     >
                       Task Statuses
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/form-field"
+                      startIcon={<TextFieldsIcon />}
+                    >
+                      Form Fields
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/form-builder"
+                      startIcon={<BuildIcon />}
+                    >
+                      Form Builder
                     </Button>
                   </ListItem>
                 </List>

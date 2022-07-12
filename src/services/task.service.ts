@@ -68,7 +68,7 @@ export const taskService = {
   async bulkChangeStatusOrder(data: { id: string; newOrder: number }[]) {
     return apiService.patch(`${TASK_STATUS_URL}/bulk/order`, data);
   },
-  
+
   async createTaskTypes(values) {
     return apiService.post(TASK_TYPE_URL, values);
   },
@@ -79,5 +79,13 @@ export const taskService = {
 
   async updateTaskType(id: string, values) {
     return apiService.patch(`${TASK_TYPE_URL}/${id}`, values);
+  },
+
+  async bulkDeleteStatus(ids: string[]) {
+    return apiService.delete(`${TASK_STATUS_URL}/bulk`, { data: ids });
+  },
+
+  async bulkDeleteType(ids: string[]) {
+    return apiService.delete(`${TASK_TYPE_URL}/bulk`, { data: ids });
   },
 };
