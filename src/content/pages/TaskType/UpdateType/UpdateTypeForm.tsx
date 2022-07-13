@@ -4,11 +4,6 @@ import {
   CircularProgress,
   Grid,
   TextField,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
 } from "@mui/material";
 import { useState } from "react";
 import { useFormik } from "formik";
@@ -21,7 +16,6 @@ interface ITaskType {
   key: string;
   label: string;
   description: string;
-  systemStatusKey: string;
 }
 
 type Props = {
@@ -32,7 +26,6 @@ type Props = {
 const validationSchema = yup.object({
   label: yup.string().required("required"),
   description: yup.string().optional(),
-  systemStatusKey: yup.string().required(),
 });
 
 const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
@@ -43,7 +36,6 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
     initialValues: {
       label: selectedType.label,
       description: selectedType.description,
-      systemStatusKey: "none",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -110,28 +102,6 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
               fullWidth
               onChange={handleChange}
             />
-          </Grid>
-          <Grid item>
-            <FormControl fullWidth>
-              <InputLabel id="select">System Status</InputLabel>
-              <Select
-                label="System status"
-                name="systemStatusKey"
-                value={formik.values.systemStatusKey}
-                labelId="select"
-                onChange={handleChange}
-                error={
-                  formik.touched.systemStatusKey &&
-                  Boolean(formik.errors.systemStatusKey)
-                }
-              >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="new">New</MenuItem>
-                <MenuItem value="assigned">Assigned</MenuItem>
-                <MenuItem value="inProgress">In Progress</MenuItem>
-                <MenuItem value="done">Done</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
           <Grid item>
             <Button

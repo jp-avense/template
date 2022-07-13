@@ -4,6 +4,10 @@ import {
   CircularProgress,
   Grid,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useFormik, yupToFormErrors } from "formik";
 import { useState } from "react";
@@ -16,6 +20,7 @@ interface ITaskStatus {
   Key: string;
   label: string;
   description?: string;
+  systemStatusKey: string;
 }
 
 type Props = {
@@ -26,6 +31,7 @@ type Props = {
 const validationSchema = yup.object({
   label: yup.string().required("required"),
   description: yup.string().optional(),
+  systemStatusKey: yup.string().required(),
 });
 
 const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
@@ -36,6 +42,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
     initialValues: {
       label: selectedStatus.label,
       description: selectedStatus.description,
+      systemStatusKey: selectedStatus.systemStatusKey,
     },
     validationSchema,
     onSubmit: async (values, actions) => {
@@ -45,7 +52,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
 
         await taskService.updateStatus(selectedStatus._id, values);
         setSuccess("Updated status");
-        
+
         await onDone();
       } catch (error) {
         setError(getAxiosErrorMessage(error));
@@ -99,6 +106,29 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
             fullWidth
             onChange={handleChange}
           />
+        </Grid>
+        <Grid item>
+          <FormControl fullWidth>
+            <InputLabel id="select">System Status</InputLabel>
+            <Select
+              label="System status"
+              name="systemStatusKey"
+              value={formik.values.systemStatusKey}
+              fullWidth
+              labelId="select"
+              onChange={handleChange}
+              error={
+                formik.touched.systemStatusKey &&
+                Boolean(formik.errors.systemStatusKey)
+              }
+            >
+              <MenuItem value="none">None</MenuItem>
+              <MenuItem value="new">New</MenuItem>
+              <MenuItem value="assigned">Assigned</MenuItem>
+              <MenuItem value="inProgress">In Progress</MenuItem>
+              <MenuItem value="done">Done</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item>
           <Button
