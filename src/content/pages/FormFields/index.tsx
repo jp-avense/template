@@ -1,16 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Button, Card } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { t } from "i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
-import { taskService } from "src/services/task.service";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import FormFieldHeader from "./FormFieldsHeader";
-import FormFieldsTable from "./FormFieldsTable";
 import ConfirmModal from "src/components/ConfirmModal";
 import DynamicTable from "../Components/DynamicTable";
 import Swal from "sweetalert2";
-import axios from "axios";
 import { formService } from "src/services/form.service";
 import FormFieldForm from "./CreateFormFieldForm";
 import UpdateForms from "./UpdateForm";
@@ -40,44 +37,16 @@ const headerKeys = [
 ];
 
 const FormFields = () => {
-  const [forms, setForms] = useState([
-    {
-      _id: "1",
-      key: "paymentMethod",
-      inputType: "dropdown",
-      note: "This is a note",
-      label: "Payment method",
-      placeholder: "Payment method",
-      description:
-        "This is a helper text that should be displayed under this input",
-      defaultValue: "cc",
-      rules: {
-        required: true,
-      },
-      options: [
-        { key: "creditcard", value: "Credit Card" },
-        { key: "cash", value: "Cash" },
-      ],
-    },
-  ]);
+  const [forms, setForms] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<string[]>(["1"]);
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
     formService
       .getFields()
       .then(({ data }) => {
-        const h = Object.keys(data[0])
-          .filter((item) => item !== "_id")
-          .map((item) => {
-            return {
-              key: item,
-              label: item.charAt(0).toUpperCase() + item.slice(1),
-            };
-          });
-
         setHeaders(headerKeys);
         setForms(data);
       })

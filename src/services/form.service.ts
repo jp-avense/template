@@ -15,8 +15,7 @@ export const formService = {
     return apiService.delete(`${BASE_URL}/bulk`, { data: ids });
   },
 
-  async updateField(values) {
-    console.log("VAL", values);
-    return true;
+  async updateField(id, values) {
+    return apiService.patch(`${BASE_URL}/${id}`, values)
   },
 };

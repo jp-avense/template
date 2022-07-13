@@ -55,8 +55,9 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
   const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
-
+  
   const [options, setOptions] = useState([{ key: "", value: "" }]);
+
   const types = [
     "text",
     "textarea",
@@ -78,7 +79,6 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
     if (selectedForm.rows) setRows(selectedForm.rows);
 
     if (selectedForm.options) {
-      console.log("selected", selectedForm.options);
       setOptions(selectedForm.options);
     }
   }, [selectedForm]);
@@ -117,7 +117,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
 
         delete res.key;
 
-        await formService.updateField(res);
+        await formService.updateField(selectedForm._id, res);
         await onFinish();
 
         setSuccess("Success");
