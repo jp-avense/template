@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Card } from "@mui/material";
 import { t } from "i18next";
 import { Helmet } from "react-helmet-async";
@@ -13,6 +13,8 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { formService } from "src/services/form.service";
 import FormFieldForm from "./CreateFormFieldForm";
+import UpdateForms from "./UpdateForm";
+import UpdateFormField from "./UpdateForm/UpdateFormField";
 
 const headerKeys = [
   {
@@ -34,14 +36,33 @@ const headerKeys = [
   {
     key: "note",
     label: "Note",
-  }
+  },
 ];
 
 const FormFields = () => {
-  const [forms, setForms] = useState([]);
+  const [forms, setForms] = useState([
+    {
+      _id: "1",
+      key: "paymentMethod",
+      inputType: "dropdown",
+      note: "This is a note",
+      label: "Payment method",
+      placeholder: "Payment method",
+      description:
+        "This is a helper text that should be displayed under this input",
+      defaultValue: "cc",
+      rules: {
+        required: true,
+      },
+      options: [
+        { key: "creditcard", value: "Credit Card" },
+        { key: "cash", value: "Cash" },
+      ],
+    },
+  ]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(["1"]);
 
   useEffect(() => {
     setLoading(true);
@@ -72,6 +93,10 @@ const FormFields = () => {
     setSelected(res);
   };
 
+  const updateForm = useMemo(() => {
+    return forms.find((item) => item._id === selected[0]);
+  }, [selected, forms]);
+
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const ids = forms.map((item) => item._id);
@@ -89,6 +114,22 @@ const FormFields = () => {
       const filtered = forms.filter((item) => !selected.includes(item._id));
       setSelected([]);
       setForms(filtered);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onFinish = async () => {
+    setLoading(true);
+    try {
+      const { data } = await formService.getFields();
+      setForms(data);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -138,7 +179,16 @@ const FormFields = () => {
             handleSelectAll={handleSelectAll}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
-                {selected.length === 1 ? <></> : null}
+                {selected.length === 1 ? (
+                  <>
+                    <UpdateForms>
+                      <UpdateFormField
+                        selectedForm={updateForm}
+                        onFinish={onFinish}
+                      />
+                    </UpdateForms>
+                  </>
+                ) : null}
                 {selected.length ? (
                   <ConfirmModal
                     buttonText="Delete"
