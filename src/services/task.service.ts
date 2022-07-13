@@ -30,11 +30,12 @@ export const taskService = {
     return apiService.get(DETAILS_URL);
   },
 
-  async assign({ taskIds, agent, admin }) {
+  async assign({ taskIds, agent, admin, assignDate }) {
     return apiService.post(`${TASK_URL}/assign`, {
       taskIds: taskIds,
       agentSub: agent,
       adminSub: admin,
+      assignDate
     });
   },
 
