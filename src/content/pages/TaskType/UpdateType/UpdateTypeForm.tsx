@@ -44,7 +44,7 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
         setSuccess("");
 
         await taskService.updateTaskType(selectedType._id, values);
-        setSuccess("Updated Task");
+        setSuccess("Updated Task.");
 
         await onFinish();
       } catch (error) {
