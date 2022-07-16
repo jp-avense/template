@@ -10,10 +10,15 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { formService } from "src/services/form.service";
+import Swal from "sweetalert2";
+import { getAxiosErrorMessage } from "src/lib";
 
 function CreateForm() {
   const [loading, setLoading] = useState(false);
-  const [fieldForms, setFieldForms] = useState();
+  const [fieldForms, setFieldForms] = useState([]);
+  const [dragData, setDragData] = useState([]);
+  const [drag, setDrag] = useState(null);
+
   useEffect(() => {
     setLoading(true);
     formService
@@ -32,7 +37,85 @@ function CreateForm() {
       .finally(() => setLoading(false));
   }, []);
 
-  console.log(fieldForms);
+  const onDragEnter = (e, data: string) => {
+    if (data === drag) return;
+    // e.currentTarget.classList.add("drag-target");
+    // console.log(data);
+  };
+
+  const onDragStart = (e, id: string) => {
+    e.dataTransfer.effectAllowed = "move";
+    setDrag(id);
+    // console.log(id);
+  };
+
+  const onDragLeave = (e) => {
+    e.currentTarget.classList.remove("drag-target");
+  };
+
+  const onDrop = (e, dragTarget: string) => {
+    e.currentTarget.classList.remove("drag-target");
+
+    if (dragTarget !== drag) handleDragDrop(e);
+
+    setDrag("");
+
+    // console.log("dropped");
+  };
+
+  const handleDragDrop = (e) => {
+    const res = {
+      key: drag,
+      conditions: {},
+      rules: {},
+    };
+
+    const data = [...dragData, res];
+
+    setDragData(data);
+
+    console.log(data);
+  };
+
+  // const handleDragDrop = (e, source, target) => {
+  //   const sourceidx = fieldForms.findIndex((item) => item._id === source);
+  //   const targetidx = fieldForms.findIndex((item) => item._id === target);
+
+  //   const sourceObj = fieldForms[sourceidx];
+  //   const targetObj = fieldForms[targetidx];
+
+  //   const newSource = {
+  //     ...targetObj,
+  //     order: sourceObj.order,
+  //   };
+
+  //   const newTarget = {
+  //     ...sourceObj,
+  //     order: targetObj.order,
+  //   };
+
+  //   try {
+  //     const data = [
+  //       {
+  //         id: newSource._id,
+  //         newOrder: newSource.order,
+  //       },
+  //       {
+  //         id: newTarget._id,
+  //         newOrder: newTarget.order,
+  //       },
+  //     ];
+  //     formService.getFields();
+  //   } catch (err) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       text: getAxiosErrorMessage(err),
+  //       title: "Error",
+  //     });
+  //   }
+  // };
+
+  // console.log(fieldForms);
 
   return (
     <>
@@ -43,10 +126,15 @@ function CreateForm() {
       ) : (
         <Grid container>
           <Grid item xs={3}>
-            <FormFieldPicker />
+            <FormFieldPicker
+              onDragEnter={onDragEnter}
+              onDragStart={onDragStart}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+            />
           </Grid>
           <Grid item xs={6}>
-            <Playground />
+            <Playground data={dragData} fields={fieldForms} onDrop={onDrop} />
           </Grid>
           <Grid item xs={3}>
             <FormFieldSettings />

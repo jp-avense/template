@@ -14,9 +14,11 @@ import {
   ListItemText,
   styled,
   CircularProgress,
+  Box,
 } from "@mui/material";
 import { formService } from "src/services/form.service";
 import { t } from "i18next";
+import "./style.css";
 
 const ListWrapper = styled(List)(
   () => `
@@ -27,10 +29,24 @@ const ListWrapper = styled(List)(
 `
 );
 
-function FormFieldPicker() {
+type Props = {
+  onDragEnter: any;
+  onDragStart: any;
+  onDragLeave: any;
+  onDrop: any;
+};
+
+function FormFieldPicker({
+  onDragEnter,
+  onDragStart,
+  onDragLeave,
+  onDrop,
+}: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [drag, setDrag] = useState(null);
+
   const theme = useTheme();
 
   useEffect(() => {
@@ -45,16 +61,16 @@ function FormFieldPicker() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSelectOne = (id: string) => {
-    let res = [];
+  // const handleSelectOne = (id: string) => {
+  //   let res = [];
 
-    if (!selected.includes(id)) res = [...selected, id];
-    else res = selected.filter((item) => item !== id);
+  //   if (!selected.includes(id)) res = [...selected, id];
+  //   else res = selected.filter((item) => item === id);
 
-    setSelected(res);
+  //   setSelected(res);
 
-    console.log(res);
-  };
+  //   // console.log(res);
+  // };
 
   return (
     <>
@@ -92,9 +108,14 @@ function FormFieldPicker() {
                   return (
                     <>
                       <ListItem
-                        onClick={(e) => {
-                          handleSelectOne(item._id);
-                        }}
+                        draggable="true"
+                        onDragEnter={(e) => onDragEnter(e, item._id)}
+                        onDragStart={(e) => onDragStart(e, item._id)}
+                        onDragLeave={(e) => onDragLeave(e)}
+                        onDrop={(e) => onDrop(e, item._id)}
+                        // onClick={(e) => {
+                        //   handleSelectOne(item._id);
+                        // }}
                         key={key}
                         sx={{
                           color: `${theme.colors.primary.main}`,
@@ -105,7 +126,7 @@ function FormFieldPicker() {
                         }}
                         button
                       >
-                        <ListItemText>{item.inputType}</ListItemText>
+                        <ListItemText>{item.label}</ListItemText>
                       </ListItem>
                       <Divider />
                     </>
