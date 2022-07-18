@@ -6,3 +6,13 @@
 .drag-source {
   background: #5569ff !important;
 }
+
+.playground-drag-target {
+  background-color: #ececec;
+  color: white;
+  padding: 10px;
+}
+
+.playground-drag-source {
+  background-color: #dfdfdf;
+}

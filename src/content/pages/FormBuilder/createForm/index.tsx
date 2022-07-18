@@ -56,6 +56,7 @@ function CreateForm() {
   const onDrop = (e, dragTarget: string) => {
     e.currentTarget.classList.remove("drag-target");
 
+    if (e.currentTarget.id !== "playground") return;
     if (dragTarget !== drag) handleDragDrop(e);
 
     setDrag("");
@@ -73,8 +74,42 @@ function CreateForm() {
     const data = [...dragData, res];
 
     setDragData(data);
+  };
 
-    console.log(data);
+  const handleDragDropPlayground = async (
+    e,
+    source: string,
+    target: string
+  ) => {
+    // console.log(source);
+    // console.log(target);
+    // console.log(dragData);
+    const targetidx = dragData.findIndex((item) => item.key === target);
+    const sourceidx = dragData.findIndex((item) => item.key === source);
+
+    // console.log(targetidx);
+    // console.log(sourceidx);
+
+    const targetObj = dragData[targetidx];
+    const sourceObj = dragData[sourceidx];
+
+    // console.log(targetObj);
+
+    try {
+      const dup = dragData.slice().map((item) => ({ ...item }));
+
+      dup[sourceidx] = targetObj;
+      dup[targetidx] = sourceObj;
+
+      setDragData(dup);
+      // console.log(dup);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        text: getAxiosErrorMessage(err),
+        title: "Error",
+      });
+    }
   };
 
   // const handleDragDrop = (e, source, target) => {
@@ -134,7 +169,12 @@ function CreateForm() {
             />
           </Grid>
           <Grid item xs={6}>
-            <Playground data={dragData} fields={fieldForms} onDrop={onDrop} />
+            <Playground
+              data={dragData}
+              fields={fieldForms}
+              onDrop={onDrop}
+              handleDragDropPlayground={handleDragDropPlayground}
+            />
           </Grid>
           <Grid item xs={3}>
             <FormFieldSettings />
