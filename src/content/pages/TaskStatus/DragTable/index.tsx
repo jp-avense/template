@@ -75,9 +75,8 @@ const DynamicTable = ({
 
     e.currentTarget.classList.remove("drag-target");
 
-    if (dragTarget !== dragItem)
-      handleDragDrop(e, dragItem, dragTarget);
-      
+    if (dragTarget !== dragItem) handleDragDrop(e, dragItem, dragTarget);
+
     setDragItem("");
   };
 
