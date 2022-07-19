@@ -11,7 +11,6 @@ import {
 import { useEffect, useState } from "react";
 import { formService } from "src/services/form.service";
 import Swal from "sweetalert2";
-import { getAxiosErrorMessage } from "src/lib";
 
 function CreateForm() {
   const [loading, setLoading] = useState(false);
@@ -24,48 +23,50 @@ function CreateForm() {
     formService
       .getFields()
       .then(({ data }) => {
-        const h = Object.keys(data[0])
-          .filter((item) => item !== "_id")
-          .map((item) => {
-            return {
-              key: item,
-              label: item.charAt(0).toUpperCase() + item.slice(1),
-            };
-          });
         setFieldForms(data);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const onDragEnter = (e, data: string) => {
-    if (data === drag) return;
-    // e.currentTarget.classList.add("drag-target");
-    // console.log(data);
+  const onDragStart = (e, id: string) => {
+    const dragData = {
+      id: id,
+      sidebar: true,
+    };
+
+    e.dataTransfer.effectAllowed = "move";
+    e.stopPropagation();
+    setDrag(dragData);
   };
 
-  const onDragStart = (e, id: string) => {
-    e.dataTransfer.effectAllowed = "move";
-    setDrag(id);
-    // console.log(id);
+  const onDragEnd = (e) => {
+    // e.target.classList.remove("drag-source");
   };
+
+  const onDragEnter = (e, id: string) => {
+    if (id === drag) return;
+    // e.currentTarget.classList.add("drag-target");
+    // console.log(drag);
+  };
+
+  const onDragOver = (e) => e.preventDefault();
 
   const onDragLeave = (e) => {
-    e.currentTarget.classList.remove("drag-target");
+    // e.currentTarget.classList.remove("drag-target");
   };
 
   const onDrop = (e, dragTarget: string) => {
-    e.currentTarget.classList.remove("drag-target");
+    // e.currentTarget.classList.remove("drag-target");
 
-    if (dragTarget !== drag) handleDragDrop(e);
+    if (e.currentTarget.id !== "playground") return;
+    if (dragTarget !== drag.id && drag.sidebar) handleDragDrop(e);
 
     setDrag("");
-
-    // console.log("dropped");
   };
 
   const handleDragDrop = (e) => {
     const res = {
-      key: drag,
+      key: drag.id,
       conditions: {},
       rules: {},
     };
@@ -73,47 +74,34 @@ function CreateForm() {
     const data = [...dragData, res];
 
     setDragData(data);
-
-    console.log(data);
   };
 
-  // const handleDragDrop = (e, source, target) => {
-  //   const sourceidx = fieldForms.findIndex((item) => item._id === source);
-  //   const targetidx = fieldForms.findIndex((item) => item._id === target);
+  const handleDragDropPlayground = async (
+    e,
+    source: string,
+    target: string
+  ) => {
+    const sourceidx = dragData.findIndex((item) => item.key === source);
+    const targetidx = dragData.findIndex((item) => item.key === target);
 
-  //   const sourceObj = fieldForms[sourceidx];
-  //   const targetObj = fieldForms[targetidx];
+    const targetObj = dragData[targetidx];
+    const sourceObj = dragData[sourceidx];
+    try {
+      const dup = dragData.slice().map((item) => ({ ...item }));
 
-  //   const newSource = {
-  //     ...targetObj,
-  //     order: sourceObj.order,
-  //   };
+      dup[sourceidx] = targetObj;
+      dup[targetidx] = sourceObj;
 
-  //   const newTarget = {
-  //     ...sourceObj,
-  //     order: targetObj.order,
-  //   };
-
-  //   try {
-  //     const data = [
-  //       {
-  //         id: newSource._id,
-  //         newOrder: newSource.order,
-  //       },
-  //       {
-  //         id: newTarget._id,
-  //         newOrder: newTarget.order,
-  //       },
-  //     ];
-  //     formService.getFields();
-  //   } catch (err) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       text: getAxiosErrorMessage(err),
-  //       title: "Error",
-  //     });
-  //   }
-  // };
+      setDragData(dup);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        text: "Error dragging field forms",
+        title: "Error",
+      });
+    }
+    e.stopPropagation();
+  };
 
   // console.log(fieldForms);
 
@@ -127,14 +115,20 @@ function CreateForm() {
         <Grid container>
           <Grid item xs={3}>
             <FormFieldPicker
-              onDragEnter={onDragEnter}
               onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onDragEnter={onDragEnter}
               onDragLeave={onDragLeave}
-              onDrop={onDrop}
             />
           </Grid>
           <Grid item xs={6}>
-            <Playground data={dragData} fields={fieldForms} onDrop={onDrop} />
+            <Playground
+              data={dragData}
+              fields={fieldForms}
+              onDragOver={onDragOver}
+              onDrop={onDrop}
+              handleDragDropPlayground={handleDragDropPlayground}
+            />
           </Grid>
           <Grid item xs={3}>
             <FormFieldSettings />

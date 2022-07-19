@@ -32,20 +32,18 @@ const ListWrapper = styled(List)(
 type Props = {
   onDragEnter: any;
   onDragStart: any;
+  onDragEnd: any;
   onDragLeave: any;
-  onDrop: any;
 };
 
 function FormFieldPicker({
   onDragEnter,
   onDragStart,
+  onDragEnd,
   onDragLeave,
-  onDrop,
 }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [drag, setDrag] = useState(null);
 
   const theme = useTheme();
 
@@ -54,23 +52,10 @@ function FormFieldPicker({
     formService
       .getFields()
       .then(({ data }) => {
-        data.sort((a, b) => a.order - b.order);
-
         setForms(data);
       })
       .finally(() => setLoading(false));
   }, []);
-
-  // const handleSelectOne = (id: string) => {
-  //   let res = [];
-
-  //   if (!selected.includes(id)) res = [...selected, id];
-  //   else res = selected.filter((item) => item === id);
-
-  //   setSelected(res);
-
-  //   // console.log(res);
-  // };
 
   return (
     <>
@@ -101,7 +86,7 @@ function FormFieldPicker({
               <CircularProgress size={30} />
             </ListItem>
           ) : (
-            <Grid item style={{ height: 999 }}>
+            <Grid item minHeight={999}>
               <ListWrapper disablePadding>
                 {forms.map((item) => {
                   const { key } = item;
@@ -109,13 +94,10 @@ function FormFieldPicker({
                     <>
                       <ListItem
                         draggable="true"
-                        onDragEnter={(e) => onDragEnter(e, item._id)}
                         onDragStart={(e) => onDragStart(e, item._id)}
+                        onDragEnd={(e) => onDragEnd(e)}
+                        onDragEnter={(e) => onDragEnter(e, item._id)}
                         onDragLeave={(e) => onDragLeave(e)}
-                        onDrop={(e) => onDrop(e, item._id)}
-                        // onClick={(e) => {
-                        //   handleSelectOne(item._id);
-                        // }}
                         key={key}
                         sx={{
                           color: `${theme.colors.primary.main}`,
