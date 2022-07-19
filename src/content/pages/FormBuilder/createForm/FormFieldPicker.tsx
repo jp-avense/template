@@ -32,15 +32,15 @@ const ListWrapper = styled(List)(
 type Props = {
   onDragEnter: any;
   onDragStart: any;
+  onDragEnd: any;
   onDragLeave: any;
-  onDrop: any;
 };
 
 function FormFieldPicker({
   onDragEnter,
   onDragStart,
+  onDragEnd,
   onDragLeave,
-  onDrop,
 }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,8 +52,6 @@ function FormFieldPicker({
     formService
       .getFields()
       .then(({ data }) => {
-        data.sort((a, b) => a.order - b.order);
-
         setForms(data);
       })
       .finally(() => setLoading(false));
@@ -96,10 +94,10 @@ function FormFieldPicker({
                     <>
                       <ListItem
                         draggable="true"
-                        onDragEnter={(e) => onDragEnter(e, item._id)}
                         onDragStart={(e) => onDragStart(e, item._id)}
+                        onDragEnd={(e) => onDragEnd(e)}
+                        onDragEnter={(e) => onDragEnter(e, item._id)}
                         onDragLeave={(e) => onDragLeave(e)}
-                        onDrop={(e) => onDrop(e, item._id)}
                         key={key}
                         sx={{
                           color: `${theme.colors.primary.main}`,

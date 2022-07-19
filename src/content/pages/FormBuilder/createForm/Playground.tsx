@@ -15,8 +15,7 @@ import {
   FormGroup,
   FormControl,
   FormLabel,
-  Menu,
-  MenuItem,
+  Divider,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { getAxiosErrorMessage } from "src/lib";
@@ -48,11 +47,13 @@ interface IData {
 type Props = {
   data: IData[];
   fields: IFields[];
+  onDragOver: any;
   onDrop: any;
   handleDragDropPlayground: any;
 };
 const Playground = ({
   data,
+  onDragOver,
   onDrop,
   fields,
   handleDragDropPlayground,
@@ -239,52 +240,43 @@ const Playground = ({
     }
   };
 
-  const onDragEnter = (e, type: string) => {
-    if (type === dragPlay) return;
-    e.currentTarget.classList.add("playground-drag-target");
-    // console.log(type);
-  };
-
   const onDragStart = (e, type: string) => {
-    e.target.classList.add("playground-drag-source");
+    // e.target.classList.add("playground-drag-source");
     e.dataTransfer.effectAllowed = "move";
     setDragPlay(type);
   };
 
-  const onDragEnd = (e) => {
-    e.preventDefault();
-    e.target.classList.remove("playground-drag-source");
+  const onDragEnter = (e, type: string) => {
+    // e.currentTarget.classList.add("playground-drag-target");
+    if (type === dragPlay) return;
+    e.stopPropagation();
   };
 
-  const onDragPlaygroundOver = (e) => e.preventDefault();
+  const onDragEnd = (e) => {
+    e.preventDefault();
+    // e.target.classList.remove("playground-drag-source");
+  };
+
+  const onDragLeave = (e) => {
+    // e.currentTarget.classList.remove("drag-target");
+  };
 
   const onDropData = (e) => {
     onDrop(e);
     setDrag("");
   };
 
-  const onDragLeave = (e) => {
-    e.currentTarget.classList.remove("playground-drag-target");
-  };
-
   const onDropPlayground = (e, dataTarget: string) => {
-    e.currentTarget.classList.remove("drag-target");
+    // e.currentTarget.classList.remove("drag-target");
 
-    if (dataTarget !== dragPlay)
+    if (dataTarget !== dragPlay && dragPlay)
       handleDragDropPlayground(e, dragPlay, dataTarget);
 
     setDragPlay("");
   };
 
-  const onDragOver = (e) => {
-    e.preventDefault();
-  };
+  const handleChange = (e) => {};
 
-  const handleChange = (e) => {
-    // console.log(e.target.value);
-  };
-
-  // console.log(data);
   return (
     <>
       {/* "text", "textarea", "markup", "dateTimeRegister", "attachButton",
@@ -293,8 +285,8 @@ const Playground = ({
 
       <Card
         id="playground"
-        onDrop={(e) => onDropData(e)}
         onDragOver={(e) => onDragOver(e)}
+        onDrop={(e) => onDropData(e)}
         style={{
           width: 700,
           marginTop: 50,
@@ -304,9 +296,10 @@ const Playground = ({
           paddingRight: 10,
         }}
       >
-        <Box display="flex" justifyContent={"center"}>
+        <Box display="flex" justifyContent={"center"} sx={{ py: 2 }}>
           <Typography variant="h3">Form</Typography>
         </Box>
+        <Divider />
         <Box
           style={{
             display: "flex",
@@ -318,18 +311,19 @@ const Playground = ({
           px={2}
           mt={2}
         >
-          {data.map((item) => {
+          {data.map((item, index) => {
+            console.log(data);
             const obj = fields.find((x) => x._id == item.key);
             return (
               <Box
                 draggable="true"
                 onDragStart={(e) => onDragStart(e, item.key)}
-                onDragEnd={(e) => onDragEnd(e)}
                 onDragEnter={(e) => onDragEnter(e, item.key)}
-                onDragOver={onDragPlaygroundOver}
+                onDragOver={(e) => onDragOver(e)}
+                onDragEnd={(e) => onDragEnd(e)}
                 onDragLeave={(e) => onDragLeave(e)}
                 onDrop={(e) => onDropPlayground(e, item.key)}
-                key={item.key}
+                key={index}
                 sx={{ width: "100%" }}
               >
                 {handleData(obj)}
