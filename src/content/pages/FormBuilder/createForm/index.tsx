@@ -10,10 +10,15 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { formService } from "src/services/form.service";
+import { useLocation } from "react-router";
 
 function CreateForm() {
   const [loading, setLoading] = useState(false);
   const [fieldForms, setFieldForms] = useState();
+  
+  const location = useLocation()
+
+
   useEffect(() => {
     setLoading(true);
     formService

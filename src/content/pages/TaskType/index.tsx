@@ -2,40 +2,69 @@ import { Box, Card } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import ConfirmModal from "src/components/ConfirmModal";
+import ModalButton from "src/components/ModalButton";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import { getAxiosErrorMessage } from "src/lib";
+import { formService } from "src/services/form.service";
 import { taskService } from "src/services/task.service";
 import Swal from "sweetalert2";
 import DynamicTable from "../Components/DynamicTable";
+import { Form } from "../FormBuilder/form.interface";
 import CreateType from "./CreateType";
 import CreateTypeForm from "./CreateType/CreateTypeForm";
+import DuplicateTypeForm from "./DuplicateType";
+import { TaskType } from "./type.interface";
 import UpdateType from "./UpdateType";
 import UpdateTypeForm from "./UpdateType/UpdateTypeForm";
 
 const TaskTypePage = () => {
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState<TaskType[]>([]);
+  const [forms, setForms] = useState<Form[]>([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
-    taskService
-      .getTaskTypes()
-      .then(({ data }) => {
-        const h = Object.keys(data[0])
-          .filter((item) => item !== "_id")
-          .map((item) => {
-            return {
-              key: item,
-              label: item.charAt(0).toUpperCase() + item.slice(1),
-            };
-          });
-        setTypes(data);
-        setHeaders(h);
-      })
-      .finally(() => setLoading(false));
+    init();
   }, []);
+
+  const init = async () => {
+    const headers = [
+      {
+        key: "key",
+        label: "Key",
+      },
+      {
+        key: "label",
+        label: "Label",
+      },
+      {
+        key: "description",
+        label: "Description",
+      },
+    ];
+
+    try {
+      setLoading(true);
+
+      const { data } = await taskService.getTaskTypes();
+
+      setTypes(data);
+      setHeaders(headers);
+
+      const { data: response } = await formService.getForms();
+      setForms(response);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectOne = (id: string) => {
     let res = [];
@@ -94,6 +123,11 @@ const TaskTypePage = () => {
     }
   };
 
+  const firstSelectedObject = useMemo(() => {
+    const res = types.find((item) => item._id === selected[0]);
+    return res;
+  }, [selected]);
+
   return (
     <>
       <Helmet>
@@ -101,7 +135,7 @@ const TaskTypePage = () => {
       </Helmet>
       <PageTitleWrapper>
         <CreateType>
-          <CreateTypeForm onFinish={onFinish} />
+          <CreateTypeForm onFinish={onFinish} forms={forms} />
         </CreateType>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center">
@@ -117,12 +151,25 @@ const TaskTypePage = () => {
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (
-                  <UpdateType>
-                    <UpdateTypeForm
-                      selectedType={updateType}
-                      onFinish={onFinish}
-                    />
-                  </UpdateType>
+                  <>
+                    <UpdateType>
+                      <UpdateTypeForm
+                        selectedType={updateType}
+                        onFinish={onFinish}
+                        forms={forms}
+                      />
+                    </UpdateType>
+                    <ModalButton
+                      text="Duplicate"
+                      title="Duplicate type"
+                      buttonProps={{ variant: "contained", color: "secondary" }}
+                    >
+                      <DuplicateTypeForm
+                        onFinish={onFinish}
+                        source={firstSelectedObject}
+                      />
+                    </ModalButton>
+                  </>
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal

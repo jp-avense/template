@@ -2,7 +2,11 @@ import {
   Alert,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -10,6 +14,8 @@ import { useFormik } from "formik";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
+import { Form } from "../../FormBuilder/form.interface";
+import { Link, useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
   key: yup
@@ -21,9 +27,15 @@ const validationSchema = yup.object({
   label: yup.string().required("required"),
 });
 
-const CreateTaskTypeForm = ({ onFinish }) => {
+type Props = {
+  forms: Form[];
+  onFinish: () => any;
+};
+const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -32,6 +44,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
       key: "",
       label: "",
       description: "",
+      form: "",
     },
     onSubmit: async (values, actions) => {
       try {
@@ -40,7 +53,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
 
         await taskService.createTaskTypes({
           ...values,
-          key: values.key.toString()
+          key: values.key.toString(),
         });
         actions.resetForm();
         setSuccess("Added new task type");
@@ -54,6 +67,19 @@ const CreateTaskTypeForm = ({ onFinish }) => {
   const handleChange = (e) => {
     setSuccess("");
     setError("");
+    formik.handleChange(e);
+  };
+
+  const handleFormChange = (e) => {
+    if (e.target.value === "new") {
+      return navigate("/create-form", {
+        state: {
+          value: formik.values,
+          mode: "update",
+        },
+      });
+    }
+
     formik.handleChange(e);
   };
 
@@ -102,6 +128,26 @@ const CreateTaskTypeForm = ({ onFinish }) => {
               }
               fullWidth
             />
+          </Grid>
+          <Grid item>
+            <FormControl fullWidth>
+              <InputLabel id="form">Form</InputLabel>
+              <Select
+                labelId="form"
+                id="form"
+                value={formik.values.form}
+                label="Age"
+                name="form"
+                onChange={(e) => handleFormChange(e)}
+              >
+                {forms.map((item) => (
+                  <MenuItem key={item._id} value={item._id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="new">Create a new form</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item>
             <Button

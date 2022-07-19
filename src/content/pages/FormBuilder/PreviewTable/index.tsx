@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardHeader,
@@ -12,9 +13,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { t } from "i18next";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import React, { ReactNode, useState } from "react";
-import "./style.css";
+import { ReactNode } from "react";
+import { Form } from "../form.interface";
+import PreviewModal from "./PreviewModal";
 
 interface IHeader {
   key: string;
@@ -24,16 +25,15 @@ interface IHeader {
 type Props = {
   headers: IHeader[];
   loading: boolean;
-  data: any[];
+  data: Form[];
   handleSelectOne: (id: string) => void;
   handleSelectAll: (event: any) => void;
   title: string;
   selected: string[];
   action?: ReactNode | null;
-  handleDragDrop: any;
 };
 
-const DynamicTable = ({
+const PreviewTable = ({
   data,
   loading,
   headers,
@@ -42,44 +42,11 @@ const DynamicTable = ({
   title,
   selected,
   action,
-  handleDragDrop,
 }: Props) => {
-  const [dragItem, setDragItem] = useState(null);
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
 
   const headKeys = headers.map((item) => item.key);
-
-  const onDragEnter = (e, id: string) => {
-    if (id === dragItem) return;
-    e.currentTarget.classList.add("drag-target");
-  };
-
-  const onDragStart = (e, id: string) => {
-    e.target.classList.add("drag-source");
-    e.dataTransfer.effectAllowed = "move";
-    setDragItem(id);
-  };
-
-  const onDragEnd = (e) => {
-    e.target.classList.remove("drag-source");
-  };
-
-  const onDragLeave = (e) => {
-    e.currentTarget.classList.remove("drag-target");
-  };
-
-  const onDragOver = (e) => e.preventDefault();
-
-  const onDrop = (e, dragTarget: string) => {
-
-    e.currentTarget.classList.remove("drag-target");
-
-    if (dragTarget !== dragItem)
-      handleDragDrop(e, dragItem, dragTarget);
-      
-    setDragItem("");
-  };
 
   return (
     <Card>
@@ -100,7 +67,7 @@ const DynamicTable = ({
               {headers.map((item) => {
                 return <TableCell key={item.key}>{item.label}</TableCell>;
               })}
-              <TableCell></TableCell>
+              <TableCell>Preview</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -117,16 +84,9 @@ const DynamicTable = ({
             ) : (
               data.map((item) => {
                 const isSelected = selected.includes(item._id);
-                const { key } = item;
+                const { _id: key } = item;
                 return (
                   <TableRow
-                    draggable="true"
-                    onDragStart={(e) => onDragStart(e, item._id)}
-                    onDragEnd={(e) => onDragEnd(e)}
-                    onDragEnter={(e) => onDragEnter(e, item._id)}
-                    onDragOver={onDragOver}
-                    onDragLeave={(e) => onDragLeave(e)}
-                    onDrop={(e) => onDrop(e, item._id)}
                     key={key}
                     onClick={(e) => {
                       handleSelectOne(item._id);
@@ -164,8 +124,8 @@ const DynamicTable = ({
                         <TableCell key={cellkey}>{displayValue}</TableCell>
                       );
                     })}
-                    <TableCell>
-                      <DragIndicatorIcon />
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <PreviewModal data={item} />
                     </TableCell>
                   </TableRow>
                 );
@@ -178,4 +138,4 @@ const DynamicTable = ({
   );
 };
 
-export default React.memo(DynamicTable);
+export default PreviewTable;

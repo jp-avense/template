@@ -1,19 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Button, Card } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { t } from "i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
-import { taskService } from "src/services/task.service";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import FormBuilderHeader from "./FormBuilderHeader";
 import ConfirmModal from "src/components/ConfirmModal";
 import DynamicTable from "../Components/DynamicTable";
 import Swal from "sweetalert2";
-import axios from "axios";
 import { formService } from "src/services/form.service";
-// import FormFieldForm from "./CreateFormFieldForm";
-// import UpdateForms from "./UpdateForm";
-// import UpdateFormField from "./UpdateForm/UpdateFormField";
+import PreviewTable from "./PreviewTable";
 
 const headerKeys = [
   {
@@ -34,15 +30,32 @@ const FormBuilder = () => {
   const [forms, setForms] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<string[]>(["1"]);
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
-    setLoading(true);
-    const jsonData = require("./sample.json");
+    // const jsonData = require("./sample.json");
+    // setForms(jsonData);
+
     setHeaders(headerKeys);
-    setForms(jsonData);
-    setLoading(false);
+    init()
+    
   }, []);
+
+  const init = async () => {
+    setLoading(true);
+    try {
+      const { data } = await formService.getForms();
+      setForms(data);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: getAxiosErrorMessage(error),
+        timer: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectOne = (id: string) => {
     let res = [];
@@ -67,6 +80,8 @@ const FormBuilder = () => {
   };
 
   const handleDelete = async () => {
+    return;
+
     setLoading(true);
     try {
       await formService.bulkDeleteFormFields(selected);
@@ -74,38 +89,6 @@ const FormBuilder = () => {
       const filtered = forms.filter((item) => !selected.includes(item._id));
       setSelected([]);
       setForms(filtered);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        timer: 4000,
-        text: getAxiosErrorMessage(error),
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onFinish = async () => {
-    setLoading(true);
-    try {
-      const { data } = await formService.getFields();
-      setForms(data);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        timer: 4000,
-        text: getAxiosErrorMessage(error),
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onDone = async () => {
-    setLoading(true);
-    try {
-      const { data } = await formService.getFields();
-      setForms(data);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -129,7 +112,7 @@ const FormBuilder = () => {
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center">
         <Card sx={{ width: "80%" }}>
-          <DynamicTable
+          <PreviewTable
             data={forms}
             headers={headers}
             selected={selected}
@@ -164,7 +147,7 @@ const FormBuilder = () => {
                 ) : null}
               </Box>
             }
-          ></DynamicTable>
+          ></PreviewTable>
         </Card>
       </Box>
     </>

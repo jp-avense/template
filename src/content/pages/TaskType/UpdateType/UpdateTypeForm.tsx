@@ -2,7 +2,11 @@ import {
   Alert,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -10,16 +14,13 @@ import { useFormik } from "formik";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
-
-interface ITaskType {
-  _id: string;
-  key: string;
-  label: string;
-  description: string;
-}
+import { useNavigate } from "react-router";
+import { Form } from "../../FormBuilder/form.interface";
+import { TaskType } from "../type.interface";
 
 type Props = {
-  selectedType: ITaskType;
+  forms: Form[];
+  selectedType: TaskType;
   onFinish: () => Promise<any>;
 };
 
@@ -28,14 +29,20 @@ const validationSchema = yup.object({
   description: yup.string().optional(),
 });
 
-const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
+const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
+  const formOfType = forms.find((item) => item.type === selectedType.key)._id;
+
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       label: selectedType.label,
       description: selectedType.description,
+      form: formOfType,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -56,6 +63,22 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
   const handleChange = (e) => {
     setSuccess("");
     setError("");
+    formik.handleChange(e);
+  };
+
+  const handleFormChange = (e) => {
+    if (e.target.value === "new") {
+      return navigate("/create-form", {
+        state: {
+          selectedType: {
+            ...selectedType,
+            ...formik.values,
+          },
+          mode: "update",
+        },
+      });
+    }
+
     formik.handleChange(e);
   };
 
@@ -102,6 +125,26 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
               fullWidth
               onChange={handleChange}
             />
+          </Grid>
+          <Grid item>
+            <FormControl fullWidth>
+              <InputLabel id="form">Form</InputLabel>
+              <Select
+                labelId="form"
+                id="form"
+                value={formik.values.form}
+                label="Form"
+                name="form"
+                onChange={(e) => handleFormChange(e)}
+              >
+                {forms.map((item) => (
+                  <MenuItem key={item._id} value={item._id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="new">Create a new form</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item>
             <Button
