@@ -37,8 +37,9 @@ function CreateForm() {
 
   useEffect(() => {
     const currentIndex = dragData.findIndex((c) => c.key === selected[0]);
-
-    setSelectedData([{ _id: selected[0], index: currentIndex }]);
+    if (selected[0]) {
+      setSelectedData([{ _id: selected[0], index: currentIndex }]);
+    }
     let availForms = [];
     for (let i = 0; i < currentIndex; i++) {
       availForms.push(dragData[i].key);
