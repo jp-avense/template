@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
+import { TaskType } from "../../TaskType/type.interface";
+import FormGeneralSettings from "./FormGeneralSettings";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
@@ -23,6 +25,16 @@ type Props = {
   selected: any[];
   activeForms: any[];
   setFieldSettings: React.Dispatch<React.SetStateAction<any>>;
+  generalData?: {
+    mode: "create" | "update";
+    value: {
+      key: string;
+      label: string;
+      description: string;
+      form: string;
+    };
+  };
+  taskTypes: TaskType[];
   fieldSettings: any[];
 };
 
@@ -32,7 +44,7 @@ function TabPanel(props) {
   return (
     <div {...other}>
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box p={2}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -44,6 +56,8 @@ function FormFieldSettings({
   selected,
   activeForms,
   setFieldSettings,
+  generalData,
+  taskTypes,
   fieldSettings,
 }: Props) {
   const [action, setAction] = useState([]);
@@ -202,7 +216,6 @@ function FormFieldSettings({
               backgroundColor: "transparent",
               borderRadius: 0,
               border: "0",
-              borderBottom: "5px solid #5569ff",
               boxShadow: "0",
             },
           }}
@@ -211,6 +224,9 @@ function FormFieldSettings({
           <Tab label="Field Settings" />
         </Tabs>
       </AppBar>
+      <TabPanel value={currentTab} index={0}>
+        <FormGeneralSettings data={generalData} taskTypes={taskTypes} />
+      </TabPanel>
       <TabPanel value={currentTab} index={1}>
         <List>
           {selected.length === 1 ? (
