@@ -16,19 +16,15 @@ import {
   FormControl,
   FormLabel,
   Divider,
-  Menu,
   MenuItem,
   Grid,
   IconButton,
   Select,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { getAxiosErrorMessage } from "src/lib";
-import { formService } from "src/services/form.service";
-import ConfirmModal from "src/components/ConfirmModal";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import Swal from "sweetalert2";
+import AttachmentIcon from "@mui/icons-material/Attachment";
 import "./style.css";
 
 interface IFields {
@@ -72,34 +68,12 @@ const Playground = ({
   setSelected,
   selected,
 }: Props) => {
-  const [dragData, setDragData] = useState<IData[]>([]);
   const [drag, setDrag] = useState(null);
   const [dragPlay, setDragPlay] = useState<string>("");
-  const [menu, setMenu] = useState(null);
-  const [dataDrag, setDataDrag] = useState([]);
-
-  const open = Boolean(menu);
-
-  const handleClickMenu = (e) => {
-    setMenu(e.currentTarget);
-  };
-  const handleCloseMenu = () => {
-    setMenu(null);
-  };
 
   const handleClick = (id: string) => {
     setSelected(id);
   };
-
-  // const handleDelete = (id) => {
-  //   let deleteArr = data.indexOf(id);
-
-  //   if (deleteArr != -1) {
-  //     data.slice(deleteArr, 1);
-  //   }
-  //   setDataDrag([...data]);
-  //   console.log(setDataDrag([...data]));
-  // };
 
   const onDragStart = (e, type: string) => {
     // e.target.classList.add("playground-drag-source");
@@ -213,10 +187,17 @@ const Playground = ({
           </>
         );
       case "attachButton":
-        return;
-        <Button variant="contained" onClick={() => setSelected([item._id])}>
-          {item.label}
-        </Button>;
+        return (
+          <Button variant="contained" onClick={() => setSelected([item._id])}>
+            <AttachmentIcon />
+          </Button>
+        );
+      case "button":
+        return (
+          <Button variant="contained" onClick={() => setSelected([item._id])}>
+            {item.label}
+          </Button>
+        );
       case "radios":
         return (
           <>
