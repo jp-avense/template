@@ -49,6 +49,7 @@ function FormFieldPicker({
         sx={{
           width: 300,
           height: "100%",
+          backgroundColor: 'white'
         }}
       >
         <Scrollbar>
