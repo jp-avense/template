@@ -20,6 +20,7 @@ import { TaskType } from "../../TaskType/type.interface";
 import FormGeneralSettings from "./FormGeneralSettings";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { cloneDeep } from "lodash";
 
 type Props = {
   selected: any[];
@@ -74,7 +75,8 @@ function FormFieldSettings({
   ];
 
   const setSelectedCondition = (e, index) => {
-    const data = activeForms.filter((c) => e.target.value == c.label);
+    const forms = cloneDeep(activeForms);
+    const data = forms.filter((c) => e.target.value == c.label);
     let current = selectedForm.slice();
     current.splice(index, 1, data[0]);
     setSelectedForm(current);
@@ -146,13 +148,16 @@ function FormFieldSettings({
   useEffect(() => {
     const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
     if (index > -1) {
-      const condition = Object.entries(fieldSettings[index].conditions).map(
-        ([key, value]: [string, any]) => {
-          const res = activeForms.find((c) => c.key === key);
-          if (value) res.value = value;
-          return res;
-        }
-      );
+      const condition = Object.entries(fieldSettings[index].conditions)
+        .map(([key, value]: [string, any]) => {
+          const forms = cloneDeep(activeForms);
+          const res = forms.find((c) => c.key === key);
+          if (res) {
+            res.value = value;
+            return res;
+          }
+        })
+        .filter(Boolean);
       setSelectedForm(condition);
       setAction(fieldSettings[index].rules.action);
       setRequired(fieldSettings[index].rules.required);
