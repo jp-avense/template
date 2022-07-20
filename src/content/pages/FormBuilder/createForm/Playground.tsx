@@ -59,6 +59,7 @@ type Props = {
   onDrop: any;
   handleDelete: any;
   handleDragDropPlayground: any;
+  setSelected: React.Dispatch<React.SetStateAction<any>>;
 };
 const Playground = ({
   data,
@@ -67,12 +68,12 @@ const Playground = ({
   fields,
   handleDelete,
   handleDragDropPlayground,
+  setSelected,
 }: Props) => {
   const [dragData, setDragData] = useState<IData[]>([]);
   const [drag, setDrag] = useState(null);
   const [dragPlay, setDragPlay] = useState<string>("");
   const [menu, setMenu] = useState(null);
-  const [selected, setSelected] = useState<string>("");
   const [dataDrag, setDataDrag] = useState([]);
 
   const open = Boolean(menu);
@@ -143,6 +144,7 @@ const Playground = ({
           <>
             <InputLabel>{item.label}</InputLabel>
             <TextField
+              onClick={() => setSelected([item._id])}
               id="outlined-basic"
               variant="outlined"
               placeholder={item.placeholder}
@@ -157,6 +159,7 @@ const Playground = ({
           <>
             <InputLabel>{item.label}</InputLabel>
             <TextField
+              onClick={() => setSelected([item._id])}
               multiline
               rows={item.rows}
               aria-label="empty textarea"
@@ -172,6 +175,7 @@ const Playground = ({
           <>
             <InputLabel>{item.label}</InputLabel>
             <Box
+              onClick={() => setSelected([item._id])}
               sx={{
                 borderStyle: "dotted",
                 height: "75px",
@@ -184,42 +188,34 @@ const Playground = ({
       case "dateTimeRegister":
         return (
           <>
-            <InputLabel>{item.label}</InputLabel>
-            <Button variant="contained">{item.label}</Button>
-            {/* <DateTimePicker
-              label={item.label}
-              value={null}
-              onChange={handleChange}
-              renderInput={(params) => <TextField fullWidth {...params} />}
-              disabled
-            /> */}
             <FormHelperText>{item.description}</FormHelperText>
+            <Button onClick={() => setSelected([item._id])} variant="contained">{item.label}</Button>
+            
           </>
         );
       case "dateTimePicker":
         return (
           <>
-            <InputLabel>{item.label}</InputLabel>
-            <DateTimePicker
-              label={item.label}
-              value={null}
-              onChange={handleChange}
-              renderInput={(params) => <TextField fullWidth {...params} />}
-              disabled
-            />
-            <FormHelperText>{item.description}</FormHelperText>
+            <Box onClick={() => setSelected([item._id])}>
+              <InputLabel>{item.label}</InputLabel>
+              <DateTimePicker
+                label={item.label}
+                value={null}
+                onChange={handleChange}
+                renderInput={(params) => <TextField fullWidth {...params} />}
+                disabled
+              />
+              <FormHelperText>{item.description}</FormHelperText>
+            </Box>
           </>
         );
       case "attachButton":
-        return (
-          <>
-            <Button variant="contained">{item.label}</Button>
-          </>
-        );
+        return 
+            <Button variant="contained" onClick={() => setSelected([item._id])}>{item.label}</Button>
       case "radios":
         return (
           <>
-            <FormControl>
+            <FormControl onClick={() => setSelected([item._id])}>
               <FormLabel id="demo-radio-buttons-group-label">
                 {item.label}
               </FormLabel>
@@ -247,7 +243,7 @@ const Playground = ({
         return (
           <>
             <InputLabel>{item.label}</InputLabel>
-            <FormGroup>
+            <FormGroup onClick={() => setSelected([item._id])}>
               {Object.values(optionsObj).map((item) => {
                 return (
                   <FormControlLabel
@@ -265,7 +261,7 @@ const Playground = ({
       case "dropdown":
         return (
           <>
-            <FormControl fullWidth>
+            <FormControl fullWidth onClick={() => setSelected([item._id])}>
               <InputLabel id="demo-simple-select-label">
                 {item.label}
               </InputLabel>
@@ -293,7 +289,7 @@ const Playground = ({
         return (
           <>
             <InputLabel>{item.label}</InputLabel>
-            <Button variant="outlined">
+            <Button onClick={() => setSelected([item._id])} variant="outlined">
               <CameraAltIcon />
             </Button>
             <FormHelperText>{item.description}</FormHelperText>
@@ -304,6 +300,7 @@ const Playground = ({
           <>
             <InputLabel>{item.label}</InputLabel>
             <TextField
+              onClick={() => setSelected([item._id])}
               id="outlined-basic"
               variant="outlined"
               placeholder={item.placeholder}
@@ -316,7 +313,7 @@ const Playground = ({
       case "geo":
         return (
           <>
-            <InputLabel>Geolocation enabled</InputLabel>
+            <InputLabel onClick={() => setSelected([item._id])}>Geolocation enabled</InputLabel>
           </>
         );
     }

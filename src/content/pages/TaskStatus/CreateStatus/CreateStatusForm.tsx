@@ -73,7 +73,7 @@ const CreateStatusForm = ({ onDone }) => {
         </Grid>
         <Grid item>
           <TextField
-            label="Key"
+            label={t("key")}
             name="Key"
             onChange={(e) => handleChange(e)}
             error={formik.touched.Key && Boolean(formik.errors.Key)}
@@ -84,7 +84,7 @@ const CreateStatusForm = ({ onDone }) => {
         </Grid>
         <Grid item>
           <TextField
-            label="Label"
+            label={t("label")}
             name="label"
             onChange={(e) => handleChange(e)}
             error={formik.touched.label && Boolean(formik.errors.label)}
@@ -95,7 +95,7 @@ const CreateStatusForm = ({ onDone }) => {
         </Grid>
         <Grid item>
           <TextField
-            label="Description"
+            label={t("description")}
             name="description"
             onChange={(e) => handleChange(e)}
             error={
@@ -109,9 +109,9 @@ const CreateStatusForm = ({ onDone }) => {
         </Grid>
         <Grid item>
           <FormControl fullWidth>
-            <InputLabel id="select">System Status</InputLabel>
+            <InputLabel id="select">{t("systemStatusKey")}</InputLabel>
             <Select
-              label="System status"
+              label={t("systemStatusKey")}
               name="systemStatusKey"
               value={formik.values.systemStatusKey}
               fullWidth
@@ -122,18 +122,18 @@ const CreateStatusForm = ({ onDone }) => {
                 Boolean(formik.errors.systemStatusKey)
               }
             >
-              <MenuItem value="none">None</MenuItem>
-              <MenuItem value="new">New</MenuItem>
-              <MenuItem value="assigned">Assigned</MenuItem>
-              <MenuItem value="inProgress">In Progress</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
+              <MenuItem value="none">{t("none")}</MenuItem>
+              <MenuItem value="new">{t("new")}</MenuItem>
+              <MenuItem value="assigned">{t("assigned")}</MenuItem>
+              <MenuItem value="inProgress">{t("inProgress")}</MenuItem>
+              <MenuItem value="done">{t("done")}</MenuItem>
             </Select>
             <FormHelperText>
               {formik.touched.systemStatusKey &&
               Boolean(formik.errors.systemStatusKey)
                 ? formik.touched.systemStatusKey &&
                   formik.errors.systemStatusKey
-                : "Choose a system status that is related to this new status"}
+                : t("chooseSystemStatus")}
             </FormHelperText>
           </FormControl>
         </Grid>
@@ -145,7 +145,7 @@ const CreateStatusForm = ({ onDone }) => {
             type="submit"
             fullWidth
           >
-            {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+            {formik.isSubmitting ? <CircularProgress size={18} /> : t("submit")}
           </Button>
         </Grid>
       </Grid>

@@ -1,30 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, Card } from "@mui/material";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import FormBuilderHeader from "./FormBuilderHeader";
 import ConfirmModal from "src/components/ConfirmModal";
-import DynamicTable from "../Components/DynamicTable";
 import Swal from "sweetalert2";
 import { formService } from "src/services/form.service";
 import PreviewTable from "./PreviewTable";
-
-const headerKeys = [
-  {
-    key: "name",
-    label: "Form name",
-  },
-  {
-    key: "type",
-    label: "Type",
-  },
-  {
-    key: "description",
-    label: "Description",
-  },
-];
 
 const FormBuilder = () => {
   const [forms, setForms] = useState([]);
@@ -32,14 +16,35 @@ const FormBuilder = () => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
+
   useEffect(() => {
     // const jsonData = require("./sample.json");
     // setForms(jsonData);
+    init();
+  }, []);
+
+  useEffect(() => {
+    const headerKeys = [
+      {
+        key: "name",
+        label: t("name"),
+      },
+      {
+        key: "type",
+        label: t("type"),
+      },
+      {
+        key: "description",
+        label: t("description"),
+      },
+    ];
 
     setHeaders(headerKeys);
-    init()
-    
-  }, []);
+  }, [language]);
 
   const init = async () => {
     setLoading(true);
@@ -81,29 +86,12 @@ const FormBuilder = () => {
 
   const handleDelete = async () => {
     return;
-
-    setLoading(true);
-    try {
-      await formService.bulkDeleteFormFields(selected);
-
-      const filtered = forms.filter((item) => !selected.includes(item._id));
-      setSelected([]);
-      setForms(filtered);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        timer: 4000,
-        text: getAxiosErrorMessage(error),
-      });
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <>
       <Helmet>
-        <title>{t("formFields")}</title>
+        <title>{t("formBuilder")}</title>
       </Helmet>
       <PageTitleWrapper>
         <FormBuilderHeader>
@@ -134,11 +122,11 @@ const FormBuilder = () => {
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal
-                    buttonText="Delete"
-                    title="Delete forms"
+                    buttonText={t("delete")}
+                    title={t("delete")}
                     handleConfirm={() => handleDelete()}
-                    confirmMessage="You are about to delete some forms. Continue?"
-                    confirmText="Confirm"
+                    confirmMessage={t("deleteSomeForms")}
+                    confirmText={t("submit")}
                     buttonProps={{
                       variant: "contained",
                       color: "warning",
