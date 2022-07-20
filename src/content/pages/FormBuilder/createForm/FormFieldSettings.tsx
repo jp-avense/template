@@ -1,19 +1,16 @@
-import types from "@emotion/styled";
-import { ImportExport } from "@mui/icons-material";
 import {
-  Grid,
   Box,
   Typography,
   List,
-  ListItem,
   Checkbox,
-  FormControl,
-  InputLabel,
   MenuItem,
-  Select,
   Button,
   TextField,
   Divider,
+  Tab,
+  Tabs,
+  AppBar,
+  Paper,
 } from "@mui/material";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
@@ -24,11 +21,27 @@ type Props = {
   setFieldSettings: React.Dispatch<React.SetStateAction<any>>;
 };
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
 function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
   const [action, setAction] = useState([]);
   const [conditions, setCondition] = useState([]);
   const [required, setRequired] = useState(true);
   const [selectedForm, setSelectedForm] = useState<any>([]);
+  const [currentTab, setCurrentTab] = useState(0);
+
   const actions = [
     "closeForm",
     "rescheduleTask",
@@ -123,20 +136,30 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
     current[index].value?.splice(current[index].value.length - 1, 1);
     setSelectedForm(current);
   };
-  console.log("selectedForm", selectedForm);
 
-  console.log("selected", selected);
-
-  console.log("activeForms", activeForms);
+  const changeTab = (e, newTab) => setCurrentTab(newTab);
 
   return (
-    <Grid container padding={1} bgcolor={"#ffffff"}>
-      <Grid item width="100%" sx={{ padding: "0px", minHeight: "400px" }}>
-        <Box fontWeight="bold" sx={{ ml: 3, mt: 2 }}>
-          <Typography variant="h3" color="primary">
-            Field Settings
-          </Typography>
-        </Box>
+    <Paper square elevation={0} sx={{ height: "100vh" }}>
+      <AppBar position="static" sx={{ p: 1 }}>
+        <Tabs
+          onChange={changeTab}
+          value={currentTab}
+          TabIndicatorProps={{
+            sx: {
+              backgroundColor: "transparent",
+              borderRadius: 0,
+              border: "0",
+              borderBottom: "5px solid #5569ff",
+              boxShadow: '0'
+            },
+          }}
+        >
+          <Tab label="General Settings" />
+          <Tab label="Field Settings" />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={currentTab} index={1}>
         <List>
           {selected.length === 1 ? (
             <>
@@ -294,8 +317,8 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
             <></>
           )}
         </List>
-      </Grid>
-    </Grid>
+      </TabPanel>
+    </Paper>
   );
 }
 export default FormFieldSettings;

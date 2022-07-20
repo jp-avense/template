@@ -16,7 +16,13 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  createElement,
+} from "react";
 import Modals from "../../Components/Modals";
 import {
   FormField,
@@ -28,6 +34,9 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import TodayIcon from "@mui/icons-material/Today";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import PrintIcon from "@mui/icons-material/Print";
+import SignaturePad from "signature_pad";
+import "./style.css";
+import { pad } from "lodash";
 
 type Props = {
   data: Form;
@@ -40,6 +49,9 @@ const PreviewModal = ({ data }: Props) => {
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
 
+  const [canvas, setCanvas] = useState(null);
+  const [pad, setPad] = useState(null);
+
   useEffect(() => {
     const fields = data.formFields;
 
@@ -47,9 +59,9 @@ const PreviewModal = ({ data }: Props) => {
       const { inputType, defaultValue, key } = item;
 
       if (inputType === InputTypeEnum.CHECKBOX) {
-        acc[key] = [defaultValue];
+        acc[key] = [];
       } else {
-        acc[key] = defaultValue;
+        acc[key] = "";
       }
 
       return acc;
@@ -57,6 +69,10 @@ const PreviewModal = ({ data }: Props) => {
 
     setValues(res);
   }, [data]);
+
+  useEffect(() => {
+    if (canvas) setPad(new SignaturePad(canvas));
+  }, [canvas]);
 
   const handleDateChange = (value, name) => {
     setValues({
@@ -293,6 +309,20 @@ const PreviewModal = ({ data }: Props) => {
 
       case InputTypeEnum.MARKUP:
         return <div dangerouslySetInnerHTML={{ __html: value }} />;
+
+      case InputTypeEnum.SIGNATURE:
+        return (
+          <Box>
+            <Box mb={1}>{label}</Box>
+            <canvas
+              id="canvas"
+              height="300"
+              width="500"
+              ref={(e) => setCanvas(e)}
+            ></canvas>
+            <Box mt={1}>{description}</Box>
+          </Box>
+        );
     }
   };
 

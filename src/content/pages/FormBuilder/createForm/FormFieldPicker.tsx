@@ -1,33 +1,19 @@
 import { useState, useEffect } from "react";
 
 import {
-  Tooltip,
-  IconButton,
-  Grid,
   Typography,
   Divider,
-  List,
-  Card,
-  ListItem,
   useTheme,
-  Theme,
-  ListItemText,
-  styled,
   CircularProgress,
   Box,
+  Grid,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { formService } from "src/services/form.service";
 import { t } from "i18next";
+import Scrollbar from "src/components/Scrollbar";
 import "./style.css";
-
-const ListWrapper = styled(List)(
-  () => `
-      .MuiListItem-root {
-        border-radius: 0;
-        margin: 0;
-      }
-`
-);
 
 type Props = {
   onDragEnter: any;
@@ -65,29 +51,26 @@ function FormFieldPicker({
           height: "100%",
         }}
       >
-        <Grid
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "start",
-            backgroundColor: "white",
-            px: 2,
-            py: 1,
-          }}
-        >
-          <Grid item>
-            <Typography variant="h5">{t("Form Fields")}</Typography>
-          </Grid>
-        </Grid>
-        <Divider />
-        <Grid style={{ backgroundColor: "white" }}>
-          {loading ? (
-            <ListItem alignItems="center">
-              <CircularProgress size={30} />
-            </ListItem>
-          ) : (
-            <Grid item minHeight={999}>
-              <ListWrapper disablePadding>
+        <Scrollbar>
+          <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={2}>
+            <Typography sx={{ color: "white" }} variant="h4">
+              Field Forms
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            {loading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100vh",
+                }}
+              >
+                <CircularProgress size={50} />
+              </Box>
+            ) : (
+              <Box>
                 {forms.map((item) => {
                   const { key } = item;
                   return (
@@ -114,10 +97,10 @@ function FormFieldPicker({
                     </>
                   );
                 })}
-              </ListWrapper>
-            </Grid>
-          )}
-        </Grid>
+              </Box>
+            )}
+          </Box>
+        </Scrollbar>
       </Grid>
     </>
   );
