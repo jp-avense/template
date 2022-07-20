@@ -18,6 +18,10 @@ function CreateForm() {
   const [fieldForms, setFieldForms] = useState([]);
   const [dragData, setDragData] = useState([]);
   const [drag, setDrag] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [selectedData, setSelectedData] = useState<any>([]);
+  const [activeForms, setActiveForms] = useState([]);
+  const [fieldSettings, setFieldSettings] = useState([]);
 
   const location = useLocation();
 
@@ -30,6 +34,23 @@ function CreateForm() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const currentIndex = dragData.findIndex((c) => c.key === selected[0]);
+
+    setSelectedData([{ _id: selected[0], index: currentIndex }]);
+    let availForms = [];
+    for (let i = 0; i < currentIndex; i++) {
+      availForms.push(dragData[i].key);
+    }
+    if (availForms.length > 0) {
+      const current = availForms.map((c) => {
+        const res = fieldForms.find((x) => x._id === c);
+        return res;
+      });
+      setActiveForms(current);
+    } else setActiveForms([]);
+  }, [selected, dragData]);
 
   const onDragStart = (e, id: string) => {
     const dragData = {
@@ -108,6 +129,7 @@ function CreateForm() {
 
   // console.log(fieldForms);
 
+  console.log("fieldSettings", fieldSettings);
   return (
     <>
       {loading ? (
@@ -128,13 +150,18 @@ function CreateForm() {
             <Playground
               data={dragData}
               fields={fieldForms}
+              setSelected={setSelected}
               onDragOver={onDragOver}
               onDrop={onDrop}
               handleDragDropPlayground={handleDragDropPlayground}
             />
           </Grid>
           <Grid item xs={3}>
-            <FormFieldSettings />
+            <FormFieldSettings
+              activeForms={activeForms}
+              setFieldSettings={setFieldSettings}
+              selected={selectedData}
+            />
           </Grid>
         </Grid>
       )}
