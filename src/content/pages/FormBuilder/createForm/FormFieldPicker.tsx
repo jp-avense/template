@@ -1,48 +1,26 @@
 import { useState, useEffect } from "react";
 
 import {
-  Tooltip,
-  IconButton,
-  Grid,
   Typography,
   Divider,
-  List,
-  Card,
-  ListItem,
   useTheme,
-  Theme,
-  ListItemText,
-  styled,
   CircularProgress,
   Box,
+  Grid,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { formService } from "src/services/form.service";
 import Scrollbar from "src/components/Scrollbar";
 import { t } from "i18next";
 import "./style.css";
 
-const ListWrapper = styled(List)(
-  () => `
-      .MuiListItem-root {
-        border-radius: 0;
-        margin: 0;
-      }
-`
-);
-
 type Props = {
   onDragEnter: any;
   onDragStart: any;
-  onDragEnd: any;
-  onDragLeave: any;
 };
 
-function FormFieldPicker({
-  onDragEnter,
-  onDragStart,
-  onDragEnd,
-  onDragLeave,
-}: Props) {
+function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +48,7 @@ function FormFieldPicker({
       >
         <Scrollbar>
           <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={2}>
-            <Typography sx={{ color: "white" }} variant="h3">
+            <Typography sx={{ color: "white" }} variant="h4">
               Field Forms
             </Typography>
           </Box>
@@ -95,9 +73,7 @@ function FormFieldPicker({
                       <Box
                         draggable="true"
                         onDragStart={(e) => onDragStart(e, item._id)}
-                        onDragEnd={(e) => onDragEnd(e)}
                         onDragEnter={(e) => onDragEnter(e, item._id)}
-                        onDragLeave={(e) => onDragLeave(e)}
                         key={key}
                         py={2}
                         px={2}
