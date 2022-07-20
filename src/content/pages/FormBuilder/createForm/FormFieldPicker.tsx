@@ -21,15 +21,6 @@ import Scrollbar from "src/components/Scrollbar";
 import { t } from "i18next";
 import "./style.css";
 
-const ListWrapper = styled(List)(
-  () => `
-      .MuiListItem-root {
-        border-radius: 0;
-        margin: 0;
-      }
-`
-);
-
 type Props = {
   onDragEnter: any;
   onDragStart: any;
@@ -45,8 +36,6 @@ function FormFieldPicker({
 }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const theme = useTheme();
 
   useEffect(() => {
     setLoading(true);
