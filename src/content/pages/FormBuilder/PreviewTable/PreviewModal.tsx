@@ -37,6 +37,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import SignaturePad from "signature_pad";
 import "./style.css";
 import { pad } from "lodash";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   data: Form;
@@ -51,6 +52,8 @@ const PreviewModal = ({ data }: Props) => {
 
   const [canvas, setCanvas] = useState(null);
   const [pad, setPad] = useState(null);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fields = data.formFields;
@@ -351,7 +354,7 @@ const PreviewModal = ({ data }: Props) => {
 
   return (
     <>
-      <Modals onClose={handleClose} open={open} title="Form Preview">
+      <Modals onClose={handleClose} open={open} title={t('preview')}>
         <Grid container gap={3} direction="column">
           {shownFields.map((item) => (
             <Grid item key={item._id}>
@@ -361,7 +364,7 @@ const PreviewModal = ({ data }: Props) => {
         </Grid>
       </Modals>
       <Button variant="contained" onClick={handleOpen}>
-        Preview
+        {t("preview")}
       </Button>
     </>
   );

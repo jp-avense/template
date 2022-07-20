@@ -17,6 +17,7 @@ import * as yup from "yup";
 import { useNavigate } from "react-router";
 import { Form } from "../../FormBuilder/form.interface";
 import { TaskType } from "../type.interface";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   forms: Form[];
@@ -35,7 +36,10 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
 
   const navigate = useNavigate();
 
-  const formOfType = forms.find((item) => item.type === selectedType.key)._id;
+  const { t } = useTranslation();
+
+  const formOfType =
+    forms.find((item) => item.type === selectedType.key)?._id || "";
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -93,17 +97,17 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
           <Grid item>
             <TextField
               name="key"
-              label="Key"
+              label={t("key")}
               defaultValue={selectedType.key}
               disabled
               fullWidth
-              helperText="You cannot change this field"
+              helperText={t("cantChangeField")}
             />
           </Grid>
           <Grid item>
             <TextField
               name="label"
-              label="Label"
+              label={t("label")}
               value={formik.values.label}
               error={formik.touched.label && Boolean(formik.errors.label)}
               helperText={formik.touched.label && formik.errors.label}
@@ -114,7 +118,7 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
           <Grid item>
             <TextField
               name="description"
-              label="Description"
+              label={t("description")}
               value={formik.values.description}
               error={
                 formik.touched.description && Boolean(formik.errors.description)
@@ -128,12 +132,12 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <FormControl fullWidth>
-              <InputLabel id="form">Form</InputLabel>
+              <InputLabel id="form">{t("form")}</InputLabel>
               <Select
                 labelId="form"
                 id="form"
                 value={formik.values.form}
-                label="Form"
+                label={t("form")}
                 name="form"
                 onChange={(e) => handleFormChange(e)}
               >
@@ -142,7 +146,7 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
                     {item.name}
                   </MenuItem>
                 ))}
-                <MenuItem value="new">Create a new form</MenuItem>
+                <MenuItem value="new">{t("createNewForm")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -153,7 +157,11 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
               fullWidth
               variant="contained"
             >
-              {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+              {formik.isSubmitting ? (
+                <CircularProgress size={18} />
+              ) : (
+                t("submit")
+              )}
             </Button>
           </Grid>
         </Grid>

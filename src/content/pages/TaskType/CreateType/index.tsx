@@ -17,13 +17,13 @@ function CreateTaskType({ children }) {
 
   return (
     <>
-      <Modals open={open} onClose={handleClose} title="Add task type">
+      <Modals open={open} onClose={handleClose} title={t('createType')}>
         {children}
       </Modals>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item>
           <Typography variant="h3" component="h3" gutterBottom>
-            {t("Task Types")}
+            {t("taskTypes")}
           </Typography>
         </Grid>
         {isAdmin ? (
@@ -34,7 +34,7 @@ function CreateTaskType({ children }) {
               startIcon={<AddTwoToneIcon fontSize="small" />}
               onClick={() => setOpen(true)}
             >
-              {t("Create task type")}
+              {t("createType")}
             </Button>
           </Grid>
         ) : null}

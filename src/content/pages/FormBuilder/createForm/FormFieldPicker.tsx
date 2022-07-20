@@ -18,16 +18,9 @@ import "./style.css";
 type Props = {
   onDragEnter: any;
   onDragStart: any;
-  onDragEnd: any;
-  onDragLeave: any;
 };
 
-function FormFieldPicker({
-  onDragEnter,
-  onDragStart,
-  onDragEnd,
-  onDragLeave,
-}: Props) {
+function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +42,7 @@ function FormFieldPicker({
         sx={{
           width: 300,
           height: "100%",
-          backgroundColor: 'white'
+          backgroundColor: "white",
         }}
       >
         <Scrollbar>
@@ -79,9 +72,7 @@ function FormFieldPicker({
                       <ListItem
                         draggable="true"
                         onDragStart={(e) => onDragStart(e, item._id)}
-                        onDragEnd={(e) => onDragEnd(e)}
                         onDragEnter={(e) => onDragEnter(e, item._id)}
-                        onDragLeave={(e) => onDragLeave(e)}
                         key={key}
                         sx={{
                           color: `${theme.colors.primary.main}`,

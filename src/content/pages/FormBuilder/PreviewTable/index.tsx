@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { t } from "i18next";
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Form } from "../form.interface";
 import PreviewModal from "./PreviewModal";
 
@@ -48,6 +49,8 @@ const PreviewTable = ({
 
   const headKeys = headers.map((item) => item.key);
 
+  const { t } = useTranslation() 
+
   return (
     <Card>
       <CardHeader title={t(title)} sx={{ height: "60px" }} action={action} />
@@ -67,7 +70,7 @@ const PreviewTable = ({
               {headers.map((item) => {
                 return <TableCell key={item.key}>{item.label}</TableCell>;
               })}
-              <TableCell>Preview</TableCell>
+              <TableCell>{t('preview')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

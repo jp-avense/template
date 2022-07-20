@@ -1,6 +1,7 @@
 import { Box, Card } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import ConfirmModal from "src/components/ConfirmModal";
 import ModalButton from "src/components/ModalButton";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
@@ -24,24 +25,48 @@ const TaskTypePage = () => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
+
   useEffect(() => {
     setLoading(true);
     init();
   }, []);
 
+  useEffect(() => {
+    const headers = [
+      {
+        key: "key",
+        label: t("key"),
+      },
+      {
+        key: "label",
+        label: t("label"),
+      },
+      {
+        key: "description",
+        label: t("description"),
+      },
+    ];
+
+    setHeaders(headers);
+  }, [language]);
+
   const init = async () => {
     const headers = [
       {
         key: "key",
-        label: "Key",
+        label: t("key"),
       },
       {
         key: "label",
-        label: "Label",
+        label: t("label"),
       },
       {
         key: "description",
-        label: "Description",
+        label: t("description"),
       },
     ];
 
@@ -144,7 +169,7 @@ const TaskTypePage = () => {
             data={types}
             headers={headers}
             selected={selected}
-            title="Task Types"
+            title={t("taskTypes")}
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
@@ -160,8 +185,8 @@ const TaskTypePage = () => {
                       />
                     </UpdateType>
                     <ModalButton
-                      text="Duplicate"
-                      title="Duplicate type"
+                      text={t("duplicate")}
+                      title={t("duplicate")}
                       buttonProps={{ variant: "contained", color: "secondary" }}
                     >
                       <DuplicateTypeForm
@@ -173,11 +198,11 @@ const TaskTypePage = () => {
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal
-                    buttonText="Delete"
-                    title="Delete types"
+                    buttonText={t("delete")}
+                    title={t("delete")}
                     handleConfirm={() => handleDelete()}
-                    confirmMessage="You are about to delete some types. Continue?"
-                    confirmText="Confirm"
+                    confirmMessage={t("deleteSomeTypes")}
+                    confirmText={t("submit")}
                     buttonProps={{
                       variant: "contained",
                       color: "warning",
