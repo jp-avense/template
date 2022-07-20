@@ -16,3 +16,7 @@
 .playground-drag-source {
   background-color: #dfdfdf;
 }
+
+.is-active {
+  background: #b4bbf3;
+}

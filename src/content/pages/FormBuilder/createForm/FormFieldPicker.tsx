@@ -24,8 +24,6 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const theme = useTheme();
-
   useEffect(() => {
     setLoading(true);
     formService
