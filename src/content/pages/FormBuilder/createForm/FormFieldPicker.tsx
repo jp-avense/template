@@ -17,6 +17,7 @@ import {
   Box,
 } from "@mui/material";
 import { formService } from "src/services/form.service";
+import Scrollbar from "src/components/Scrollbar";
 import { t } from "i18next";
 import "./style.css";
 
@@ -59,66 +60,65 @@ function FormFieldPicker({
 
   return (
     <>
-      <Grid
+      <Box
         sx={{
           width: 300,
-          height: "100%",
+          height: "100vh",
+          backgroundColor: "white",
+          position: "fixed",
         }}
       >
-        <Grid
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "start",
-            backgroundColor: "white",
-            px: 2,
-            py: 1,
-          }}
-        >
-          <Grid item>
-            <Typography variant="h5">{t("Form Fields")}</Typography>
-          </Grid>
-        </Grid>
-        <Divider />
-        <Grid style={{ backgroundColor: "white" }}>
-          {loading ? (
-            <ListItem alignItems="center">
-              <CircularProgress size={30} />
-            </ListItem>
-          ) : (
-            <Grid item minHeight={999}>
-              <ListWrapper disablePadding>
+        <Scrollbar>
+          <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={2}>
+            <Typography sx={{ color: "white" }} variant="h3">
+              Field Forms
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            {loading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100vh",
+                }}
+              >
+                <CircularProgress size={50} />
+              </Box>
+            ) : (
+              <Box>
                 {forms.map((item) => {
                   const { key } = item;
                   return (
                     <>
-                      <ListItem
+                      <Box
                         draggable="true"
                         onDragStart={(e) => onDragStart(e, item._id)}
                         onDragEnd={(e) => onDragEnd(e)}
                         onDragEnter={(e) => onDragEnter(e, item._id)}
                         onDragLeave={(e) => onDragLeave(e)}
                         key={key}
+                        py={2}
+                        px={2}
                         sx={{
-                          color: `${theme.colors.primary.main}`,
                           "&:hover": {
-                            color: `${theme.colors.primary.dark}`,
-                            borderRadius: 0,
+                            backgroundColor: "#f0f2f5",
+                            transitionDuration: "150ms",
                           },
                         }}
-                        button
                       >
-                        <ListItemText>{item.label}</ListItemText>
-                      </ListItem>
+                        <Typography variant="body2">{item.label}</Typography>
+                      </Box>
                       <Divider />
                     </>
                   );
                 })}
-              </ListWrapper>
-            </Grid>
-          )}
-        </Grid>
-      </Grid>
+              </Box>
+            )}
+          </Box>
+        </Scrollbar>
+      </Box>
     </>
   );
 }

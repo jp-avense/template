@@ -19,7 +19,7 @@ function CreateForm() {
   const [dragData, setDragData] = useState([]);
   const [drag, setDrag] = useState(null);
 
-  const location = useLocation()
+  const location = useLocation();
 
   useEffect(() => {
     setLoading(true);

@@ -287,17 +287,15 @@ const Playground = ({
         id="playground"
         onDragOver={(e) => onDragOver(e)}
         onDrop={(e) => onDropData(e)}
-        style={{
+        sx={{
           width: 700,
-          marginTop: 50,
-          paddingTop: 50,
-          paddingBottom: 10,
-          paddingLeft: 10,
-          paddingRight: 10,
+          height: "auto",
+          marginTop: "2rem",
+          marginBottom: "2rem",
         }}
       >
-        <Box display="flex" justifyContent={"center"} sx={{ py: 2 }}>
-          <Typography variant="h3">Form</Typography>
+        <Box display="flex" justifyContent={"center"} py={5}>
+          <Typography variant="h1">Form Builder</Typography>
         </Box>
         <Divider />
         <Box
@@ -307,7 +305,7 @@ const Playground = ({
             alignItems: "start",
           }}
           gap={1}
-          pb={3}
+          pb={10}
           px={2}
           mt={2}
         >
@@ -324,7 +322,17 @@ const Playground = ({
                 onDragLeave={(e) => onDragLeave(e)}
                 onDrop={(e) => onDropPlayground(e, item.key)}
                 key={index}
-                sx={{ width: "100%" }}
+                sx={{
+                  width: "100%",
+                  "&:hover": {
+                    backgroundColor: "#f0f2f5",
+                    transitionDuration: "150ms",
+                    paddingTop: "5px",
+                    paddingBottom: "5px",
+                    paddingLeft: "5px",
+                    paddingRight: "5px",
+                  },
+                }}
               >
                 {handleData(obj)}
               </Box>
