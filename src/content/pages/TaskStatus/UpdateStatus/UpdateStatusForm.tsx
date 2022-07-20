@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useFormik, yupToFormErrors } from "formik";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
@@ -37,6 +38,8 @@ const validationSchema = yup.object({
 const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const { t } = useTranslation();
 
   const formik = useFormik({
     initialValues: {
@@ -76,17 +79,17 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
         <Grid item>
           <TextField
             name="key"
-            label="Key"
+            label={t("key")}
             defaultValue={selectedStatus.Key}
             disabled
             fullWidth
-            helperText="You cannot change this field"
+            helperText={t("cantChangeField")}
           />
         </Grid>
         <Grid item>
           <TextField
             name="label"
-            label="Label"
+            label={t("label")}
             value={formik.values.label}
             error={formik.touched.label && Boolean(formik.errors.label)}
             helperText={formik.touched.label && formik.errors.label}
@@ -97,7 +100,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
         <Grid item>
           <TextField
             name="description"
-            label="Description"
+            label={t("description")}
             value={formik.values.description}
             error={
               formik.touched.description && Boolean(formik.errors.description)
@@ -109,9 +112,9 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
         </Grid>
         <Grid item>
           <FormControl fullWidth>
-            <InputLabel id="select">System Status</InputLabel>
+            <InputLabel id="select">{t("systemStatusKey")}</InputLabel>
             <Select
-              label="System status"
+              label={t("systemStatus")}
               name="systemStatusKey"
               value={formik.values.systemStatusKey}
               fullWidth
@@ -122,11 +125,11 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
                 Boolean(formik.errors.systemStatusKey)
               }
             >
-              <MenuItem value="none">None</MenuItem>
-              <MenuItem value="new">New</MenuItem>
-              <MenuItem value="assigned">Assigned</MenuItem>
-              <MenuItem value="inProgress">In Progress</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
+              <MenuItem value="none">{t("none")}</MenuItem>
+              <MenuItem value="new">{t("new")}</MenuItem>
+              <MenuItem value="assigned">{t("assigned")}</MenuItem>
+              <MenuItem value="inProgress">{t("inProgress")}</MenuItem>
+              <MenuItem value="done">{t("done")}</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -137,7 +140,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
             fullWidth
             variant="contained"
           >
-            {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+            {formik.isSubmitting ? <CircularProgress size={18} /> : t("submit")}
           </Button>
         </Grid>
       </Grid>

@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
 import { Form } from "../../FormBuilder/form.interface";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
   key: yup
@@ -36,6 +37,8 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -58,8 +61,10 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
         actions.resetForm();
         setSuccess("Added new task type");
         await onFinish();
+        return true;
       } catch (error) {
         setError(getAxiosErrorMessage(error));
+        return false;
       }
     },
   });
@@ -70,17 +75,25 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
     formik.handleChange(e);
   };
 
-  const handleFormChange = (e) => {
+  const handleFormChange = async (e) => {
+    setError("");
+    setSuccess("");
+
     if (e.target.value === "new") {
+      const isValidForm = await formik.submitForm();
+
+      if (!isValidForm) {
+        formik.setFieldValue("form", "");
+        return;
+      }
+
       return navigate("/create-form", {
         state: {
           value: formik.values,
-          mode: "update",
+          mode: "create",
         },
       });
-    }
-
-    formik.handleChange(e);
+    } else formik.handleChange(e);
   };
 
   return (
@@ -93,7 +106,7 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Key"
+              label={t("key")}
               name="key"
               onChange={(e) => handleChange(e)}
               error={formik.touched.key && Boolean(formik.errors.key)}
@@ -105,7 +118,7 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Label"
+              label={t("label")}
               name="label"
               onChange={(e) => handleChange(e)}
               error={formik.touched.label && Boolean(formik.errors.label)}
@@ -116,7 +129,7 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Description"
+              label={t("description")}
               name="description"
               onChange={(e) => handleChange(e)}
               error={
@@ -131,12 +144,12 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <FormControl fullWidth>
-              <InputLabel id="form">Form</InputLabel>
+              <InputLabel id="form">{t("form")}</InputLabel>
               <Select
                 labelId="form"
                 id="form"
                 value={formik.values.form}
-                label="Age"
+                label={t("form")}
                 name="form"
                 onChange={(e) => handleFormChange(e)}
               >
@@ -145,7 +158,7 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
                     {item.name}
                   </MenuItem>
                 ))}
-                <MenuItem value="new">Create a new form</MenuItem>
+                <MenuItem value="new">{t("createNewForm")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -157,7 +170,11 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
               type="submit"
               fullWidth
             >
-              {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+              {formik.isSubmitting ? (
+                <CircularProgress size={18} />
+              ) : (
+                t("submit")
+              )}
             </Button>
           </Grid>
         </Grid>

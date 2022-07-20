@@ -13,13 +13,13 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { t } from "i18next";
 
 import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 interface KeyValuePair {
   key: string;
@@ -73,6 +73,8 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
     "signature",
     "geo",
   ];
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     setType(selectedForm.inputType);

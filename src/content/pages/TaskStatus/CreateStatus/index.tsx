@@ -19,13 +19,13 @@ function CreateStatus({ children }) {
 
   return (
     <>
-      <Modals open={open} onClose={handleClose} title="Add task status">
+      <Modals open={open} onClose={handleClose} title={t('createStatus')}>
         {children}
       </Modals>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item>
           <Typography variant="h3" component="h3" gutterBottom>
-            Task Status
+            {t('taskStatus')}
           </Typography>
         </Grid>
         {isAdmin ? (
@@ -36,7 +36,7 @@ function CreateStatus({ children }) {
               startIcon={<AddTwoToneIcon fontSize="small" />}
               onClick={() => setOpenPopup(true)}
             >
-              Create task status
+              {t('createStatus')}
             </Button>
           </Grid>
         ) : null}
