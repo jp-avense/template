@@ -59,6 +59,7 @@ type Props = {
   onDrop: any;
   handleDelete: any;
   handleDragDropPlayground: any;
+  selected: any;
   setSelected: React.Dispatch<React.SetStateAction<any>>;
 };
 const Playground = ({
@@ -69,6 +70,7 @@ const Playground = ({
   handleDelete,
   handleDragDropPlayground,
   setSelected,
+  selected,
 }: Props) => {
   const [dragData, setDragData] = useState<IData[]>([]);
   const [drag, setDrag] = useState(null);
@@ -189,8 +191,9 @@ const Playground = ({
         return (
           <>
             <FormHelperText>{item.description}</FormHelperText>
-            <Button onClick={() => setSelected([item._id])} variant="contained">{item.label}</Button>
-            
+            <Button onClick={() => setSelected([item._id])} variant="contained">
+              {item.label}
+            </Button>
           </>
         );
       case "dateTimePicker":
@@ -210,8 +213,10 @@ const Playground = ({
           </>
         );
       case "attachButton":
-        return 
-            <Button variant="contained" onClick={() => setSelected([item._id])}>{item.label}</Button>
+        return;
+        <Button variant="contained" onClick={() => setSelected([item._id])}>
+          {item.label}
+        </Button>;
       case "radios":
         return (
           <>
@@ -313,7 +318,9 @@ const Playground = ({
       case "geo":
         return (
           <>
-            <InputLabel onClick={() => setSelected([item._id])}>Geolocation enabled</InputLabel>
+            <InputLabel onClick={() => setSelected([item._id])}>
+              Geolocation enabled
+            </InputLabel>
           </>
         );
     }

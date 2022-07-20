@@ -167,6 +167,7 @@ function CreateForm() {
               setSelected={setSelected}
               onDragOver={onDragOver}
               onDrop={onDrop}
+              selected={selected}
               handleDelete={handleDelete}
               handleDragDropPlayground={handleDragDropPlayground}
             />
