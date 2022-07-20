@@ -90,9 +90,22 @@ function CreateForm() {
 
   const onDrop = (e, dragTarget: string) => {
     if (e.currentTarget.id !== "playground") return;
+    if (dragData.find((item) => item.key === drag.id)) return;
     if (dragTarget !== drag.id && drag.sidebar) handleDragDrop(e);
 
+    // console.log(dragTarget);
+    // console.log(drag.id);
+    // console.log(dragData);
+    // console.log(fieldForms);
+
     setDrag("");
+  };
+
+  const handleDelete = (id) => {
+    const filtered = dragData.filter((item) => item.key !== id);
+
+    console.log(filtered);
+    setDragData(filtered);
   };
 
   const handleDragDrop = (e) => {
@@ -134,7 +147,6 @@ function CreateForm() {
     e.stopPropagation();
   };
 
-  console.log("fieldSettings", fieldSettings);
   return (
     <>
       {loading ? (
@@ -156,6 +168,8 @@ function CreateForm() {
               setSelected={setSelected}
               onDragOver={onDragOver}
               onDrop={onDrop}
+              selected={selected}
+              handleDelete={handleDelete}
               handleDragDropPlayground={handleDragDropPlayground}
             />
           </Grid>

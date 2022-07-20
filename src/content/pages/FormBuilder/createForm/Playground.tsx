@@ -16,10 +16,18 @@ import {
   FormControl,
   FormLabel,
   Divider,
+  Menu,
+  MenuItem,
+  Grid,
+  IconButton,
+  Select,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { getAxiosErrorMessage } from "src/lib";
+import { formService } from "src/services/form.service";
+import ConfirmModal from "src/components/ConfirmModal";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import Swal from "sweetalert2";
 import "./style.css";
 
@@ -49,7 +57,9 @@ type Props = {
   fields: IFields[];
   onDragOver: any;
   onDrop: any;
+  handleDelete: any;
   handleDragDropPlayground: any;
+  selected: any;
   setSelected: React.Dispatch<React.SetStateAction<any>>;
 };
 const Playground = ({
@@ -57,11 +67,76 @@ const Playground = ({
   onDragOver,
   onDrop,
   fields,
+  handleDelete,
   handleDragDropPlayground,
   setSelected,
+  selected,
 }: Props) => {
+  const [dragData, setDragData] = useState<IData[]>([]);
   const [drag, setDrag] = useState(null);
   const [dragPlay, setDragPlay] = useState<string>("");
+  const [menu, setMenu] = useState(null);
+  const [dataDrag, setDataDrag] = useState([]);
+
+  const open = Boolean(menu);
+
+  const handleClickMenu = (e) => {
+    setMenu(e.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setMenu(null);
+  };
+
+  const handleClick = (id: string) => {
+    setSelected(id);
+  };
+
+  // const handleDelete = (id) => {
+  //   let deleteArr = data.indexOf(id);
+
+  //   if (deleteArr != -1) {
+  //     data.slice(deleteArr, 1);
+  //   }
+  //   setDataDrag([...data]);
+  //   console.log(setDataDrag([...data]));
+  // };
+
+  const onDragStart = (e, type: string) => {
+    // e.target.classList.add("playground-drag-source");
+    e.dataTransfer.effectAllowed = "move";
+    setDragPlay(type);
+  };
+
+  const onDragEnter = (e, type: string) => {
+    // e.currentTarget.classList.add("playground-drag-target");
+    if (type === dragPlay) return;
+    e.stopPropagation();
+  };
+
+  const onDragEnd = (e) => {
+    e.preventDefault();
+    // e.target.classList.remove("playground-drag-source");
+  };
+
+  const onDragLeave = (e) => {
+    // e.currentTarget.classList.remove("drag-target");
+  };
+
+  const onDropData = (e) => {
+    onDrop(e);
+    setDrag("");
+  };
+
+  const onDropPlayground = (e, dataTarget: string) => {
+    // e.currentTarget.classList.remove("drag-target");
+
+    if (dataTarget !== dragPlay && dragPlay)
+      handleDragDropPlayground(e, dragPlay, dataTarget);
+
+    setDragPlay("");
+  };
+
+  const handleChange = (e) => {};
 
   const handleData = (item: IFields) => {
     const optionsObj = item.options;
@@ -115,17 +190,10 @@ const Playground = ({
       case "dateTimeRegister":
         return (
           <>
-            <Box onClick={() => setSelected([item._id])}>
-              <InputLabel>{item.label}</InputLabel>
-              <DateTimePicker
-                label={item.label}
-                value={null}
-                onChange={handleChange}
-                renderInput={(params) => <TextField fullWidth {...params} />}
-                disabled
-              />
-              <FormHelperText>{item.description}</FormHelperText>
-            </Box>
+            <FormHelperText>{item.description}</FormHelperText>
+            <Button onClick={() => setSelected([item._id])} variant="contained">
+              {item.label}
+            </Button>
           </>
         );
       case "dateTimePicker":
@@ -145,15 +213,10 @@ const Playground = ({
           </>
         );
       case "attachButton":
-        return (
-          <>
-            <Box onClick={() => setSelected([item._id])}>
-              <Button variant="outlined" disabled>
-                {item.label}
-              </Button>
-            </Box>
-          </>
-        );
+        return;
+        <Button variant="contained" onClick={() => setSelected([item._id])}>
+          {item.label}
+        </Button>;
       case "radios":
         return (
           <>
@@ -203,11 +266,28 @@ const Playground = ({
       case "dropdown":
         return (
           <>
-            <Box onClick={() => setSelected([item._id])}>
-              <Button variant="outlined" disabled>
+            <FormControl fullWidth onClick={() => setSelected([item._id])}>
+              <InputLabel id="demo-simple-select-label">
                 {item.label}
-              </Button>
-            </Box>
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label={item.label}
+                defaultValue={item.defaultValue}
+                fullWidth
+                onChange={handleChange}
+              >
+                {Object.keys(optionsObj).map((item) => {
+                  const value = optionsObj[item];
+                  return (
+                    <MenuItem key={item} value={item}>
+                      {value}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
           </>
         );
       case "cameraButton":
@@ -238,81 +318,29 @@ const Playground = ({
       case "geo":
         return (
           <>
-            <InputLabel>{item.label}</InputLabel>
-            <TextField
-              onClick={() => setSelected([item._id])}
-              id="outlined-basic"
-              variant="outlined"
-              placeholder={item.placeholder}
-              fullWidth
-              disabled
-            ></TextField>
-            <FormHelperText>{item.description}</FormHelperText>
+            <InputLabel onClick={() => setSelected([item._id])}>
+              Geolocation enabled
+            </InputLabel>
           </>
         );
     }
   };
 
-  const onDragStart = (e, type: string) => {
-    // e.target.classList.add("playground-drag-source");
-    e.dataTransfer.effectAllowed = "move";
-    setDragPlay(type);
-  };
-
-  const onDragEnter = (e, type: string) => {
-    // e.currentTarget.classList.add("playground-drag-target");
-    if (type === dragPlay) return;
-    e.stopPropagation();
-  };
-
-  const onDragEnd = (e) => {
-    e.preventDefault();
-    // e.target.classList.remove("playground-drag-source");
-  };
-
-  const onDragLeave = (e) => {
-    // e.currentTarget.classList.remove("drag-target");
-  };
-
-  const onDropData = (e) => {
-    onDrop(e);
-    setDrag("");
-  };
-
-  const onDropPlayground = (e, dataTarget: string) => {
-    // e.currentTarget.classList.remove("drag-target");
-
-    if (dataTarget !== dragPlay && dragPlay)
-      handleDragDropPlayground(e, dragPlay, dataTarget);
-    setSelected([dragPlay]);
-    setDragPlay("");
-  };
-
-  const handleChange = (e) => {};
-
-  console.log("lmao", fields);
-
   return (
     <>
-      {/* "text", "textarea", "markup", "dateTimeRegister", "attachButton",
-      "cameraButton", "radios", "checkboxes", "dropdown", "dateTimePicker",
-      "button", "signature", "geo", */}
-
       <Card
         id="playground"
         onDragOver={(e) => onDragOver(e)}
         onDrop={(e) => onDropData(e)}
-        style={{
+        sx={{
           width: 700,
-          marginTop: 50,
-          paddingTop: 50,
-          paddingBottom: 10,
-          paddingLeft: 10,
-          paddingRight: 10,
+          height: "auto",
+          marginTop: "2rem",
+          marginBottom: "2rem",
         }}
       >
-        <Box display="flex" justifyContent={"center"} sx={{ py: 2 }}>
-          <Typography variant="h3">Form</Typography>
+        <Box display="flex" justifyContent={"center"} py={5}>
+          <Typography variant="h1">Form Builder</Typography>
         </Box>
         <Divider />
         <Box
@@ -322,8 +350,7 @@ const Playground = ({
             alignItems: "start",
           }}
           gap={1}
-          pb={3}
-          px={2}
+          pb={10}
           mt={2}
         >
           {data.map((item, index) => {
@@ -337,10 +364,42 @@ const Playground = ({
                 onDragEnd={(e) => onDragEnd(e)}
                 onDragLeave={(e) => onDragLeave(e)}
                 onDrop={(e) => onDropPlayground(e, item.key)}
+                onClick={(e) => handleClick(item.key)}
                 key={index}
-                sx={{ width: "100%" }}
+                sx={[
+                  {
+                    width: "100%",
+                    alignItems: "center",
+                    "&:hover": {
+                      backgroundColor: "#f0f2f5",
+                      transitionDuration: "150ms",
+                    },
+                  },
+                  selected.includes(item.key)
+                    ? {
+                        backgroundColor: "#e8eaf6",
+                      }
+                    : null,
+                ]}
+                px={2}
+                py={2}
               >
-                {handleData(obj)}
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Grid item xs={11}>
+                    {handleData(obj)}
+                  </Grid>
+                  <Grid item xs={1}>
+                    <IconButton onClick={(e) => handleDelete(item.key)}>
+                      <DeleteRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
               </Box>
             );
           })}

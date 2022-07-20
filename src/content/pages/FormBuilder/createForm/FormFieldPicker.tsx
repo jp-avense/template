@@ -11,8 +11,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import { formService } from "src/services/form.service";
-import { t } from "i18next";
 import Scrollbar from "src/components/Scrollbar";
+import { t } from "i18next";
 import "./style.css";
 
 type Props = {
@@ -23,8 +23,6 @@ type Props = {
 function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const theme = useTheme();
 
   useEffect(() => {
     setLoading(true);
@@ -38,11 +36,12 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
 
   return (
     <>
-      <Grid
+      <Box
         sx={{
           width: 300,
-          height: "100%",
+          height: "100vh",
           backgroundColor: "white",
+          position: "fixed",
         }}
       >
         <Scrollbar>
@@ -69,22 +68,22 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                   const { key } = item;
                   return (
                     <>
-                      <ListItem
+                      <Box
                         draggable="true"
                         onDragStart={(e) => onDragStart(e, item._id)}
                         onDragEnter={(e) => onDragEnter(e, item._id)}
                         key={key}
+                        py={2}
+                        px={2}
                         sx={{
-                          color: `${theme.colors.primary.main}`,
                           "&:hover": {
-                            color: `${theme.colors.primary.dark}`,
-                            borderRadius: 0,
+                            backgroundColor: "#f0f2f5",
+                            transitionDuration: "150ms",
                           },
                         }}
-                        button
                       >
-                        <ListItemText>{item.label}</ListItemText>
-                      </ListItem>
+                        <Typography variant="body2">{item.label}</Typography>
+                      </Box>
                       <Divider />
                     </>
                   );
@@ -93,7 +92,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
             )}
           </Box>
         </Scrollbar>
-      </Grid>
+      </Box>
     </>
   );
 }
