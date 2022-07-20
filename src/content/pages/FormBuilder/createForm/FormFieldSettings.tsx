@@ -14,17 +14,26 @@ import {
   Button,
   TextField,
   Divider,
+  IconButton,
 } from "@mui/material";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 type Props = {
   selected: any[];
   activeForms: any[];
   setFieldSettings: React.Dispatch<React.SetStateAction<any>>;
+  fieldSettings: any[];
 };
 
-function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
+function FormFieldSettings({
+  selected,
+  activeForms,
+  setFieldSettings,
+  fieldSettings,
+}: Props) {
   const [action, setAction] = useState([]);
   const [conditions, setCondition] = useState([]);
   const [required, setRequired] = useState(true);
@@ -79,14 +88,29 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
       }
       return acc;
     }, {});
+    let settings = fieldSettings.slice();
 
     const res = {
       rules: { required: required, action: action },
       conditions: current,
       _id: selected[0]?._id,
     };
-    setFieldSettings(res);
+    if (fieldSettings.length > 0) {
+      const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
+      if (index > -1) {
+        settings.splice(index, 1, res);
+        setFieldSettings(settings);
+      } else {
+        settings.push(res);
+        setFieldSettings(settings);
+      }
+    } else {
+      settings.push(res);
+      setFieldSettings(settings);
+    }
   }, [conditions, required, action]);
+
+  useEffect(() => {}, [selected]);
 
   const setSelectedAction = (e) => {
     setAction(e.target.value);
@@ -130,8 +154,8 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
   console.log("activeForms", activeForms);
 
   return (
-    <Grid container padding={1} bgcolor={"#ffffff"}>
-      <Grid item width="100%" sx={{ padding: "0px", minHeight: "400px" }}>
+    <Grid container padding={1} bgcolor={"#ffffff"} height="100%">
+      <Grid item width="100%" sx={{ padding: "0px" }}>
         <Box fontWeight="bold" sx={{ ml: 3, mt: 2 }}>
           <Typography variant="h3" color="primary">
             Field Settings
@@ -160,25 +184,22 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
               </TextField>
               {activeForms.length > 0 ? (
                 <>
-                  <Typography sx={{ mt: 2 }} variant="h5">
-                    {t("conditions")}
-                  </Typography>
-                  <div>
-                    <Button
-                      sx={{ mr: 1 }}
-                      onClick={removeOption}
-                      variant="contained"
-                    >
-                      -
-                    </Button>
-                    <Button
-                      disabled={activeForms.length <= conditions.length}
-                      onClick={addOption}
-                      variant="contained"
-                    >
-                      +
-                    </Button>
-                  </div>
+                  <Grid container justifyContent={"space-between"}>
+                    <Typography sx={{ mt: 2 }} variant="h5">
+                      {t("conditions")}
+                    </Typography>
+                    <Grid item sx={{ mt: 2 }}>
+                      <IconButton sx={{ mr: 1 }} onClick={removeOption}>
+                        <RemoveIcon />
+                      </IconButton>
+                      <IconButton
+                        disabled={activeForms.length <= conditions.length}
+                        onClick={addOption}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
                   {selectedForm.map((form, index) => (
                     <>
                       <TextField
@@ -239,24 +260,22 @@ function FormFieldSettings({ selected, activeForms, setFieldSettings }: Props) {
                             </>
                           ) : (
                             <>
-                              <Typography sx={{ mt: 1 }} variant="h5">
-                                {t("Text Values")}
-                              </Typography>
-                              <div>
-                                <Button
-                                  sx={{ mr: 1 }}
-                                  onClick={() => removeValue(index)}
-                                  variant="outlined"
-                                >
-                                  -
-                                </Button>
-                                <Button
-                                  onClick={() => addValue(index)}
-                                  variant="outlined"
-                                >
-                                  +
-                                </Button>
-                              </div>
+                              <Grid container justifyContent={"space-between"}>
+                                <Typography sx={{ mt: 1 }} variant="h5">
+                                  {t("Text Values")}
+                                </Typography>
+                                <Grid item sx={{ mt: 2 }}>
+                                  <IconButton
+                                    sx={{ mr: 1 }}
+                                    onClick={() => removeValue(index)}
+                                  >
+                                    <RemoveIcon />
+                                  </IconButton>
+                                  <IconButton onClick={() => addValue(index)}>
+                                    <AddIcon />
+                                  </IconButton>
+                                </Grid>
+                              </Grid>
                               {form.value?.map((val, valIndex) => (
                                 <TextField
                                   sx={{ mt: 1 }}

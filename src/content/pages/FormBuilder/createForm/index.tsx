@@ -161,6 +161,7 @@ function CreateForm() {
               activeForms={activeForms}
               setFieldSettings={setFieldSettings}
               selected={selectedData}
+              fieldSettings={fieldSettings}
             />
           </Grid>
         </Grid>
