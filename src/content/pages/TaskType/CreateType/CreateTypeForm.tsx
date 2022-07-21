@@ -2,7 +2,11 @@ import {
   Alert,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -10,6 +14,9 @@ import { useFormik } from "formik";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
+import { Form } from "../../FormBuilder/form.interface";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
   key: yup
@@ -21,9 +28,17 @@ const validationSchema = yup.object({
   label: yup.string().required("required"),
 });
 
-const CreateTaskTypeForm = ({ onFinish }) => {
+type Props = {
+  forms: Form[];
+  onFinish: () => any;
+};
+const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -32,6 +47,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
       key: "",
       label: "",
       description: "",
+      form: "",
     },
     onSubmit: async (values, actions) => {
       try {
@@ -40,13 +56,15 @@ const CreateTaskTypeForm = ({ onFinish }) => {
 
         await taskService.createTaskTypes({
           ...values,
-          key: values.key.toString()
+          key: values.key.toString(),
         });
         actions.resetForm();
         setSuccess("Added new task type");
         await onFinish();
+        return true;
       } catch (error) {
         setError(getAxiosErrorMessage(error));
+        return false;
       }
     },
   });
@@ -55,6 +73,27 @@ const CreateTaskTypeForm = ({ onFinish }) => {
     setSuccess("");
     setError("");
     formik.handleChange(e);
+  };
+
+  const handleFormChange = async (e) => {
+    setError("");
+    setSuccess("");
+
+    if (e.target.value === "new") {
+      const isValidForm = await formik.submitForm();
+
+      if (!isValidForm) {
+        formik.setFieldValue("form", "");
+        return;
+      }
+
+      return navigate("/create-form", {
+        state: {
+          value: formik.values,
+          mode: "create",
+        },
+      });
+    } else formik.handleChange(e);
   };
 
   return (
@@ -67,7 +106,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Key"
+              label={t("key")}
               name="key"
               onChange={(e) => handleChange(e)}
               error={formik.touched.key && Boolean(formik.errors.key)}
@@ -79,7 +118,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Label"
+              label={t("label")}
               name="label"
               onChange={(e) => handleChange(e)}
               error={formik.touched.label && Boolean(formik.errors.label)}
@@ -90,7 +129,7 @@ const CreateTaskTypeForm = ({ onFinish }) => {
           </Grid>
           <Grid item>
             <TextField
-              label="Description"
+              label={t("description")}
               name="description"
               onChange={(e) => handleChange(e)}
               error={
@@ -104,6 +143,26 @@ const CreateTaskTypeForm = ({ onFinish }) => {
             />
           </Grid>
           <Grid item>
+            <FormControl fullWidth>
+              <InputLabel id="form">{t("form")}</InputLabel>
+              <Select
+                labelId="form"
+                id="form"
+                value={formik.values.form}
+                label={t("form")}
+                name="form"
+                onChange={(e) => handleFormChange(e)}
+              >
+                {forms.map((item) => (
+                  <MenuItem key={item._id} value={item._id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="new">{t("createNewForm")}</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item>
             <Button
               variant="contained"
               disabled={formik.isSubmitting}
@@ -111,7 +170,11 @@ const CreateTaskTypeForm = ({ onFinish }) => {
               type="submit"
               fullWidth
             >
-              {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+              {formik.isSubmitting ? (
+                <CircularProgress size={18} />
+              ) : (
+                t("submit")
+              )}
             </Button>
           </Grid>
         </Grid>

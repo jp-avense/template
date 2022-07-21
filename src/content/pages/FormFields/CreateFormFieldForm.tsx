@@ -10,6 +10,8 @@ import {
   Checkbox,
   CircularProgress,
   Alert,
+  FormHelperText,
+  IconButton,
 } from "@mui/material";
 import { t } from "i18next";
 
@@ -19,6 +21,9 @@ import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
+
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
@@ -44,7 +49,13 @@ function FormFieldForm({ onDone }) {
   ];
 
   const validationSchema = yup.object({
-    key: yup.string().required(t("keyIsRequred")),
+    key: yup
+      .string()
+      .matches(
+        /^[a-zA-Z]+/,
+        "Key should only contain lower and uppercase letters"
+      )
+      .required(t("keyIsRequred")),
     label: yup.string(),
     description: yup.string(),
     note: yup.string(),
@@ -69,19 +80,45 @@ function FormFieldForm({ onDone }) {
         setError("");
         setSuccess("");
 
+
         const res = { ...values } as any;
         res.inputType = type;
 
-        if (type === "radios" || type === "checkboxes" || type === "dropdown")
-          res.options = options;
+        let errors = [];
+
+        if (type === "radios" || type === "checkboxes" || type === "dropdown") {
+
+          const reduced = options.reduce((acc, x) => {
+            return {
+              ...acc,
+              [x.key]: x.value,
+            };
+          }, {});
+
+          res.options = reduced;
+          
+          console.log(res);
+          if (
+            res.defaultValue &&
+            !Object.keys(res.options).includes(res.defaultValue)
+          ) {
+            errors.push("Default value must exist in the options");
+          }
+        }
 
         if (type === "textarea") res.rows = rows;
 
-        await formService.createField(res);
-        await onDone();
+        console.log(res);
 
-        setSuccess("Success");
+        if (!errors.length) {
+          console.log(res);
+          await formService.createField(res);
+          await onDone();
+
+          setSuccess("Success");
+        } else setError(errors[0]);
       } catch (error) {
+        console.log(error);
         setError(getAxiosErrorMessage(error));
       }
     },
@@ -98,7 +135,7 @@ function FormFieldForm({ onDone }) {
     });
 
     current.splice(index, 1, {
-      key: e.target.value.replace(" ", ""),
+      key: e.target.value.replace(/\s/g, "").toLowerCase(),
       value: e.target.value,
     });
     setOptions(current);
@@ -118,6 +155,14 @@ function FormFieldForm({ onDone }) {
     let current = options.slice();
     current.splice(current.length - 1, 1);
     setOptions(current);
+    formik.setFieldValue('defaultValue', "")
+  };
+
+  const handleChange = (e) => {
+    setSuccess("");
+    setError("");
+
+    formik.handleChange(e);
   };
 
   return (
@@ -166,7 +211,7 @@ function FormFieldForm({ onDone }) {
                     name="key"
                     label={t("key")}
                     value={formik.values.key}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={formik.touched.key && Boolean(formik.errors.key)}
                     helperText={formik.touched.key && formik.errors.key}
                     fullWidth
@@ -177,7 +222,7 @@ function FormFieldForm({ onDone }) {
                     name="label"
                     label={t("label")}
                     value={formik.values.label}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={formik.touched.label && Boolean(formik.errors.label)}
                     helperText={formik.touched.label && formik.errors.label}
                     fullWidth
@@ -188,7 +233,7 @@ function FormFieldForm({ onDone }) {
                     name="description"
                     label={t("description")}
                     value={formik.values.description}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={
                       formik.touched.description &&
                       Boolean(formik.errors.description)
@@ -204,7 +249,7 @@ function FormFieldForm({ onDone }) {
                     name="placeholder"
                     label={t("placeholder")}
                     value={formik.values.placeholder}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={
                       formik.touched.placeholder &&
                       Boolean(formik.errors.placeholder)
@@ -214,29 +259,64 @@ function FormFieldForm({ onDone }) {
                     }
                     fullWidth
                   ></TextField>
-                  <TextField
-                    sx={{ mt: 2 }}
-                    id="defaultValue"
-                    name="defaultValue"
-                    label={t("defaultValue")}
-                    value={formik.values.defaultValue}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.defaultValue &&
-                      Boolean(formik.errors.defaultValue)
-                    }
-                    helperText={
-                      formik.touched.defaultValue && formik.errors.defaultValue
-                    }
-                    fullWidth
-                  ></TextField>
+                  {type === "checkboxes" ||
+                  type === "dropdown" ||
+                  type === "radios" ? (
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                      <InputLabel id="defaultvalue">
+                        {t("defaultValue")}
+                      </InputLabel>
+                      <Select
+                        labelId="defaultvalue"
+                        id="defaultvalue"
+                        name="defaultValue"
+                        label={t("defaultValue")}
+                        onChange={(e) => handleChange(e)}
+                        value={formik.values.defaultValue}
+
+                        error={
+                          formik.touched.defaultValue &&
+                          Boolean(formik.errors.defaultValue)
+                        }
+                      >
+                        {options.map((c) => (
+                          <MenuItem key={c.key} value={c.key}>
+                            {c.value}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        {formik.touched.defaultValue &&
+                          formik.errors.defaultValue}
+                      </FormHelperText>
+                    </FormControl>
+                  ) : (
+                    <TextField
+                      sx={{ mt: 2 }}
+                      id="defaultValue"
+                      name="defaultValue"
+                      label={t("defaultValue")}
+                      value={formik.values.defaultValue}
+                      onChange={(e) => handleChange(e)}
+                      error={
+                        formik.touched.defaultValue &&
+                        Boolean(formik.errors.defaultValue)
+                      }
+                      helperText={
+                        formik.touched.defaultValue &&
+                        formik.errors.defaultValue
+                      }
+                      fullWidth
+                    ></TextField>
+                  )}
+
                   <TextField
                     sx={{ mt: 2 }}
                     id="validation"
                     name="validation"
                     label={t("validation")}
                     value={formik.values.validation}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={
                       formik.touched.validation &&
                       Boolean(formik.errors.validation)
@@ -266,38 +346,43 @@ function FormFieldForm({ onDone }) {
                   {type === "radios" ||
                   type === "checkboxes" ||
                   type === "dropdown" ? (
-                    <>
-                      <Typography sx={{ mt: 2 }} variant="h5">
-                        {t("values")}
-                      </Typography>
-                      <div>
-                        <Button
-                          disabled={options.length < 2}
-                          onClick={removeOption}
-                          variant="contained"
-                        >
-                          -
-                        </Button>
-                        <Button onClick={addOption} variant="contained">
-                          +
-                        </Button>
-                      </div>
-                      <div style={{ display: "inline-grid" }}>
-                        {options.map((c, index) => (
-                          <>
-                            <TextField
-                              key={index}
-                              id="option"
-                              name="option"
-                              value={c.value}
-                              defaultValue={c.value}
-                              onChange={(e) => optionsValue(e, index)}
-                              required
-                            ></TextField>
-                          </>
-                        ))}
-                      </div>
-                    </>
+                    <Box gap={2} display="flex" flexDirection="column" mt={2}>
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Typography sx={{ mt: 2 }} variant="h5">
+                          {t("values")}
+                        </Typography>
+                        <div>
+                          <IconButton
+                            disabled={options.length < 2}
+                            onClick={removeOption}
+                            color="error"
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                          <IconButton onClick={addOption} color="primary">
+                            <AddIcon />
+                          </IconButton>
+                        </div>
+                      </Box>
+                      {options.map((c, index) => (
+                        <>
+                          <TextField
+                            key={index}
+                            id="option"
+                            name="option"
+                            value={c.value}
+                            defaultValue={c.value}
+                            onChange={(e) => optionsValue(e, index)}
+                            required
+                          ></TextField>
+                        </>
+                      ))}
+                    </Box>
                   ) : (
                     <></>
                   )}
@@ -307,7 +392,7 @@ function FormFieldForm({ onDone }) {
                     name="note"
                     label={t("note")}
                     value={formik.values.note}
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleChange(e)}
                     error={formik.touched.note && Boolean(formik.errors.note)}
                     helperText={formik.touched.note && formik.errors.note}
                     fullWidth

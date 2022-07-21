@@ -23,12 +23,12 @@ const ModalButton = ({
 }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = (e) => {
     if (setForceOpen) setForceOpen(false);
 
     setOpen(false);
   };
-  const handleOpen = () => {
+  const handleOpen = (e) => {
     if (setForceOpen) setForceOpen(true);
     setOpen(true);
   };

@@ -8,6 +8,7 @@ import SuspenseLoader from "src/components/SuspenseLoader";
 import AdminOnlyRoute from "./components/AdminOnlyRoute";
 import FormFields from "./content/pages/FormFields";
 import FormBuilder from "./content/pages/FormBuilder";
+import CreateForm from "./content/pages/FormBuilder/createForm";
 
 const Loader = (Component) => (props) =>
   (
@@ -133,6 +134,10 @@ const routes: RouteObject[] = [
         element: <FormBuilder />,
       },
     ],
+  },
+  {
+    path: "create-form",
+    element: <CreateForm />,
   },
 ];
 

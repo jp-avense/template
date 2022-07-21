@@ -2,48 +2,51 @@ import {
   Alert,
   Button,
   CircularProgress,
-  Grid,
-  TextField,
   FormControl,
-  FormHelperText,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
+  TextField,
 } from "@mui/material";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
-
-interface ITaskType {
-  _id: string;
-  key: string;
-  label: string;
-  description: string;
-  systemStatusKey: string;
-}
+import { useNavigate } from "react-router";
+import { Form } from "../../FormBuilder/form.interface";
+import { TaskType } from "../type.interface";
+import { useTranslation } from "react-i18next";
 
 type Props = {
-  selectedType: ITaskType;
+  forms: Form[];
+  selectedType: TaskType;
   onFinish: () => Promise<any>;
 };
 
 const validationSchema = yup.object({
   label: yup.string().required("required"),
   description: yup.string().optional(),
-  systemStatusKey: yup.string().required(),
 });
 
-const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
+const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
+  const { t } = useTranslation();
+
+  const formOfType =
+    forms.find((item) => item.type === selectedType.key)?._id || "";
+
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       label: selectedType.label,
       description: selectedType.description,
-      systemStatusKey: "none",
+      form: formOfType,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -52,7 +55,7 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
         setSuccess("");
 
         await taskService.updateTaskType(selectedType._id, values);
-        setSuccess("Updated Task");
+        setSuccess("Updated Task.");
 
         await onFinish();
       } catch (error) {
@@ -67,6 +70,22 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
     formik.handleChange(e);
   };
 
+  const handleFormChange = (e) => {
+    if (e.target.value === "new") {
+      return navigate("/create-form", {
+        state: {
+          selectedType: {
+            ...selectedType,
+            ...formik.values,
+          },
+          mode: "update",
+        },
+      });
+    }
+
+    formik.handleChange(e);
+  };
+
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
@@ -78,17 +97,17 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
           <Grid item>
             <TextField
               name="key"
-              label="Key"
+              label={t("key")}
               defaultValue={selectedType.key}
               disabled
               fullWidth
-              helperText="You cannot change this field"
+              helperText={t("cantChangeField")}
             />
           </Grid>
           <Grid item>
             <TextField
               name="label"
-              label="Label"
+              label={t("label")}
               value={formik.values.label}
               error={formik.touched.label && Boolean(formik.errors.label)}
               helperText={formik.touched.label && formik.errors.label}
@@ -99,7 +118,7 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
           <Grid item>
             <TextField
               name="description"
-              label="Description"
+              label={t("description")}
               value={formik.values.description}
               error={
                 formik.touched.description && Boolean(formik.errors.description)
@@ -113,23 +132,21 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
           </Grid>
           <Grid item>
             <FormControl fullWidth>
-              <InputLabel id="select">System Status</InputLabel>
+              <InputLabel id="form">{t("form")}</InputLabel>
               <Select
-                label="System status"
-                name="systemStatusKey"
-                value={formik.values.systemStatusKey}
-                labelId="select"
-                onChange={handleChange}
-                error={
-                  formik.touched.systemStatusKey &&
-                  Boolean(formik.errors.systemStatusKey)
-                }
+                labelId="form"
+                id="form"
+                value={formik.values.form}
+                label={t("form")}
+                name="form"
+                onChange={(e) => handleFormChange(e)}
               >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="new">New</MenuItem>
-                <MenuItem value="assigned">Assigned</MenuItem>
-                <MenuItem value="inProgress">In Progress</MenuItem>
-                <MenuItem value="done">Done</MenuItem>
+                {forms.map((item) => (
+                  <MenuItem key={item._id} value={item._id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+                <MenuItem value="new">{t("createNewForm")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -140,7 +157,11 @@ const UpdateTypeForm = ({ selectedType, onFinish }: Props) => {
               fullWidth
               variant="contained"
             >
-              {formik.isSubmitting ? <CircularProgress size={18} /> : "Submit"}
+              {formik.isSubmitting ? (
+                <CircularProgress size={18} />
+              ) : (
+                t("submit")
+              )}
             </Button>
           </Grid>
         </Grid>

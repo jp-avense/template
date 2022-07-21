@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, Card } from "@mui/material";
-import { t } from "i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
@@ -12,29 +11,7 @@ import { formService } from "src/services/form.service";
 import FormFieldForm from "./CreateFormFieldForm";
 import UpdateForms from "./UpdateForm";
 import UpdateFormField from "./UpdateForm/UpdateFormField";
-
-const headerKeys = [
-  {
-    key: "key",
-    label: "Key",
-  },
-  {
-    key: "inputType",
-    label: "Input Type",
-  },
-  {
-    key: "label",
-    label: "Label",
-  },
-  {
-    key: "description",
-    label: "Description",
-  },
-  {
-    key: "note",
-    label: "Note",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const FormFields = () => {
   const [forms, setForms] = useState([]);
@@ -42,16 +19,47 @@ const FormFields = () => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
+
   useEffect(() => {
     setLoading(true);
     formService
       .getFields()
       .then(({ data }) => {
-        setHeaders(headerKeys);
         setForms(data);
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const headerKeys = [
+      {
+        key: "key",
+        label: t("key"),
+      },
+      {
+        key: "inputType",
+        label: t("inputType"),
+      },
+      {
+        key: "label",
+        label: t("label"),
+      },
+      {
+        key: "description",
+        label: t("description"),
+      },
+      {
+        key: "note",
+        label: t("note"),
+      },
+    ];
+
+    setHeaders(headerKeys);
+  }, [language]);
 
   const handleSelectOne = (id: string) => {
     let res = [];
@@ -160,11 +168,11 @@ const FormFields = () => {
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal
-                    buttonText="Delete"
-                    title="Delete forms"
+                    buttonText={t("delete")}
+                    title={t("delete")}
                     handleConfirm={() => handleDelete()}
-                    confirmMessage="You are about to delete some forms. Continue?"
-                    confirmText="Confirm"
+                    confirmMessage={t("deleteSomeFields")}
+                    confirmText={t("submit")}
                     buttonProps={{
                       variant: "contained",
                       color: "warning",

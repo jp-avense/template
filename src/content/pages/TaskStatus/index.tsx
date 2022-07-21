@@ -12,33 +12,7 @@ import { ITaskStatus, TaskStatusState } from "./status.interface";
 import UpdateStatus from "./UpdateStatus";
 import UpdateStatusForm from "./UpdateStatus/UpdateStatusForm";
 import ConfirmModal from "src/components/ConfirmModal";
-
-const tableHeaders = [
-  {
-    key: "Key",
-    label: "Key",
-  },
-  {
-    key: "label",
-    label: "Label",
-  },
-  {
-    key: "description",
-    label: "Description",
-  },
-  {
-    key: "isSystemStatus",
-    label: "Is System Status?",
-  },
-  {
-    key: "state",
-    label: "State",
-  },
-  {
-    key: "systemStatusKey",
-    label: "System Status Key",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const TaskStatusPage = () => {
   const [status, setStatus] = useState<ITaskStatus[]>([]);
@@ -46,18 +20,52 @@ const TaskStatusPage = () => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
+
   useEffect(() => {
     setLoading(true);
     taskService
       .getStatuses()
       .then(({ data }) => {
         data.sort((a, b) => a.order - b.order);
-
-        setHeaders(tableHeaders);
         setStatus(data);
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const tableHeaders = [
+      {
+        key: "Key",
+        label: t("key"),
+      },
+      {
+        key: "label",
+        label: t("label"),
+      },
+      {
+        key: "description",
+        label: t("description"),
+      },
+      {
+        key: "isSystemStatus",
+        label: t("isSystemStatus"),
+      },
+      {
+        key: "state",
+        label: t("state"),
+      },
+      {
+        key: "systemStatusKey",
+        label: t("systemStatusKey"),
+      },
+    ];
+
+    setHeaders(tableHeaders);
+  }, [language]);
 
   const handleSelectOne = (id: string) => {
     let res = [];
@@ -229,11 +237,11 @@ const TaskStatusPage = () => {
                 {selected.length > 0 ? (
                   <>
                     <ConfirmModal
-                      buttonText="Delete"
-                      title="Delete status"
+                      buttonText={t("delete")}
+                      title={t("delete")}
                       handleConfirm={() => handleDelete()}
-                      confirmMessage="You are about to delete some status. Continue?"
-                      confirmText="Confirm"
+                      confirmMessage={t("deleteSomeStatus")}
+                      confirmText={t("submit")}
                       buttonProps={{
                         variant: "contained",
                         color: "warning",
@@ -245,7 +253,7 @@ const TaskStatusPage = () => {
                       color="success"
                       onClick={handleEnable}
                     >
-                      Enable
+                      {t("enable")}
                     </Button>
                     <Button
                       type="button"
@@ -253,7 +261,7 @@ const TaskStatusPage = () => {
                       color="error"
                       onClick={handleDisable}
                     >
-                      Disable
+                      {t("disable")}
                     </Button>
                   </>
                 ) : null}
