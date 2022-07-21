@@ -145,5 +145,7 @@
   "systemStatusKey": "System Status Key",
   "enable": "לְאַפשֵׁר",
   "disable": "לִשְׁלוֹל זְכוּת",
-  "preview": "תצוגה מקדימה"
+  "preview": "תצוגה מקדימה",
+  "conditions": "תנאים",
+  "success": "הַצלָחָה"
 }

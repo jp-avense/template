@@ -15,6 +15,13 @@ import { useLocation } from "react-router";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import { TaskType } from "../../TaskType/type.interface";
+import { cloneDeep } from "lodash";
+
+type Values = {
+  name: string;
+  description: string;
+  type: string;
+};
 
 function CreateForm() {
   const [loading, setLoading] = useState(false);
@@ -26,6 +33,12 @@ function CreateForm() {
   const [activeForms, setActiveForms] = useState([]);
   const [fieldSettings, setFieldSettings] = useState([]);
   const [types, setTypes] = useState<TaskType[]>([]);
+  const [gSettings, setGSettings] = useState<Values>({
+    name: "",
+    description: "",
+    type: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const location = useLocation();
 
@@ -92,12 +105,6 @@ function CreateForm() {
     if (e.currentTarget.id !== "playground") return;
     if (dragData.find((item) => item.key === drag.id)) return;
     if (dragTarget !== drag.id && drag.sidebar) handleDragDrop(e);
-
-    // console.log(dragTarget);
-    // console.log(drag.id);
-    // console.log(dragData);
-    // console.log(fieldForms);
-
     setDrag("");
   };
 
@@ -147,6 +154,46 @@ function CreateForm() {
     e.stopPropagation();
   };
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    if (dragData.length < 1) {
+      setIsSubmitting(false);
+      throw new Error("Please add at least one form field");
+    }
+
+    const dup = cloneDeep(dragData);
+
+    for (const setting of fieldSettings) {
+      const { _id, conditions, rules } = setting;
+
+      console.log(dup);
+      console.log(_id);
+
+      const item = dup.find((x) => x.key === _id);
+
+      item.conditions = conditions;
+      item.rules = rules;
+    }
+
+    for (const d of dup) {
+      const { key } = fieldForms.find((item) => item._id === d.key);
+      d.key = key;
+    }
+
+    try {
+      await formService.createForm({
+        ...gSettings,
+        formFields: dup,
+      });
+    } catch (error) {
+      setIsSubmitting(false);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -154,14 +201,14 @@ function CreateForm() {
           <CircularProgress size={40} />
         </Box>
       ) : (
-        <Grid container>
-          <Grid item xs={3}>
+        <Grid container sx={{ position: "relative" }}>
+          <Grid item xs={3} sx={{ position: "relative" }}>
             <FormFieldPicker
               onDragStart={onDragStart}
               onDragEnter={onDragEnter}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} sx={{ position: "relative" }}>
             <Playground
               data={dragData}
               fields={fieldForms}
@@ -173,7 +220,11 @@ function CreateForm() {
               handleDragDropPlayground={handleDragDropPlayground}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid
+            item
+            xs={3}
+            sx={{ position: "fixed", right: 0, height: "100vh", width: "100%" }}
+          >
             <FormFieldSettings
               generalData={location.state as any}
               taskTypes={types}
@@ -181,6 +232,10 @@ function CreateForm() {
               setFieldSettings={setFieldSettings}
               selected={selectedData}
               fieldSettings={fieldSettings}
+              generalSettings={gSettings}
+              setGeneralSettings={setGSettings}
+              loading={isSubmitting}
+              onSubmit={handleSubmit}
             />
           </Grid>
         </Grid>
