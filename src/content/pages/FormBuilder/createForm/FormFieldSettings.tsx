@@ -20,6 +20,7 @@ import { TaskType } from "../../TaskType/type.interface";
 import FormGeneralSettings from "./FormGeneralSettings";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { cloneDeep } from "lodash";
 
 type Props = {
   selected: any[];
@@ -74,7 +75,8 @@ function FormFieldSettings({
   ];
 
   const setSelectedCondition = (e, index) => {
-    const data = activeForms.filter((c) => e.target.value == c.label);
+    const forms = cloneDeep(activeForms);
+    const data = forms.filter((c) => e.target.value == c.label);
     let current = selectedForm.slice();
     current.splice(index, 1, data[0]);
     setSelectedForm(current);
@@ -103,42 +105,68 @@ function FormFieldSettings({
   }, [selectedForm]);
 
   useEffect(() => {
-    const current = conditions.reduce((acc, item) => {
-      if (item.key && item.value?.length > 0) {
-        const value = item.value.filter((value) => value != "");
+    if (selected[0]?._id) {
+      const current = conditions.reduce((acc, item) => {
+        if (item.key && item.value?.length > 0) {
+          const value = item.value.filter((value) => value != "");
 
-        if (value.length > 0) {
-          acc = {
-            ...acc,
-            [item.key]: value,
-          };
+          if (value.length > 0) {
+            acc = {
+              ...acc,
+              [item.key]: value,
+            };
+          }
         }
-      }
-      return acc;
-    }, {});
-    let settings = fieldSettings.slice();
+        return acc;
+      }, {});
 
-    const res = {
-      rules: { required: required, action: action },
-      conditions: current,
-      _id: selected[0]?._id,
-    };
-    if (fieldSettings.length > 0) {
-      const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
-      if (index > -1) {
-        settings.splice(index, 1, res);
-        setFieldSettings(settings);
+      const settings = fieldSettings.slice();
+
+      const res = {
+        rules: { required: required, action: action },
+        conditions: current,
+        _id: selected[0]?._id,
+      };
+      if (fieldSettings.length > 0) {
+        const index = fieldSettings.findIndex(
+          (c) => c._id === selected[0]?._id
+        );
+        if (index > -1) {
+          settings.splice(index, 1, res);
+          setFieldSettings(settings);
+        } else {
+          settings.push(res);
+          setFieldSettings(settings);
+        }
       } else {
         settings.push(res);
         setFieldSettings(settings);
       }
-    } else {
-      settings.push(res);
-      setFieldSettings(settings);
     }
   }, [conditions, required, action]);
 
-  useEffect(() => {}, [selected]);
+  useEffect(() => {
+    const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
+    if (index > -1) {
+      const condition = Object.entries(fieldSettings[index].conditions)
+        .map(([key, value]: [string, any]) => {
+          const forms = cloneDeep(activeForms);
+          const res = forms.find((c) => c.key === key);
+          if (res) {
+            res.value = value;
+            return res;
+          }
+        })
+        .filter(Boolean);
+      setSelectedForm(condition);
+      setAction(fieldSettings[index].rules.action);
+      setRequired(fieldSettings[index].rules.required);
+    } else {
+      setSelectedForm([]);
+      setAction([]);
+      setRequired(true);
+    }
+  }, [selected]);
 
   const setSelectedAction = (e) => {
     setAction(e.target.value);
@@ -177,6 +205,10 @@ function FormFieldSettings({
   };
 
   const changeTab = (e, newTab) => setCurrentTab(newTab);
+
+  console.log("selected", selected);
+
+  console.log("activeForm", activeForms);
 
   return (
     <Paper square elevation={0} sx={{ height: "100vh" }}>
