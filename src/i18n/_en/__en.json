@@ -153,5 +153,7 @@
   "chooseSystemStatus": "Choose a system status that is related to this new status",
   "deleteSomeFields": "You are about to delete some form fields. Continue?",
   "deleteSomeForms": "You are about to delete some forms. Continue?",
-  "preview": "Preview"
+  "preview": "Preview",
+  "conditions": "Conditions",
+  "success": "Success"
 }

@@ -16,16 +16,9 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  createElement,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import Modals from "../../Components/Modals";
 import {
-  FormField,
   FormFieldExtended,
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
@@ -36,7 +29,6 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import PrintIcon from "@mui/icons-material/Print";
 import SignaturePad from "signature_pad";
 import "./style.css";
-import { pad } from "lodash";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -164,7 +156,7 @@ const PreviewModal = ({ data }: Props) => {
           <FormGroup>
             <FormLabel>{label}</FormLabel>
             {Object.entries(options).map(([key, label]) => {
-              const checked = values[pk].includes(key);
+              const checked = values[pk]?.includes(key);
 
               return (
                 <FormControlLabel
@@ -354,7 +346,7 @@ const PreviewModal = ({ data }: Props) => {
 
   return (
     <>
-      <Modals onClose={handleClose} open={open} title={t('preview')}>
+      <Modals onClose={handleClose} open={open} title={t("preview")}>
         <Grid container gap={3} direction="column">
           {shownFields.map((item) => (
             <Grid item key={item._id}>

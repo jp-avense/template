@@ -21,6 +21,7 @@ import FormGeneralSettings from "./FormGeneralSettings";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { cloneDeep } from "lodash";
+import CircleIcon from "@mui/icons-material/Circle";
 
 type Props = {
   selected: any[];
@@ -37,6 +38,16 @@ type Props = {
   };
   taskTypes: TaskType[];
   fieldSettings: any[];
+  generalSettings: Values;
+  setGeneralSettings: React.Dispatch<React.SetStateAction<Values>>;
+  loading: boolean;
+  onSubmit: any;
+};
+
+type Values = {
+  name: string;
+  description: string;
+  type: string;
 };
 
 function TabPanel(props) {
@@ -53,6 +64,22 @@ function TabPanel(props) {
   );
 }
 
+function CircleDivide() {
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="center"
+      gap={1}
+      marginTop={2}
+    >
+      <CircleIcon sx={{ fontSize: 12, opacity: 0.2 }} />
+      <CircleIcon sx={{ fontSize: 12, opacity: 0.2 }} />
+      <CircleIcon sx={{ fontSize: 12, opacity: 0.2 }} />
+    </Box>
+  );
+}
+
 function FormFieldSettings({
   selected,
   activeForms,
@@ -60,6 +87,10 @@ function FormFieldSettings({
   generalData,
   taskTypes,
   fieldSettings,
+  generalSettings,
+  setGeneralSettings,
+  loading,
+  onSubmit,
 }: Props) {
   const [action, setAction] = useState([]);
   const [conditions, setCondition] = useState([]);
@@ -206,12 +237,8 @@ function FormFieldSettings({
 
   const changeTab = (e, newTab) => setCurrentTab(newTab);
 
-  console.log("selected", selected);
-
-  console.log("activeForm", activeForms);
-
   return (
-    <Paper square elevation={0} sx={{ height: "100vh" }}>
+    <Paper square elevation={0} sx={{ minHeight: "100%" }}>
       <AppBar position="static" sx={{ p: 1 }}>
         <Tabs
           onChange={changeTab}
@@ -230,7 +257,14 @@ function FormFieldSettings({
         </Tabs>
       </AppBar>
       <TabPanel value={currentTab} index={0}>
-        <FormGeneralSettings data={generalData} taskTypes={taskTypes} />
+        <FormGeneralSettings
+          data={generalData}
+          taskTypes={taskTypes}
+          settings={generalSettings}
+          setSettings={setGeneralSettings}
+          loading={loading}
+          onSubmit={onSubmit}
+        />
       </TabPanel>
       <TabPanel value={currentTab} index={1}>
         <List>
@@ -256,7 +290,11 @@ function FormFieldSettings({
               </TextField>
               {activeForms.length > 0 ? (
                 <>
-                  <Grid container justifyContent={"space-between"}>
+                  <Grid
+                    container
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                  >
                     <Typography sx={{ mt: 2 }} variant="h5">
                       {t("conditions")}
                     </Typography>
@@ -271,116 +309,97 @@ function FormFieldSettings({
                         <AddIcon />
                       </IconButton>
                     </Grid>
-                    <Grid container justifyContent={"space-between"}>
-                      <Grid item xs={4}>
-                        {selectedForm.map((form, index) => (
-                          <>
-                            <TextField
-                              sx={{ mt: 2, mb: 1 }}
-                              fullWidth
-                              label="Fields"
-                              select
-                              onChange={(e) => setSelectedCondition(e, index)}
-                              value={form.label}
-                            >
-                              {activeForms.map((c) => (
-                                <MenuItem
-                                  disabled={
-                                    selectedForm.findIndex((object) => {
-                                      return object.key === c.key;
-                                    }) > -1
-                                      ? true
-                                      : false
-                                  }
-                                  key={c.key}
-                                  value={c.label}
-                                >
-                                  {t(c.label)}
-                                </MenuItem>
-                              ))}
-                            </TextField>
-                          </>
-                        ))}
-                      </Grid>
-                      <Grid item xs={4} sx={{ mt: 2 }}>
-                        {selectedForm.map((form, index) => (
-                          <>
-                            {form.inputType ? (
-                              <>
-                                {form.inputType === "dropdown" ||
-                                form.inputType === "radios" ||
-                                form.inputType === "checkboxes" ? (
-                                  <>
-                                    <TextField
-                                      fullWidth
-                                      label="value"
-                                      onChange={(e) =>
-                                        setConditionValue(e, index)
-                                      }
-                                      value={form.value || []}
-                                      select
-                                      SelectProps={{ multiple: true }}
-                                    >
-                                      {Object.entries(form.options).map(
-                                        ([key, value]: [string, any]) => (
-                                          <MenuItem key={key} value={key}>
-                                            {t(value)}
-                                          </MenuItem>
-                                        )
-                                      )}
-                                    </TextField>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Grid container>
-                                      <Typography sx={{ mt: 2 }} variant="h5">
-                                        {t("Text Values")}
-                                      </Typography>
-                                      <Grid item sx={{ mt: 2 }}>
-                                        <IconButton
-                                          sx={{ mr: 1 }}
-                                          onClick={() => removeValue(index)}
-                                        >
-                                          <RemoveIcon />
-                                        </IconButton>
-                                        <IconButton
-                                          onClick={() => addValue(index)}
-                                        >
-                                          <AddIcon />
-                                        </IconButton>
-                                      </Grid>
-                                    </Grid>
-                                    {form.value?.map((val, valIndex) => (
-                                      <TextField
-                                        sx={{ mt: 1 }}
-                                        key={valIndex}
-                                        fullWidth
-                                        label="value"
-                                        onChange={(e) =>
-                                          setStringValue(e, index, valIndex)
-                                        }
-                                        value={val}
-                                      />
-                                    ))}
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                          </>
-                        ))}
-                      </Grid>
-                    </Grid>
-                    <Divider
-                      component="li"
-                      sx={{
-                        mt: 2,
-                        height: 2,
-                        backgroundColor: "orchid",
-                      }}
-                    />
                   </Grid>
+                  {selectedForm.map((form, index) => (
+                    <>
+                      <TextField
+                        sx={{ mt: 2, mb: 1 }}
+                        fullWidth
+                        label="Fields"
+                        select
+                        onChange={(e) => setSelectedCondition(e, index)}
+                        value={form.label}
+                      >
+                        {activeForms.map((c) => (
+                          <MenuItem
+                            disabled={
+                              selectedForm.findIndex((object) => {
+                                return object.key === c.key;
+                              }) > -1
+                                ? true
+                                : false
+                            }
+                            key={c.key}
+                            value={c.label}
+                          >
+                            {t(c.label)}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+
+                      {form.inputType ? (
+                        <>
+                          {form.inputType === "dropdown" ||
+                          form.inputType === "radios" ||
+                          form.inputType === "checkboxes" ? (
+                            <>
+                              <TextField
+                                fullWidth
+                                label="value"
+                                onChange={(e) => setConditionValue(e, index)}
+                                value={form.value || []}
+                                select
+                                SelectProps={{ multiple: true }}
+                              >
+                                {Object.entries(form.options).map(
+                                  ([key, value]: [string, any]) => (
+                                    <MenuItem key={key} value={key}>
+                                      {t(value)}
+                                    </MenuItem>
+                                  )
+                                )}
+                              </TextField>
+                              <CircleDivide />
+                            </>
+                          ) : (
+                            <>
+                              <Grid container justifyContent={"space-between"}>
+                                <Typography sx={{ mt: 1 }} variant="h5">
+                                  {t("Text Values")}
+                                </Typography>
+                                <Grid item sx={{ mt: 2 }}>
+                                  <IconButton
+                                    sx={{ mr: 1 }}
+                                    onClick={() => removeValue(index)}
+                                  >
+                                    <RemoveIcon />
+                                  </IconButton>
+                                  <IconButton onClick={() => addValue(index)}>
+                                    <AddIcon />
+                                  </IconButton>
+                                </Grid>
+                              </Grid>
+                              {form.value?.map((val, valIndex) => (
+                                <TextField
+                                  sx={{ mt: 1 }}
+                                  key={valIndex}
+                                  fullWidth
+                                  label="value"
+                                  onChange={(e) =>
+                                    setStringValue(e, index, valIndex)
+                                  }
+                                  value={val}
+                                />
+                              ))}
+                              <CircleDivide />
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </>
+                  ))}
                 </>
               ) : (
                 <></>
