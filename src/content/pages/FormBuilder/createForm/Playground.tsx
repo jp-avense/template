@@ -323,6 +323,9 @@ const Playground = ({
             </InputLabel>
           </>
         );
+
+      case "button":
+        return <Button variant="contained">{item.label}</Button>;
     }
   };
 
