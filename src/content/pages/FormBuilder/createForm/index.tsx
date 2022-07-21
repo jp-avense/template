@@ -52,7 +52,10 @@ function CreateForm() {
     const currentIndex = dragData.findIndex((c) => c.key === selected[0]);
     if (currentIndex > -1) {
       if (selected[0]) {
-        setSelectedData([{ _id: selected[0], index: currentIndex }]);
+        const res = fieldForms.find((x) => x._id == selected[0]);
+        setSelectedData([
+          { _id: selected[0], index: currentIndex, inputType: res.inputType },
+        ]);
       }
       for (let i = 0; i < currentIndex; i++) {
         availForms.push(dragData[i].key);
