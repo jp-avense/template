@@ -155,5 +155,21 @@
   "deleteSomeForms": "You are about to delete some forms. Continue?",
   "preview": "Preview",
   "conditions": "Conditions",
-  "success": "Success"
+  "success": "Success",
+  "formBuilder": "Form Builder",
+  "generalSettings": "General Settings",
+  "fieldSettings": "Field Settings",
+  "isRequired": "Required?",
+  "formName": "Form name",
+  "formDescription": "Form description",
+  "taskType": "Task type",
+  "createForm": "Create Form",
+  "agentInformation": "Agent Information",
+  "fieldForms": "Field Forms",
+  "inputType": "Input type",
+  "systemTaskStatus": "System - Task Status",
+  "taskStatuses": "Task Statuses",
+  "System": "System",
+  "loggedInAs": "Logged in as",
+  "roles": "Roles"
 }

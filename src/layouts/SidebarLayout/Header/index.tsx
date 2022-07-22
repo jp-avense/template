@@ -14,6 +14,7 @@ import {
 import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
 import { SidebarContext } from "src/contexts/SidebarContext";
 import { AuthContext } from "src/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
 
 const HeaderWrapper = styled(Box)(
@@ -38,6 +39,8 @@ const HeaderWrapper = styled(Box)(
 function Header() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const context = useContext(AuthContext);
+
+  const { t } = useTranslation();
 
   const {
     handleUser: { user },
@@ -87,7 +90,7 @@ function Header() {
         </Box>
       </Box>
       <Stack direction="row" alignItems="center" spacing={2}>
-        Logged in as: {user.name + " " + user.family_name} - Roles:{" "}
+        {t("loggedInAs")}: {user.name + " " + user.family_name} - {t("roles")}:{" "}
         {roles.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(" | ")}
       </Stack>
     </HeaderWrapper>

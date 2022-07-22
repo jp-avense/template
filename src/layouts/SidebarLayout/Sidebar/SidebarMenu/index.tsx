@@ -291,7 +291,7 @@ function SidebarMenu() {
                       to="/task-type"
                       startIcon={<DashboardIcon />}
                     >
-                      Task Types
+                      {t("taskTypes")}
                     </Button>
                   </ListItem>
                   <ListItem component="div">
@@ -302,7 +302,7 @@ function SidebarMenu() {
                       to="/task-status"
                       startIcon={<DashboardIcon />}
                     >
-                      Task Statuses
+                      {t("taskStatuses")}
                     </Button>
                   </ListItem>
                   <ListItem component="div">
@@ -313,7 +313,7 @@ function SidebarMenu() {
                       to="/form-field"
                       startIcon={<TextFieldsIcon />}
                     >
-                      Form Fields
+                      {t("formFields")}
                     </Button>
                   </ListItem>
                   <ListItem component="div">
@@ -324,7 +324,7 @@ function SidebarMenu() {
                       to="/form-builder"
                       startIcon={<BuildIcon />}
                     >
-                      Form Builder
+                      {t("formBuilder")}
                     </Button>
                   </ListItem>
                 </List>

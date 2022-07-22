@@ -98,7 +98,7 @@ const FormBuilder = () => {
             data={forms}
             headers={headers}
             selected={selected}
-            title="Form Builder"
+            title={t("formBuilder")}
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}

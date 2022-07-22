@@ -150,7 +150,7 @@ const FormFields = () => {
             data={forms}
             headers={headers}
             selected={selected}
-            title="Field Forms"
+            title={t("fieldForms")}
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
