@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Card } from "@mui/material";
+import { Box, Card, Avatar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
@@ -22,6 +22,8 @@ const FormBuilder = () => {
   } = useTranslation();
 
   useEffect(() => {
+    // const jsonData = require("./sample.json");
+    // setForms(jsonData);
     init();
   }, []);
 
@@ -68,6 +70,10 @@ const FormBuilder = () => {
 
     setSelected(res);
   };
+
+  const editForm = useMemo(() => {
+    return forms.find((item) => item._id === selected[0]);
+  }, [selected, forms]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {

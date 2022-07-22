@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { formService } from "src/services/form.service";
 import Scrollbar from "src/components/Scrollbar";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import "./style.css";
 
 type Props = {
@@ -23,6 +23,8 @@ type Props = {
 function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
@@ -47,7 +49,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
         <Scrollbar>
           <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={2}>
             <Typography sx={{ color: "white" }} variant="h4">
-              Field Forms
+              {t("formFields")}
             </Typography>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column" }}>

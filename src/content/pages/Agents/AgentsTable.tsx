@@ -135,7 +135,7 @@ const AgentTable: FC = () => {
             <Box display="flex" gap={2}>
               {selectedAgents.length === 1 ? (
                 <ModalButton
-                  text="Update"
+                  text={t("update")}
                   buttonProps={{
                     variant: "contained",
                   }}

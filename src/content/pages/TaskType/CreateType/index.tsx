@@ -17,7 +17,7 @@ function CreateTaskType({ children }) {
 
   return (
     <>
-      <Modals open={open} onClose={handleClose} title={t('createType')}>
+      <Modals open={open} onClose={handleClose} title={t("createType")}>
         {children}
       </Modals>
       <Grid container justifyContent="space-between" alignItems="center">
