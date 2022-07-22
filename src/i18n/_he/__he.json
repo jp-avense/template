@@ -166,5 +166,6 @@
   "taskStatuses": "סטטוסי משימות",
   "System": "מערכת",
   "loggedInAs": "מחובר כ",
-  "roles": "תפקידים"
+  "roles": "תפקידים",
+  "taskManagementTask": "ניהול משימות - משימה"
 }

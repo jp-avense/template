@@ -171,5 +171,6 @@
   "taskStatuses": "Task Statuses",
   "System": "System",
   "loggedInAs": "Logged in as",
-  "roles": "Roles"
+  "roles": "Roles",
+  "taskManagementTask": "Task management - Tasks"
 }
