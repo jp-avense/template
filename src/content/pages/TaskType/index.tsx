@@ -156,7 +156,7 @@ const TaskTypePage = () => {
   return (
     <>
       <Helmet>
-        <title>Task Type</title>
+        <title>{t("taskType")}</title>
       </Helmet>
       <PageTitleWrapper>
         <CreateType>

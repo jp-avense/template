@@ -5,6 +5,10 @@ import {
   Box,
   CircularProgress,
   Grid,
+  IconButton,
+  Button,
+  Avatar,
+  Paper,
   TableCell,
   TableRow,
 } from "@mui/material";
@@ -12,10 +16,15 @@ import { useEffect, useState } from "react";
 import { formService } from "src/services/form.service";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router";
+import { Link } from "react-router-dom";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import { TaskType } from "../../TaskType/type.interface";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
+import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
+import enFlag from "../../../../assets/images/icons/enFlag.svg";
 
 type Values = {
   name: string;
@@ -41,6 +50,7 @@ function CreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
@@ -194,6 +204,10 @@ function CreateForm() {
     }
   };
 
+  const handleDirection = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
+
   return (
     <>
       {loading ? (
@@ -201,44 +215,100 @@ function CreateForm() {
           <CircularProgress size={40} />
         </Box>
       ) : (
-        <Grid container sx={{ position: "relative" }}>
-          <Grid item xs={3} sx={{ position: "relative" }}>
-            <FormFieldPicker
-              onDragStart={onDragStart}
-              onDragEnter={onDragEnter}
-            />
+        <>
+          <Paper>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              px={2}
+              py={1}
+            >
+              <Grid item>
+                <Link to="/form-builder">
+                  <Button>
+                    <ArrowBackIcon />
+                  </Button>
+                </Link>
+              </Grid>
+              <Grid item display="flex">
+                <Box>
+                  <Button
+                    onClick={() => handleDirection("en")}
+                    startIcon={
+                      <Avatar
+                        sx={{ width: 24, height: 24 }}
+                        variant="square"
+                        src={enFlag}
+                      />
+                    }
+                  >
+                    {t("english")}
+                  </Button>
+                </Box>
+                <Box>
+                  <Button
+                    onClick={() => handleDirection("he")}
+                    startIcon={
+                      <Avatar
+                        sx={{ width: 24, height: 24 }}
+                        variant="square"
+                        src={hebFlag}
+                      />
+                    }
+                  >
+                    {t("hebrew")}
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Grid container sx={{ position: "relative" }}>
+            <Grid item xs={3} sx={{ position: "relative" }}>
+              <FormFieldPicker
+                onDragStart={onDragStart}
+                onDragEnter={onDragEnter}
+              />
+            </Grid>
+            <Grid item xs={6} sx={{ position: "relative" }}>
+              <Playground
+                data={dragData}
+                fields={fieldForms}
+                setSelected={setSelected}
+                onDragOver={onDragOver}
+                onDrop={onDrop}
+                selected={selected}
+                handleDelete={handleDelete}
+                handleDragDropPlayground={handleDragDropPlayground}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={3}
+              sx={{
+                position: "fixed",
+                right: 0,
+                height: "100vh",
+                width: "100%",
+              }}
+            >
+              <FormFieldSettings
+                generalData={location.state as any}
+                taskTypes={types}
+                activeForms={activeForms}
+                setFieldSettings={setFieldSettings}
+                selected={selectedData}
+                fieldSettings={fieldSettings}
+                generalSettings={gSettings}
+                setGeneralSettings={setGSettings}
+                loading={isSubmitting}
+                onSubmit={handleSubmit}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6} sx={{ position: "relative" }}>
-            <Playground
-              data={dragData}
-              fields={fieldForms}
-              setSelected={setSelected}
-              onDragOver={onDragOver}
-              onDrop={onDrop}
-              selected={selected}
-              handleDelete={handleDelete}
-              handleDragDropPlayground={handleDragDropPlayground}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={3}
-            sx={{ position: "fixed", right: 0, height: "100vh", width: "100%" }}
-          >
-            <FormFieldSettings
-              generalData={location.state as any}
-              taskTypes={types}
-              activeForms={activeForms}
-              setFieldSettings={setFieldSettings}
-              selected={selectedData}
-              fieldSettings={fieldSettings}
-              generalSettings={gSettings}
-              setGeneralSettings={setGSettings}
-              loading={isSubmitting}
-              onSubmit={handleSubmit}
-            />
-          </Grid>
-        </Grid>
+        </>
       )}
     </>
   );

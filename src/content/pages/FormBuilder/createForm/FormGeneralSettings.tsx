@@ -39,6 +39,7 @@ const FormGeneralSettings = ({
 }: Props) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const FormGeneralSettings = ({
       {error ? <Alert severity="error">{error}</Alert> : null}
       {success ? <Alert severity="success">{success}</Alert> : null}
       <Box display="flex" gap={1} flexDirection="column">
-        <span>Form name</span>
+        <span>{t("formName")}</span>
         <TextField
           placeholder="Name"
           fullWidth
@@ -91,7 +92,7 @@ const FormGeneralSettings = ({
         />
       </Box>
       <Box display="flex" gap={1} flexDirection="column">
-        <span>Form description</span>
+        <span>{t("formDescription")}</span>
         <TextField
           placeholder="Description"
           fullWidth
@@ -103,7 +104,7 @@ const FormGeneralSettings = ({
         />
       </Box>
       <Box display="flex" gap={1} flexDirection="column">
-        <span>Task type</span>
+        <span>{t("taskType")}</span>
         <Select
           fullWidth
           onChange={handleChange}
