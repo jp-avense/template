@@ -144,7 +144,7 @@ const FormFields = () => {
           <FormFieldForm onDone={onDone} />
         </FormFieldHeader>
       </PageTitleWrapper>
-      <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center" pb={5}>
         <Card sx={{ width: "80%" }}>
           <DynamicTable
             data={forms}
