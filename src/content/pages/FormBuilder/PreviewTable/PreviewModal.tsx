@@ -324,6 +324,8 @@ const PreviewModal = ({ data }: Props) => {
   const checkConditions = (currentValues, field: FormFieldExtended) => {
     const { conditions } = field;
 
+    if (!conditions) return true;
+
     return Object.entries(conditions).every(
       ([key, value]: [string, string[]]) => {
         const formValue: string | string[] = currentValues[key];
@@ -348,11 +350,13 @@ const PreviewModal = ({ data }: Props) => {
     <>
       <Modals onClose={handleClose} open={open} title={t("preview")}>
         <Grid container gap={3} direction="column">
-          {shownFields.map((item) => (
-            <Grid item key={item._id}>
-              {generateFieldComponent(item)}
-            </Grid>
-          ))}
+          {shownFields.length === 0
+            ? t("noDataAvailable")
+            : shownFields.map((item) => (
+                <Grid item key={item._id}>
+                  {generateFieldComponent(item)}
+                </Grid>
+              ))}
         </Grid>
       </Modals>
       <Button variant="contained" onClick={handleOpen}>
