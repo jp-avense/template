@@ -95,7 +95,6 @@ const FormBuilder = () => {
       </Helmet>
       <PageTitleWrapper>
         <FormBuilderHeader>
-          {/* <FormBuilderForm onDone={onDone} /> */}
         </FormBuilderHeader>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center">

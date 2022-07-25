@@ -21,8 +21,6 @@ import LogoutIcon from "@mui/icons-material/LogoutTwoTone";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import BuildIcon from "@mui/icons-material/Build";
-import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
-import enFlag from "../../../../assets/images/icons/enFlag.svg";
 import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
 import useRoles from "src/hooks/useRole";
@@ -171,7 +169,7 @@ const SubMenuWrapper = styled(Box)(
 
 function SidebarMenu() {
   const { closeSidebar } = useContext(SidebarContext);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const context = useContext(AuthContext);
   const [cookies, setCookie, removeCookie] = useCookies(["refreshToken"]);
   const roles = useRoles();
@@ -184,10 +182,6 @@ function SidebarMenu() {
     handleRefresh: { refreshToken, setRefreshToken },
     handleUser: { setUser },
   } = context;
-
-  const handleDirection = (lang: string) => {
-    i18n.changeLanguage(lang);
-  };
 
   const logout = async () => {
     await authService.logout(refreshToken);
@@ -249,30 +243,6 @@ function SidebarMenu() {
         </List>
         {isAdmin ? (
           <>
-            <List
-              component="div"
-              subheader={
-                <ListSubheader component="div" disableSticky>
-                  {t("agentManagement")}
-                </ListSubheader>
-              }
-            >
-              <SubMenuWrapper>
-                <List component="div">
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={RouterLink}
-                      onClick={closeSidebar}
-                      to="/agents"
-                      startIcon={<PersonIcon />}
-                    >
-                      {t("agents")}
-                    </Button>
-                  </ListItem>
-                </List>
-              </SubMenuWrapper>
-            </List>
             <List
               component="div"
               subheader={
@@ -342,6 +312,19 @@ function SidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
+              {isAdmin ? (
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/agents"
+                    startIcon={<PersonIcon />}
+                  >
+                    {t("agents")}
+                  </Button>
+                </ListItem>
+              ) : null}
               <ListItem component="div">
                 <Button
                   disableRipple
@@ -362,47 +345,6 @@ function SidebarMenu() {
                   startIcon={<LogoutIcon />}
                 >
                   {t("logout")}
-                </Button>
-              </ListItem>
-            </List>
-          </SubMenuWrapper>
-        </List>
-        <List
-          component="div"
-          subheader={
-            <ListSubheader component="div" disableSticky>
-              {t("language")}
-            </ListSubheader>
-          }
-        >
-          <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  onClick={() => handleDirection("en")}
-                  startIcon={
-                    <Avatar
-                      sx={{ width: 24, height: 24 }}
-                      variant="square"
-                      src={enFlag}
-                    />
-                  }
-                >
-                  {t("english")}
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  onClick={() => handleDirection("he")}
-                  startIcon={
-                    <Avatar
-                      sx={{ width: 24, height: 24 }}
-                      variant="square"
-                      src={hebFlag}
-                    />
-                  }
-                >
-                  {t("hebrew")}
                 </Button>
               </ListItem>
             </List>

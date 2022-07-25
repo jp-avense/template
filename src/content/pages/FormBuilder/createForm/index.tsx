@@ -190,9 +190,6 @@ function CreateForm() {
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 
-      console.log(dup);
-      console.log(_id);
-
       const item = dup.find((x) => x.key === _id);
 
       item.conditions = conditions;
@@ -207,6 +204,7 @@ function CreateForm() {
     try {
       await formService.createForm({
         ...gSettings,
+        type: `${gSettings.type}`,
         formFields: dup,
       });
     } catch (error) {

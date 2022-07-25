@@ -20,6 +20,8 @@ export class CreateFormDto {
 
   description: string;
 
+  type: string;
+
   formFields: SimpleFormField[];
 }
 
