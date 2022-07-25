@@ -204,7 +204,7 @@ const TaskStatusPage = () => {
   return (
     <div>
       <Helmet>
-        <title>System - Task Status</title>
+        <title>{t("systemTaskStatus")}</title>
       </Helmet>
       <PageTitleWrapper>
         <CreateStatus>

@@ -280,8 +280,8 @@ function FormFieldSettings({
             },
           }}
         >
-          <Tab label="General Settings" />
-          <Tab label="Field Settings" />
+          <Tab label={t("generalSettings")} />
+          <Tab label={t("fieldSettings")} />
         </Tabs>
       </AppBar>
       <TabPanel value={currentTab} index={0}>
@@ -299,11 +299,8 @@ function FormFieldSettings({
           {selected.length === 1 ? (
             <>
               <span>
-                Required?
-                <Checkbox
-                  checked={required}
-                  onClick={(e) => handleClick(e)}
-                ></Checkbox>
+                {t("isRequired")}
+                <Checkbox checked={required} onClick={handleClick}></Checkbox>
               </span>
               <TextField
                 fullWidth

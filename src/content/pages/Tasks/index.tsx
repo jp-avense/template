@@ -10,10 +10,13 @@ import { TabsProvider } from "src/contexts/TabsContext";
 import InfoTab from "./InfoTab";
 import { taskService } from "src/services/task.service";
 import { AgentContext } from "src/contexts/AgentContext";
+import { useTranslation } from "react-i18next";
 
 const TaskPage = () => {
   const context = useContext(FilterContext);
   const agentctx = useContext(AgentContext);
+
+  const { t } = useTranslation();
 
   const {
     handleFilter: {
@@ -60,7 +63,7 @@ const TaskPage = () => {
   return (
     <>
       <Helmet>
-        <title>Task management - Tasks</title>
+        <title>{t("taskManagementTask")}</title>
       </Helmet>
       <TabsProvider>
         <PageTitleWrapper>

@@ -22,6 +22,7 @@ import {
   Select,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { useTranslation } from "react-i18next";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -70,6 +71,8 @@ const Playground = ({
 }: Props) => {
   const [drag, setDrag] = useState(null);
   const [dragPlay, setDragPlay] = useState<string>("");
+
+  const { t } = useTranslation();
 
   const handleClick = (id: string) => {
     setSelected([id]);
@@ -312,7 +315,7 @@ const Playground = ({
         }}
       >
         <Box display="flex" justifyContent={"center"} py={5}>
-          <Typography variant="h1">Form Builder</Typography>
+          <Typography variant="h1">{t("formBuilder")}</Typography>
         </Box>
         <Divider />
         <Box
