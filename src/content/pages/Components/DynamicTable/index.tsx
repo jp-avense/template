@@ -17,6 +17,7 @@ import { ReactNode } from "react";
 interface IHeader {
   key: string;
   label: string;
+  render?: (value: any) => any;
 }
 
 type Props = {
@@ -107,13 +108,24 @@ const DynamicTable = ({
                     {headKeys.map((head, idx) => {
                       const cellkey = `${key}-col${idx}`;
 
+                      const headerData = headers.find(
+                        (item) => item.key === head
+                      );
+
+                      const { render } = headerData;
+
                       const value = item[head];
+
                       let displayValue = value;
 
                       switch (typeof value) {
                         case "boolean":
                           displayValue = value?.toString() || "false";
                           break;
+                      }
+
+                      if (render) {
+                        displayValue = render(displayValue);
                       }
 
                       return (

@@ -68,18 +68,30 @@ const TaskTypePage = () => {
         key: "description",
         label: t("description"),
       },
+      {
+        key: "form",
+        label: t("form"),
+        render: (data: Form) => {
+          return data.name;
+        },
+      },
     ];
 
     try {
       setLoading(true);
 
+      const { data: response }: { data: Form[] } = await formService.getForms();
+      setForms(response);
+
       const { data } = await taskService.getTaskTypes();
+
+      for (const r of response) {
+        const d = data.find((item) => item.key === r.type);
+        d.form = r;
+      }
 
       setTypes(data);
       setHeaders(headers);
-
-      const { data: response } = await formService.getForms();
-      setForms(response);
     } catch (error) {
       Swal.fire({
         icon: "error",
