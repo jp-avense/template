@@ -228,8 +228,8 @@ function CreateForm() {
           <CircularProgress size={40} />
         </Box>
       ) : (
-        <>
-          <Paper>
+        <Grid sx={{ position: "relative" }}>
+          <Paper sx={{ position: "fixed", right: 0, left: 0, zIndex: 6 }}>
             <Grid
               container
               direction="row"
@@ -279,13 +279,13 @@ function CreateForm() {
           </Paper>
 
           <Grid container sx={{ position: "relative" }}>
-            <Grid item xs={3} sx={{ position: "relative" }}>
+            <Grid item xs={3} sx={{ position: "relative", top: 63 }}>
               <FormFieldPicker
                 onDragStart={onDragStart}
                 onDragEnter={onDragEnter}
               />
             </Grid>
-            <Grid item xs={6} sx={{ position: "relative" }}>
+            <Grid item xs={6} sx={{ position: "relative", marginTop: 10 }}>
               <Playground
                 data={dragData}
                 fields={fieldForms}
@@ -305,6 +305,7 @@ function CreateForm() {
                 right: 0,
                 height: "100vh",
                 width: "100%",
+                top: 63,
               }}
             >
               <FormFieldSettings
@@ -321,7 +322,7 @@ function CreateForm() {
               />
             </Grid>
           </Grid>
-        </>
+        </Grid>
       )}
     </>
   );
