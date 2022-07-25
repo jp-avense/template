@@ -58,13 +58,20 @@ function CreateForm() {
   }, []);
 
   useEffect(() => {
-    const currentIndex = dragData.findIndex((c) => c.key === selected[0]);
-    if (selected[0]) {
-      setSelectedData([{ _id: selected[0], index: currentIndex }]);
-    }
     let availForms = [];
-    for (let i = 0; i < currentIndex; i++) {
-      availForms.push(dragData[i].key);
+    const currentIndex = dragData.findIndex((c) => c.key === selected[0]);
+    if (currentIndex > -1) {
+      if (selected[0]) {
+        const res = fieldForms.find((x) => x._id == selected[0]);
+        setSelectedData([
+          { _id: selected[0], index: currentIndex, inputType: res.inputType },
+        ]);
+      }
+      for (let i = 0; i < currentIndex; i++) {
+        availForms.push(dragData[i].key);
+      }
+    } else {
+      setSelectedData([]);
     }
     if (availForms.length > 0) {
       const current = availForms.map((c) => {
@@ -114,15 +121,21 @@ function CreateForm() {
   const onDrop = (e, dragTarget: string) => {
     if (e.currentTarget.id !== "playground") return;
     if (dragData.find((item) => item.key === drag.id)) return;
-    if (dragTarget !== drag.id && drag.sidebar) handleDragDrop(e);
+    if (dragTarget !== drag.id && drag.sidebar) {
+      setSelected([drag.id]);
+      handleDragDrop(e);
+    }
     setDrag("");
   };
 
   const handleDelete = (id) => {
     const filtered = dragData.filter((item) => item.key !== id);
-
+    const index = fieldSettings.findIndex((item) => item._id === id);
+    const current = fieldSettings.slice();
+    current.splice(index, 1);
     console.log(filtered);
     setDragData(filtered);
+    setFieldSettings(current);
   };
 
   const handleDragDrop = (e) => {
