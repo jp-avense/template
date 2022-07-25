@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import {
   Box,
@@ -39,14 +39,19 @@ const HeaderWrapper = styled(Box)(
 function Header() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const context = useContext(AuthContext);
-
+  const [roles, setRoles] = useState([]);
   const { t } = useTranslation();
 
   const {
     handleUser: { user },
   } = context;
 
-  let roles = user["custom:role"].split(",");
+  useEffect(() => {
+    if (user) {
+      let res = user["custom:role"].split(",");
+      setRoles(res);
+    }
+  }, [user]);
 
   const theme = useTheme();
 
@@ -89,10 +94,19 @@ function Header() {
           </Tooltip>
         </Box>
       </Box>
-      <Stack direction="row" alignItems="center" spacing={2}>
-        {t("loggedInAs")}: {user.name + " " + user.family_name} - {t("roles")}:{" "}
-        {roles.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(" | ")}
-      </Stack>
+      {user ? (
+        <>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            {t("loggedInAs")}: {user.name + " " + user.family_name} -{" "}
+            {t("roles")}:{" "}
+            {roles
+              .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+              .join(" | ")}
+          </Stack>
+        </>
+      ) : (
+        <></>
+      )}
     </HeaderWrapper>
   );
 }
