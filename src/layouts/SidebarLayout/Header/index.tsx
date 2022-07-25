@@ -10,12 +10,17 @@ import {
   Tooltip,
   styled,
   useTheme,
+  Button,
+  Avatar,
+  Grid,
 } from "@mui/material";
 import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
 import { SidebarContext } from "src/contexts/SidebarContext";
 import { AuthContext } from "src/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
+import hebFlag from "../../../assets/images/icons/hebFlag.svg";
+import enFlag from "../../../assets/images/icons/enFlag.svg";
 
 const HeaderWrapper = styled(Box)(
   ({ theme }) => `
@@ -40,7 +45,7 @@ function Header() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const context = useContext(AuthContext);
   const [roles, setRoles] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const {
     handleUser: { user },
@@ -54,6 +59,10 @@ function Header() {
   }, [user]);
 
   const theme = useTheme();
+
+  const handleDirection = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
 
   return (
     <HeaderWrapper
@@ -94,19 +103,49 @@ function Header() {
           </Tooltip>
         </Box>
       </Box>
-      {user ? (
-        <>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            {t("loggedInAs")}: {user.name + " " + user.family_name} -{" "}
-            {t("roles")}:{" "}
-            {roles
-              .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
-              .join(" | ")}
-          </Stack>
-        </>
-      ) : (
-        <></>
-      )}
+      <Grid container justifyContent={"space-between"}>
+        <Grid item>
+          {user ? (
+            <>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                {t("loggedInAs")}: {user.name + " " + user.family_name} -{" "}
+                {t("roles")}:{" "}
+                {roles
+                  .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+                  .join(" | ")}
+              </Stack>
+            </>
+          ) : (
+            <></>
+          )}
+        </Grid>
+        <Grid item>
+          <Button
+            onClick={() => handleDirection("en")}
+            startIcon={
+              <Avatar
+                sx={{ width: 24, height: 24 }}
+                variant="square"
+                src={enFlag}
+              />
+            }
+          >
+            {t("english")}
+          </Button>
+          <Button
+            onClick={() => handleDirection("he")}
+            startIcon={
+              <Avatar
+                sx={{ width: 24, height: 24 }}
+                variant="square"
+                src={hebFlag}
+              />
+            }
+          >
+            {t("hebrew")}
+          </Button>
+        </Grid>
+      </Grid>
     </HeaderWrapper>
   );
 }
