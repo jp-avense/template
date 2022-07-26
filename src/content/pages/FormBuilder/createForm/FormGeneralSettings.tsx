@@ -63,9 +63,6 @@ const FormGeneralSettings = ({
       if (!values.name) {
         setError("Name is required");
         return;
-      } else if (values.type === "" || values.type == null) {
-        setError("Type is required");
-        return;
       }
 
       await onSubmit();
