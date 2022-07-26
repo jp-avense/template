@@ -172,5 +172,9 @@
   "System": "System",
   "loggedInAs": "Logged in as",
   "roles": "Roles",
-  "taskManagementTask": "Task management - Tasks"
+  "taskManagementTask": "Task management - Tasks",
+  "closeForm": "Close form",
+  "rescheduleTask": "Reschedule task",
+  "transmitDone": "Transmit Done",
+  "transmitRescheduled": "Transmit Rescheduled"
 }

@@ -167,5 +167,9 @@
   "System": "מערכת",
   "loggedInAs": "מחובר כ",
   "roles": "תפקידים",
-  "taskManagementTask": "ניהול משימות - משימה"
+  "taskManagementTask": "ניהול משימות - משימה",
+  "closeForm": "צורה קרובה",
+  "rescheduleTask": "תזמן מחדש את המשימה",
+  "transmitDone": "השידור נעשה",
+  "transmitRescheduled": "השידור נקבע מחדש"
 }
