@@ -30,7 +30,7 @@ import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
-import { isTemplateLiteral } from "typescript";
+import { isNamedExportBindings, isTemplateLiteral } from "typescript";
 
 interface Rows {
   dynamicDetails: any[];
@@ -242,10 +242,8 @@ const TaskTable = () => {
     }
   };
 
-  const exportCsv = () => {
-    let csvContent = "data:application/vnd.ms-excel,";
-
-    const columns = [
+  const xlsExport = () => {
+    const xlsHeaders = [
       {
         key: "id",
       },
@@ -272,33 +270,28 @@ const TaskTable = () => {
       },
     ];
 
-    const headers = columns.map((item) => item.key);
+    const headKeys = xlsHeaders.map((item) => item.key);
 
-    console.log(headers);
+    let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
 
-    // tableData.map((item) => {
-    //   console.log(item);
-    // const [key, value] = item;
-    // console.log(key, value);
-    // const data = {
-    //   id: item.id,
-    //   type: item.type,
-    //   assignedTo: item.assignedTo,
-    //   status: item.status,
-    //   executionStartDate: item.executionStartDate,
-    //   updatedBy: item.updatedBy,
-    //   createdAt: item.createdAt,
-    //   lastUpdate: item.lastUpdate,
-    // };
-    // csvContent += JSON.stringify(Object.values(data)) + "\r\n";
-    // console.log(data);
-    // let csvHeader = Object.keys(data);
-    // let csvValue = Object.values(data);
-    // console.log(csvHeader);
-    // });
-
-    // let encodeUri = encodeURI(csvContent);
-    // window.open(encodeUri);
+    tableData.map((item) => {
+      const data = {
+        id: item.id,
+        type: item.type,
+        assignedTo: item.assignedTo,
+        status: item.status,
+        executionStartDate: item.executionStartDate,
+        updatedBy: item.updatedBy,
+        createdAt: item.createdAt,
+        lastUpdate: item.lastUpdate,
+      };
+      csvContent += JSON.stringify(Object.values(data)) + "\r\n";
+    });
+    var x = document.createElement("A");
+    x.setAttribute("href", csvContent);
+    x.setAttribute("download", "task_table.csv");
+    document.body.appendChild(x);
+    x.click();
   };
 
   useEffect(() => {
@@ -425,7 +418,7 @@ const TaskTable = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button variant="contained" onClick={exportCsv}>
+        <Button variant="contained" onClick={xlsExport}>
           <Typography variant="h5" sx={{ mr: "5px" }}>
             Download
           </Typography>{" "}
