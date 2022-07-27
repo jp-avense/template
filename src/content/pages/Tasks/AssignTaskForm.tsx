@@ -126,7 +126,7 @@ const AssignTaskForm = ({ selected }: Props) => {
       {/* @ts-ignore */}
       <Modals open={open} onClose={handleClose} title={t("assignTask")}>
         {loading ? (
-          <span>Loading agents...</span>
+          <span>Loading users...</span>
         ) : (
           <form onSubmit={handleSubmit} style={{ paddingTop: "1rem" }}>
             <Box gap={2} display="flex" flexDirection="column">
@@ -134,12 +134,12 @@ const AssignTaskForm = ({ selected }: Props) => {
               {error && <Alert severity="error">{error}</Alert>}
               {!isValid && <Alert severity="warning">{t("taskWarning")}</Alert>}
               <FormControl fullWidth>
-                <InputLabel id="agent">{t("agent")}</InputLabel>
+                <InputLabel id="uuser">{t("user")}</InputLabel>
                 <Select
                   onChange={(e) => selectAgent(e)}
-                  id="agent"
-                  labelId="agent"
-                  label={t("agent")}
+                  id="user"
+                  labelId="user"
+                  label={t("user")}
                   fullWidth
                   value={selectedAgent}
                 >

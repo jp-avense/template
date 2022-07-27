@@ -21,13 +21,13 @@ function PageHeader() {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h3" component="h3" gutterBottom>
-          {t("agents")}
+          {t("users")}
         </Typography>
-        <Typography variant="subtitle2">{t("agentDescription")}</Typography>
+        <Typography variant="subtitle2">{t("userDescription")}</Typography>
       </Grid>
       {isAdmin ? (
         <Grid item>
-          <Modals open={open} onClose={handleClose} title={t("addAgent")}>
+          <Modals open={open} onClose={handleClose} title={t("addUser")}>
             <AgentsForm />
           </Modals>
 
@@ -37,7 +37,7 @@ function PageHeader() {
             startIcon={<AddTwoToneIcon fontSize="small" />}
             onClick={() => setOpenPopup(true)}
           >
-            {t("addAgent")}
+            {t("addUser")}
           </Button>
         </Grid>
       ) : null}

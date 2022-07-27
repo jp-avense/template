@@ -129,7 +129,7 @@ const AgentTable: FC = () => {
   return (
     <Card>
       <CardHeader
-        title={t("agents")}
+        title={t("users")}
         action={
           selectedAgents.length ? (
             <Box display="flex" gap={2}>

@@ -247,7 +247,7 @@ function SidebarMenu() {
               component="div"
               subheader={
                 <ListSubheader component="div" disableSticky>
-                  {t("agentManagement")}
+                  {t("userManagement")}
                 </ListSubheader>
               }
             >
@@ -261,7 +261,7 @@ function SidebarMenu() {
                       to="/agents"
                       startIcon={<PersonIcon />}
                     >
-                      {t("agents")}
+                      {t("users")}
                     </Button>
                   </ListItem>
                 </List>
@@ -341,7 +341,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/settings"
+                  to="/profile"
                   startIcon={<SettingsTwoToneIcon />}
                 >
                   {t("settings")}
