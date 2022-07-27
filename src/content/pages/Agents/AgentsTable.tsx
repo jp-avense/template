@@ -119,6 +119,7 @@ const AgentTable: FC = () => {
 
   const handleLimitChange = (event: any): void => {
     setLimit(parseInt(event.target.value));
+    setPage(0);
   };
 
   const paginatedAgents = applyPagination(Agents, page, limit);
@@ -126,10 +127,16 @@ const AgentTable: FC = () => {
     selectedAgents.length > 0 && selectedAgents.length < Agents.length;
   const selectedAllAgents = selectedAgents.length === Agents.length;
 
+  const callback = async () => {
+    await getAgents();
+    setSelectedAgents([]);
+    setTabsData([])
+  };
+
   return (
     <Card>
       <CardHeader
-        title={t("agents")}
+        title={t("users")}
         action={
           selectedAgents.length ? (
             <Box display="flex" gap={2}>
@@ -141,7 +148,10 @@ const AgentTable: FC = () => {
                   }}
                   title="Update agent"
                 >
-                  <UpdateAgentForm selected={selectedAgents[0]} />
+                  <UpdateAgentForm
+                    selected={selectedAgents[0]}
+                    onDone={callback}
+                  />
                 </ModalButton>
               ) : null}
               <Button

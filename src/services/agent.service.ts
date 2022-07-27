@@ -21,12 +21,13 @@ export interface RegisterDto {
 }
 
 export interface UpdateDto {
-  id: string;
   email: string;
-  roles: string[];
+  originalEmail: string;
+  role: string[];
   name: string;
   familyName: string;
   phoneNumber: string;
+  password: string;
 }
 
 export const agentService = {
@@ -42,7 +43,7 @@ export const agentService = {
     return apiService.post(REGISTER_URL, values);
   },
 
-  async update(values: UpdateDto) {
-    return apiService.patch(ALL_URL, values);
+  async update(sub: string, values: UpdateDto) {
+    return apiService.patch(`${ALL_URL}/${sub}`, values);
   },
 };

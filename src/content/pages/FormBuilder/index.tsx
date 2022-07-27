@@ -9,9 +9,12 @@ import ConfirmModal from "src/components/ConfirmModal";
 import Swal from "sweetalert2";
 import { formService } from "src/services/form.service";
 import PreviewTable from "./PreviewTable";
+import ModalButton from "src/components/ModalButton";
+import UpdateForm from "./UpdateForm";
+import { Form } from "./form.interface";
 
 const FormBuilder = () => {
-  const [forms, setForms] = useState([]);
+  const [forms, setForms] = useState<Form[]>([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
@@ -22,8 +25,6 @@ const FormBuilder = () => {
   } = useTranslation();
 
   useEffect(() => {
-    // const jsonData = require("./sample.json");
-    // setForms(jsonData);
     init();
   }, []);
 
@@ -32,10 +33,6 @@ const FormBuilder = () => {
       {
         key: "name",
         label: t("name"),
-      },
-      {
-        key: "type",
-        label: t("type"),
       },
       {
         key: "description",
@@ -85,7 +82,22 @@ const FormBuilder = () => {
   };
 
   const handleDelete = async () => {
-    return;
+    try {
+      setLoading(true);
+      await formService.bulkDeleteForms(selected);
+
+      const res = forms.filter((item) => !selected.includes(item._id));
+      setForms(res)
+
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: getAxiosErrorMessage(error),
+        timer: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,30 +106,28 @@ const FormBuilder = () => {
         <title>{t("formBuilder")}</title>
       </Helmet>
       <PageTitleWrapper>
-        <FormBuilderHeader>
-        </FormBuilderHeader>
+        <FormBuilderHeader></FormBuilderHeader>
       </PageTitleWrapper>
-      <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center" pb={3}>
         <Card sx={{ width: "80%" }}>
           <PreviewTable
             data={forms}
             headers={headers}
             selected={selected}
-            title={t('formBuilder')}
+            title={t("formBuilder")}
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (
-                  <>
-                    {/* <EditForms>
-                      <EditFormField
-                        selectedForm={EditForm}
-                        onFinish={onFinish}
-                      />
-                    </EditForms> */}
-                  </>
+                  <ModalButton
+                    text={t("update")}
+                    buttonProps={{ variant: "contained" }}
+                    title={t("update")}
+                  >
+                    <UpdateForm data={editForm}></UpdateForm>
+                  </ModalButton>
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal

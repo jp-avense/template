@@ -13,6 +13,9 @@ import {
   CircularProgress,
   Checkbox,
   TablePagination,
+  TableSortLabel,
+  Button,
+  Typography,
 } from "@mui/material";
 import { useContext } from "react";
 
@@ -26,7 +29,13 @@ import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
 import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { taskService } from "src/services/task.service";
+import { isNamedExportBindings, isTemplateLiteral } from "typescript";
 
+interface State {
+  order: "asc" | "desc";
+}
 interface Rows {
   dynamicDetails: any[];
   status: string;
@@ -46,6 +55,8 @@ const TaskTable = () => {
   const authContext = useContext(AuthContext);
   const [headers, setHeaders] = useState([]);
   const roles = useRoles();
+  const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
+  const [valueToOrderBy, setValueToOrderBy] = useState("");
 
   const isAdmin = roles.includes("admin");
 
@@ -120,6 +131,68 @@ const TaskTable = () => {
       const res = tableData.map((item) => item.id);
       setSelectedRows(res);
     } else setSelectedRows([]);
+  };
+
+  const handleRequestSort = (event, property) => {
+    const isAscending =
+      valueToOrderBy === property && orderDirection.order === "asc";
+    setValueToOrderBy(property);
+    setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+  };
+
+  const createSortHandler = (property) => (event) => {
+    handleRequestSort(event, property);
+  };
+
+  const descendingComparator = (a, b, orderBy) => {
+    if (orderBy) {
+      const bVal = b.dynamicDetails.find((c) => c.id === orderBy);
+      const aVal = a.dynamicDetails.find((c) => c.id === orderBy);
+      if (orderBy == "Balance") {
+        if (parseInt(bVal?.value) < parseInt(aVal?.value)) {
+          return -1;
+        }
+        if (parseInt(bVal?.value) > parseInt(aVal?.value)) {
+          return 1;
+        }
+      } else if (a.inputType === "number") {
+        if (parseInt(bVal?.value) < parseInt(aVal?.value)) {
+          return -1;
+        }
+        if (parseInt(bVal?.value) > parseInt(aVal?.value)) {
+          return 1;
+        }
+      } else if (a.inputType === "string") {
+        return bVal.localCompare(aVal);
+      } else {
+        if (bVal?.value < aVal?.value) {
+          return -1;
+        }
+        if (bVal?.value > aVal?.value) {
+          return 1;
+        }
+      }
+
+      return 0;
+    }
+  };
+
+  const getComparator = (order, orderBy) => {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  };
+
+  const sortedRowInformation = (rowArray, comparator) => {
+    const stabilizedRowArray = rowArray.map((el, index) => [el, index]);
+    stabilizedRowArray.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    const res = stabilizedRowArray.map((el) => el[0]);
+    console.log("res", res);
+    return res;
   };
 
   const createRows = (data) => {
@@ -236,10 +309,73 @@ const TaskTable = () => {
     }
   };
 
+  const xlsExport = () => {
+    const xlsHeaders = [
+      {
+        key: "id",
+      },
+      {
+        key: "type",
+      },
+      {
+        key: "assignedTo",
+      },
+      {
+        key: "status",
+      },
+      {
+        key: "executionStartDate",
+      },
+      {
+        key: "updatedBy",
+      },
+      {
+        key: "createdAt",
+      },
+      {
+        key: "lastUpdate",
+      },
+    ];
+
+    const headKeys = xlsHeaders.map((item) => item.key);
+    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
+    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
+
+    tableData.map((item) => {
+      const details = item.dynamicDetails;
+      const getValue = details.map((item) => {
+        // const label = item.label;
+        console.log(item.value);
+        // return item.value;
+      });
+      const data = {
+        id: item.id,
+        type: item.type,
+        assignedTo: item.assignedTo,
+        status: item.status,
+        executionStartDate: item.executionStartDate,
+        updatedBy: item.updatedBy,
+        createdAt: item.createdAt,
+        lastUpdate: item.lastUpdate,
+      };
+
+      // console.log(data);
+      // csvContent +=
+      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
+    });
+    // var x = document.createElement("A");
+    // x.setAttribute("href", csvContent);
+    // x.setAttribute("download", "task_table.csv");
+    // document.body.appendChild(x);
+    // x.click();
+  };
+
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
+
+  // console.log(tableData);
 
   return (
     <Card>
@@ -284,7 +420,18 @@ const TaskTable = () => {
               </TableCell>
               {headers.length
                 ? headers.map((c) => (
-                    <TableCell key={c.id}>{t(c.label)}</TableCell>
+                    <TableCell key={c.id}>
+                      <TableSortLabel
+                        key={c.id}
+                        active={valueToOrderBy === c.id}
+                        direction={
+                          valueToOrderBy === c.id ? orderDirection.order : "asc"
+                        }
+                        onClick={createSortHandler(c.id)}
+                      >
+                        {t(c.label)}
+                      </TableSortLabel>
+                    </TableCell>
                   ))
                 : null}
             </TableRow>
@@ -303,7 +450,10 @@ const TaskTable = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              tableData.map((rows, index) => (
+              sortedRowInformation(
+                tableData,
+                getComparator(orderDirection.order, valueToOrderBy)
+              ).map((rows, index) => (
                 <TableRow
                   key={index}
                   sx={[
@@ -354,7 +504,18 @@ const TaskTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      <Box
+        p={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Button disabled={loading} variant="contained" onClick={xlsExport}>
+          <Typography variant="h5" sx={{ mr: "5px" }}>
+            Download
+          </Typography>{" "}
+          <FileDownloadIcon fontSize="small" />
+        </Button>
         <TablePagination
           component="div"
           count={total}

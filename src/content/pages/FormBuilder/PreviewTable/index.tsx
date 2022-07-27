@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardHeader,
@@ -49,7 +48,7 @@ const PreviewTable = ({
 
   const headKeys = headers.map((item) => item.key);
 
-  const { t } = useTranslation() 
+  const { t } = useTranslation();
 
   return (
     <Card>
@@ -70,14 +69,14 @@ const PreviewTable = ({
               {headers.map((item) => {
                 return <TableCell key={item.key}>{item.label}</TableCell>;
               })}
-              <TableCell>{t('preview')}</TableCell>
+              <TableCell>{t("preview")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>
                 <TableCell
-                  colSpan={headers.length + 1}
+                  colSpan={headers.length + 2}
                   align="center"
                   height="200px"
                 >
@@ -95,14 +94,12 @@ const PreviewTable = ({
                       handleSelectOne(item._id);
                     }}
                     hover
-                    sx={[
-                      {
-                        cursor: "pointer",
-                      },
-                      selected.includes(item._id)
-                        ? { backgroundColor: "lavender" }
-                        : {},
-                    ]}
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: selected.includes(item._id)
+                        ? "lavender"
+                        : "inherit",
+                    }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox

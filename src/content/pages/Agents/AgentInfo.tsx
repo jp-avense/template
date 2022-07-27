@@ -25,7 +25,7 @@ const AgentInfo = () => {
       <Grid item width="100%" sx={{ padding: "0px", minHeight: "400px" }}>
         <Box fontWeight="bold" sx={{ ml: 3, mt: 2 }}>
           <Typography variant="h3" color="primary">
-            {t("agentInformation")}
+            {t("userInformation")}
           </Typography>
         </Box>
         <List>

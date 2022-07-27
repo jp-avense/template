@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import useRoles from "src/hooks/useRole";
 
-function PageHeader({ children }) {
+function PageHeader() {
   const { t } = useTranslation();
   const roles = useRoles();
 

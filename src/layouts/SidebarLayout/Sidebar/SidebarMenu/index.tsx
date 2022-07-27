@@ -247,6 +247,30 @@ function SidebarMenu() {
               component="div"
               subheader={
                 <ListSubheader component="div" disableSticky>
+                  {t("userManagement")}
+                </ListSubheader>
+              }
+            >
+              <SubMenuWrapper>
+                <List component="div">
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/agents"
+                      startIcon={<PersonIcon />}
+                    >
+                      {t("users")}
+                    </Button>
+                  </ListItem>
+                </List>
+              </SubMenuWrapper>
+            </List>
+            <List
+              component="div"
+              subheader={
+                <ListSubheader component="div" disableSticky>
                   {t("System")}
                 </ListSubheader>
               }
@@ -330,7 +354,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/settings"
+                  to="/profile"
                   startIcon={<SettingsTwoToneIcon />}
                 >
                   {t("settings")}

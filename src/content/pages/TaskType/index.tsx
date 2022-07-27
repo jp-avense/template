@@ -18,6 +18,7 @@ import { TaskType } from "./type.interface";
 import UpdateType from "./UpdateType";
 import UpdateTypeForm from "./UpdateType/UpdateTypeForm";
 import Label from "src/components/Label";
+import PreviewModal from "../FormBuilder/PreviewTable/PreviewModal";
 
 const TaskTypePage = () => {
   const [types, setTypes] = useState<TaskType[]>([]);
@@ -73,7 +74,11 @@ const TaskTypePage = () => {
         key: "form",
         label: t("form"),
         render: (data: Form) => {
-          return data?.name || <Label color="error">{t("none")}</Label>;
+          return data?.name ? (
+            <PreviewModal data={data} title={data.name} />
+          ) : (
+            <Label color="error">{t("none")}</Label>
+          );
         },
       },
     ];
@@ -86,14 +91,16 @@ const TaskTypePage = () => {
 
       const { data } = await taskService.getTaskTypes();
 
-      for (const r of response) {
-        const d = data.find((item) => item.key === r.type);
-        d.form = r;
+      for (const d of data) {
+        const f = response.find((item) => item._id === d.form);
+
+        d.form = f;
       }
 
       setTypes(data);
       setHeaders(headers);
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -176,7 +183,7 @@ const TaskTypePage = () => {
           <CreateTypeForm onFinish={onFinish} forms={forms} />
         </CreateType>
       </PageTitleWrapper>
-      <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center" pb={4}>
         <Card sx={{ width: "80%" }}>
           <DynamicTable
             data={types}
@@ -193,7 +200,7 @@ const TaskTypePage = () => {
                     <UpdateType>
                       <UpdateTypeForm
                         selectedType={updateType}
-                        onFinish={onFinish}
+                        onFinish={init}
                         forms={forms}
                       />
                     </UpdateType>
@@ -203,7 +210,7 @@ const TaskTypePage = () => {
                       buttonProps={{ variant: "contained", color: "secondary" }}
                     >
                       <DuplicateTypeForm
-                        onFinish={onFinish}
+                        onFinish={init}
                         source={firstSelectedObject}
                       />
                     </ModalButton>

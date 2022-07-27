@@ -1,4 +1,11 @@
-import { Alert, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import {
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { useFormik } from "formik";
 import { t } from "i18next";
 import { useState, useContext, useEffect } from "react";
@@ -6,11 +13,14 @@ import { AgentContext } from "src/contexts/AgentContext";
 import { agentService, UserRoles } from "src/services/agent.service";
 import LoadingButton from "src/content/pages/Components/LoadingButton";
 import * as yup from "yup";
-import { string } from "prop-types";
 import { getAxiosErrorMessage } from "src/lib";
+import { useTranslation } from "react-i18next";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 type Props = {
   selected: string;
+  onDone: () => any;
 };
 
 interface IUpdateAgent {
@@ -18,11 +28,13 @@ interface IUpdateAgent {
   phoneNumber: string;
   email: string;
   familyName: string;
+  password: string;
 }
 
-const UpdateAgentForm = ({ selected }: Props) => {
+const UpdateAgentForm = ({ selected, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [visible, setVisible] = useState(false);
 
   const [agent, setAgent] = useState(null);
   const [roles, setRoles] = useState<UserRoles[]>([]);
@@ -31,13 +43,24 @@ const UpdateAgentForm = ({ selected }: Props) => {
     phoneNumber: "",
     email: "",
     familyName: "",
+    password: "",
   });
 
+  const { t } = useTranslation();
+
   const validationSchema = yup.object({
-    name: yup.string().required(),
-    familyName: yup.string().required(),
-    email: yup.string().required().email(),
-    phoneNumber: yup.string().required(),
+    email: yup
+      .string()
+      .email(t("emailUserValidText"))
+      .required(t("emailRequiredText")),
+    name: yup.string().required(t("nameRequiredText")),
+    familyName: yup.string().required(t("familyNameRequiredText")),
+    phoneNumber: yup.string().required(t("phoneNumberRequiredText")),
+    password: yup
+      .string()
+      .min(8, t("passwordLengthText"))
+      .optional()
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, t("passwordMatchText")),
   });
 
   const context = useContext(AgentContext);
@@ -54,6 +77,7 @@ const UpdateAgentForm = ({ selected }: Props) => {
       name: temp.name,
       familyName: temp.family_name,
       phoneNumber: temp.phone_number,
+      password: "",
     });
     setRoles(rolesArr);
     setAgent(temp);
@@ -77,11 +101,13 @@ const UpdateAgentForm = ({ selected }: Props) => {
       try {
         setSuccess("");
         setError("");
-        await agentService.update({
-          id: selected,
-          roles,
+        await agentService.update(agent.sub, {
+          role: roles,
+          originalEmail: agent.email,
           ...values,
         });
+
+        await onDone();
         setSuccess("Success");
       } catch (error) {
         setError(getAxiosErrorMessage(error));
@@ -90,10 +116,10 @@ const UpdateAgentForm = ({ selected }: Props) => {
   });
 
   const handleChange = (e) => {
-    setSuccess("")
-    setError("")
-    formik.handleChange(e)
-  }
+    setSuccess("");
+    setError("");
+    formik.handleChange(e);
+  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -105,7 +131,7 @@ const UpdateAgentForm = ({ selected }: Props) => {
         <Grid item>
           <TextField
             name="name"
-            label="First name"
+            label={t("firstName")}
             onChange={(e) => handleChange(e)}
             value={formik.values.name}
             error={formik.touched.name && Boolean(formik.errors.name)}
@@ -116,7 +142,7 @@ const UpdateAgentForm = ({ selected }: Props) => {
         <Grid item>
           <TextField
             name="familyName"
-            label="Family name"
+            label={t("familyName")}
             onChange={(e) => handleChange(e)}
             value={formik.values.familyName}
             error={
@@ -129,7 +155,7 @@ const UpdateAgentForm = ({ selected }: Props) => {
         <Grid item>
           <TextField
             name="email"
-            label="Email"
+            label={t("email")}
             type="email"
             onChange={(e) => handleChange(e)}
             value={formik.values.email}
@@ -142,7 +168,7 @@ const UpdateAgentForm = ({ selected }: Props) => {
           <TextField
             name="phoneNumber"
             type="string"
-            label="Phone Number"
+            label={t("phoneNumber")}
             onChange={(e) => handleChange(e)}
             value={formik.values.phoneNumber}
             error={
@@ -150,6 +176,34 @@ const UpdateAgentForm = ({ selected }: Props) => {
             }
             helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
             fullWidth
+          ></TextField>
+        </Grid>
+        <Grid item>
+          <TextField
+            name="password"
+            type={visible ? "text" : "password"}
+            label={t("password")}
+            onChange={(e) => handleChange(e)}
+            value={formik.values.password}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={
+              (formik.touched.password && formik.errors.password) ||
+              t("forceChangePassword")
+            }
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  onClick={() => setVisible(!visible)}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  {visible ? <VisibilityOff /> : <Visibility />}
+                </InputAdornment>
+              ),
+            }}
           ></TextField>
         </Grid>
         <Grid item>

@@ -33,14 +33,22 @@ import { useTranslation } from "react-i18next";
 
 type Props = {
   data: Form;
+  text?: string;
+  title?: string;
 };
 
-const PreviewModal = ({ data }: Props) => {
+const PreviewModal = ({ data, text, title }: Props) => {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState({});
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = (e) => {
+    e.stopPropagation();
+    setOpen(false);
+  };
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    setOpen(true);
+  };
 
   const [canvas, setCanvas] = useState(null);
   const [pad, setPad] = useState(null);
@@ -348,8 +356,13 @@ const PreviewModal = ({ data }: Props) => {
 
   return (
     <>
-      <Modals onClose={handleClose} open={open} title={t("preview")}>
-        <Grid container gap={3} direction="column">
+      <Modals onClose={handleClose} open={open} title={title || t("preview")}>
+        <Grid
+          container
+          gap={3}
+          direction="column"
+          onClick={(e) => e.stopPropagation()}
+        >
           {shownFields.length === 0
             ? t("noDataAvailable")
             : shownFields.map((item) => (
@@ -360,7 +373,7 @@ const PreviewModal = ({ data }: Props) => {
         </Grid>
       </Modals>
       <Button variant="contained" onClick={handleOpen}>
-        {t("preview")}
+        {text || t("preview")}
       </Button>
     </>
   );

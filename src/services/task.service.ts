@@ -26,6 +26,10 @@ export const taskService = {
     return apiService.get(url);
   },
 
+  async getAllTask() {
+    return apiService.get(TASK_URL);
+  },
+
   async getDetails() {
     return apiService.get(DETAILS_URL);
   },
@@ -35,7 +39,7 @@ export const taskService = {
       taskIds: taskIds,
       agentSub: agent,
       adminSub: admin,
-      assignDate
+      assignDate,
     });
   },
 
@@ -88,5 +92,5 @@ export const taskService = {
 
   async bulkDeleteType(ids: string[]) {
     return apiService.delete(`${TASK_TYPE_URL}/bulk`, { data: ids });
-  }
+  },
 };
