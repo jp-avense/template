@@ -172,5 +172,9 @@
   "System": "מערכת",
   "loggedInAs": "התחבר כ",
   "roles": "תפקידים",
-  "taskManagementTask": "ניהול משימות - משימות"
+  "taskManagementTask": "ניהול משימות - משימות",
+  "filterByAgent": "סנן לפי סוכן",
+  "filterByDate": "סנן לפי תאריך",
+  "unDone": "לא הסתיים",
+  "inProcess": "בתהליך"
 }
