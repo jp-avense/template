@@ -13,6 +13,8 @@ import {
   CircularProgress,
   Checkbox,
   TablePagination,
+  Button,
+  Typography,
 } from "@mui/material";
 import { useContext } from "react";
 
@@ -26,6 +28,9 @@ import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
 import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { taskService } from "src/services/task.service";
+import { isTemplateLiteral } from "typescript";
 
 interface Rows {
   dynamicDetails: any[];
@@ -41,6 +46,7 @@ interface Rows {
 
 const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
+  const [csvData, setCsvData] = useState([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
   const authContext = useContext(AuthContext);
@@ -236,6 +242,65 @@ const TaskTable = () => {
     }
   };
 
+  const exportCsv = () => {
+    let csvContent = "data:application/vnd.ms-excel,";
+
+    const columns = [
+      {
+        key: "id",
+      },
+      {
+        key: "type",
+      },
+      {
+        key: "assignedTo",
+      },
+      {
+        key: "status",
+      },
+      {
+        key: "executionStartDate",
+      },
+      {
+        key: "updatedBy",
+      },
+      {
+        key: "createdAt",
+      },
+      {
+        key: "lastUpdate",
+      },
+    ];
+
+    const headers = columns.map((item) => item.key);
+
+    console.log(headers);
+
+    // tableData.map((item) => {
+    //   console.log(item);
+    // const [key, value] = item;
+    // console.log(key, value);
+    // const data = {
+    //   id: item.id,
+    //   type: item.type,
+    //   assignedTo: item.assignedTo,
+    //   status: item.status,
+    //   executionStartDate: item.executionStartDate,
+    //   updatedBy: item.updatedBy,
+    //   createdAt: item.createdAt,
+    //   lastUpdate: item.lastUpdate,
+    // };
+    // csvContent += JSON.stringify(Object.values(data)) + "\r\n";
+    // console.log(data);
+    // let csvHeader = Object.keys(data);
+    // let csvValue = Object.values(data);
+    // console.log(csvHeader);
+    // });
+
+    // let encodeUri = encodeURI(csvContent);
+    // window.open(encodeUri);
+  };
+
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
@@ -354,7 +419,18 @@ const TaskTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      <Box
+        p={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Button variant="contained" onClick={exportCsv}>
+          <Typography variant="h5" sx={{ mr: "5px" }}>
+            Download
+          </Typography>{" "}
+          <FileDownloadIcon fontSize="small" />
+        </Button>
         <TablePagination
           component="div"
           count={total}
