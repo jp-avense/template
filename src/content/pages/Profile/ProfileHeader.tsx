@@ -8,11 +8,9 @@ function PageHeader() {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h3" component="h3" gutterBottom>
-          {t("Profile")}
+          {t("profile")}
         </Typography>
-        <Typography variant="subtitle2">
-          {t("Personal settings of the user")}
-        </Typography>
+        <Typography variant="subtitle2">{t("profileDescription")}</Typography>
       </Grid>
     </Grid>
   );

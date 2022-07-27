@@ -179,5 +179,10 @@
   "closeForm": "צורה קרובה",
   "rescheduleTask": "תזמן מחדש את המשימה",
   "transmitDone": "השידור נעשה",
-  "transmitRescheduled": "השידור נקבע מחדש"
+  "transmitRescheduled": "השידור נקבע מחדש",
+  "profile": "פּרוֹפִיל",
+  "profileDescription": "הגדרות אישיות של המשתמש",
+  "changeDetails": "שנה פרטים",
+  "updateInformation": "לעדכן מידע"
+
 }

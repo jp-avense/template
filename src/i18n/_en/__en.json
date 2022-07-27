@@ -176,5 +176,9 @@
   "closeForm": "Close form",
   "rescheduleTask": "Reschedule task",
   "transmitDone": "Transmit Done",
-  "transmitRescheduled": "Transmit Rescheduled"
+  "transmitRescheduled": "Transmit Rescheduled",
+  "profile": "Profile",
+  "profileDescription": "Personal settings of the user",
+  "changeDetails": "Change Details",
+  "updateInformation": "Update Information"
 }

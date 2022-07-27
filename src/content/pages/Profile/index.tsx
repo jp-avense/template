@@ -110,11 +110,11 @@ function Profile() {
             </ListItem>
             <ListItem>
               <ModalButton
-                text={t("Change Details")}
+                text={t("changeDetails")}
                 buttonProps={{
                   variant: "contained",
                 }}
-                title="Update information"
+                title={t("updateInformation")}
               >
                 <ProfileForm userinfo={user} />
               </ModalButton>
