@@ -47,7 +47,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
         }}
       >
         <Scrollbar>
-          <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={2}>
+          <Box sx={{ backgroundColor: "#5569FF" }} py={2} px={3.5}>
             <Typography sx={{ color: "white" }} variant="h4">
               {t("formFields")}
             </Typography>
@@ -76,7 +76,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                         onDragEnter={(e) => onDragEnter(e, item._id)}
                         key={key}
                         py={2}
-                        px={2}
+                        px={3.5}
                         sx={{
                           "&:hover": {
                             backgroundColor: "#f0f2f5",
