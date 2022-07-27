@@ -336,6 +336,19 @@ function SidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
+              {isAdmin ? (
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/agents"
+                    startIcon={<PersonIcon />}
+                  >
+                    {t("agents")}
+                  </Button>
+                </ListItem>
+              ) : null}
               <ListItem component="div">
                 <Button
                   disableRipple

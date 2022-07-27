@@ -24,7 +24,6 @@ import enFlag from "../../../assets/images/icons/enFlag.svg";
 
 const HeaderWrapper = styled(Box)(
   ({ theme }) => `
-        height: ${theme.header.height};
         color: ${theme.header.textColor};
         padding: ${theme.spacing(0, 2)};
         right: 0;
@@ -103,7 +102,12 @@ function Header() {
           </Tooltip>
         </Box>
       </Box>
-      <Grid container justifyContent={"space-between"}>
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        py=".2rem"
+      >
         <Grid item>
           {user ? (
             <>

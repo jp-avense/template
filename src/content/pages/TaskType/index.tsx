@@ -17,6 +17,7 @@ import DuplicateTypeForm from "./DuplicateType";
 import { TaskType } from "./type.interface";
 import UpdateType from "./UpdateType";
 import UpdateTypeForm from "./UpdateType/UpdateTypeForm";
+import Label from "src/components/Label";
 
 const TaskTypePage = () => {
   const [types, setTypes] = useState<TaskType[]>([]);
@@ -72,7 +73,7 @@ const TaskTypePage = () => {
         key: "form",
         label: t("form"),
         render: (data: Form) => {
-          return data.name;
+          return data?.name || <Label color="error">{t("none")}</Label>;
         },
       },
     ];
