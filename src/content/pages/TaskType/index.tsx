@@ -100,7 +100,6 @@ const TaskTypePage = () => {
       setTypes(data);
       setHeaders(headers);
     } catch (error) {
-      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -180,7 +179,7 @@ const TaskTypePage = () => {
       </Helmet>
       <PageTitleWrapper>
         <CreateType>
-          <CreateTypeForm onFinish={onFinish} forms={forms} />
+          <CreateTypeForm onFinish={init} forms={forms} />
         </CreateType>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center" pb={4}>
