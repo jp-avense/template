@@ -8,7 +8,8 @@ import CloseIcon from "@mui/icons-material/Close";
 function SimpleDialog(props) {
   const { onClose, children, title, open } = props;
 
-  const handleClose = () => {
+  const handleClose = (e) => {
+    e.stopPropagation();
     onClose();
   };
 
@@ -17,7 +18,13 @@ function SimpleDialog(props) {
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" onClose={handleClose} open={open}>
+    <Dialog
+      fullWidth
+      maxWidth="sm"
+      onClose={handleClose}
+      open={open}
+      onClick={(e) => e.stopPropagation()}
+    >
       <DialogTitle variant="h3" sx={{ bgcolor: "#5569ff", mb: 2 }}>
         <Box
           display="flex"

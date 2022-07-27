@@ -172,5 +172,7 @@
   "System": "System",
   "loggedInAs": "Logged in as",
   "roles": "Roles",
-  "taskManagementTask": "Task management - Tasks"
+  "taskManagementTask": "Task management - Tasks",
+  "forceChangePassword": "Force change the password of a user",
+  "firstName": "First name"
 }

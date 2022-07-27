@@ -51,6 +51,7 @@ const FormGeneralSettings = ({
 
   const handleChange = (e) => {
     setError("");
+    setSuccess("");
 
     setValues({
       ...values,
@@ -59,6 +60,8 @@ const FormGeneralSettings = ({
   };
 
   const handleSubmit = async () => {
+    setError("");
+    setSuccess("");
     try {
       if (!values.name) {
         setError("Name is required");

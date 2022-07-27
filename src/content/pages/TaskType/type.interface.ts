@@ -6,4 +6,6 @@ export class TaskType {
   description: string;
 
   label: string;
+
+  form: string
 }

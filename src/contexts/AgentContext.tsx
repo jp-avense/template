@@ -58,6 +58,12 @@ export const AgentProvider = ({ children }) => {
     try {
       const { data } = await agentService.getAgents();
       const res = parseAgentResponse(data);
+      res.sort((a, b) => {
+        const aName = `${a.name} ${a.family_name}`;
+        const bName = `${b.name} ${b.family_name}`;
+
+        return aName.localeCompare(bName);
+      });
       setAgents(res);
       return res;
     } catch (error) {
