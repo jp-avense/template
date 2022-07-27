@@ -23,6 +23,7 @@ const Status404 = Loader(
 
 const LoginPage = Loader(lazy(() => import("src/content/pages/Login")));
 const TaskPage = Loader(lazy(() => import("src/content/pages/Tasks")));
+const ProfilePage = Loader(lazy(() => import("src/content/pages/Profile")));
 
 const DashboardPage = Loader(
   lazy(() => import("src/content/dashboards/Crypto"))
@@ -138,6 +139,20 @@ const routes: RouteObject[] = [
   {
     path: "create-form",
     element: <CreateForm />,
+  },
+  {
+    path: "profile",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AdminOnlyRoute>
+            <ProfilePage />
+          </AdminOnlyRoute>
+        ),
+      },
+    ],
   },
 ];
 

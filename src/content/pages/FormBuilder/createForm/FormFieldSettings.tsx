@@ -22,6 +22,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { cloneDeep } from "lodash";
 import CircleIcon from "@mui/icons-material/Circle";
+import Select from "react-select";
 
 type Props = {
   selected: any[];
@@ -93,6 +94,7 @@ function FormFieldSettings({
   onSubmit,
 }: Props) {
   const [action, setAction] = useState([]);
+  const [currentFormAction, setCurrentFormAction] = useState([]);
   const [conditions, setCondition] = useState([]);
   const [required, setRequired] = useState(true);
   const [selectedForm, setSelectedForm] = useState<any>([]);
@@ -100,10 +102,10 @@ function FormFieldSettings({
   const [markUpVal, setMarkUpval] = useState();
 
   const actions = [
-    "closeForm",
-    "rescheduleTask",
-    "transmitDone",
-    "transmitRescheduled",
+    { value: "closeForm", label: t("closeForm") },
+    { value: "rescheduleTask", label: t("rescheduleTask") },
+    { value: "transmitDone", label: t("transmitDone") },
+    { value: "transmitRescheduled", label: t("transmitRescheduled") },
   ];
 
   const setSelectedCondition = (e, index) => {
@@ -143,6 +145,13 @@ function FormFieldSettings({
 
     setCondition(res);
   }, [selectedForm]);
+
+  useEffect(() => {
+    const res = action.map((c) => {
+      return { value: c, label: t(c) };
+    });
+    setCurrentFormAction(res);
+  }, [action]);
 
   useEffect(() => {
     if (selected[0]?._id) {
@@ -222,7 +231,9 @@ function FormFieldSettings({
   }, [selected]);
 
   const setSelectedAction = (e) => {
-    setAction(e.target.value);
+    const res = e.map((c) => c.value);
+
+    setAction(res);
   };
 
   const setSelectedMarkUpValue = (e) => {
@@ -302,20 +313,13 @@ function FormFieldSettings({
                 {t("isRequired")}
                 <Checkbox checked={required} onClick={handleClick}></Checkbox>
               </span>
-              <TextField
-                fullWidth
-                label="Actions"
+              <Select
+                options={actions}
+                placeholder="Actions"
+                isMulti
+                value={currentFormAction}
                 onChange={(e) => setSelectedAction(e)}
-                value={action}
-                select
-                SelectProps={{ multiple: true }}
-              >
-                {actions.map((c) => (
-                  <MenuItem key={c} value={c}>
-                    {t(c)}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
               {selected[0].inputType == "markup" ? (
                 <>
                   <TextField

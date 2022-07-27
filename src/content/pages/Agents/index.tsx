@@ -14,7 +14,7 @@ const AgentsPage = () => {
     <>
       <TabsProvider>
         <Helmet>
-          <title>{t("agents")}</title>
+          <title>{t("users")}</title>
         </Helmet>
         <PageTitleWrapper>
           <AgentsHeader />
