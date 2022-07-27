@@ -180,5 +180,8 @@
   "profile": "Profile",
   "profileDescription": "Personal settings of the user",
   "changeDetails": "Change Details",
-  "updateInformation": "Update Information"
+  "updateInformation": "Update Information",
+  "filterByAgent": "Filter by agent",
+  "filterByDate": "Filter by date",
+  "unDone": "Undone"
 }

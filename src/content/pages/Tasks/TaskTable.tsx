@@ -14,6 +14,8 @@ import {
   Checkbox,
   TablePagination,
   TableSortLabel,
+  Button,
+  Typography,
 } from "@mui/material";
 import { useContext } from "react";
 
@@ -27,6 +29,9 @@ import { useTranslation } from "react-i18next";
 import useRoles from "src/hooks/useRole";
 import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { taskService } from "src/services/task.service";
+import { isNamedExportBindings, isTemplateLiteral } from "typescript";
 
 interface State {
   order: "asc" | "desc";
@@ -304,10 +309,73 @@ const TaskTable = () => {
     }
   };
 
+  const xlsExport = () => {
+    const xlsHeaders = [
+      {
+        key: "id",
+      },
+      {
+        key: "type",
+      },
+      {
+        key: "assignedTo",
+      },
+      {
+        key: "status",
+      },
+      {
+        key: "executionStartDate",
+      },
+      {
+        key: "updatedBy",
+      },
+      {
+        key: "createdAt",
+      },
+      {
+        key: "lastUpdate",
+      },
+    ];
+
+    const headKeys = xlsHeaders.map((item) => item.key);
+    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
+    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
+
+    tableData.map((item) => {
+      const details = item.dynamicDetails;
+      const getValue = details.map((item) => {
+        // const label = item.label;
+        console.log(item.value);
+        // return item.value;
+      });
+      const data = {
+        id: item.id,
+        type: item.type,
+        assignedTo: item.assignedTo,
+        status: item.status,
+        executionStartDate: item.executionStartDate,
+        updatedBy: item.updatedBy,
+        createdAt: item.createdAt,
+        lastUpdate: item.lastUpdate,
+      };
+
+      // console.log(data);
+      // csvContent +=
+      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
+    });
+    // var x = document.createElement("A");
+    // x.setAttribute("href", csvContent);
+    // x.setAttribute("download", "task_table.csv");
+    // document.body.appendChild(x);
+    // x.click();
+  };
+
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
+
+  // console.log(tableData);
 
   return (
     <Card>
@@ -436,7 +504,18 @@ const TaskTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      <Box
+        p={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Button disabled={loading} variant="contained" onClick={xlsExport}>
+          <Typography variant="h5" sx={{ mr: "5px" }}>
+            Download
+          </Typography>{" "}
+          <FileDownloadIcon fontSize="small" />
+        </Button>
         <TablePagination
           component="div"
           count={total}

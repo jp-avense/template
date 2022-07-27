@@ -164,9 +164,6 @@
   "formDescription": "תיאור טופס",
   "taskType": "סוג משימה",
   "createForm": "צור טופס",
-  "taskStatus": "סטטוס משימה",
-  "createStatus": "צור סטטוס משימה",
-  "taskTypes": "סוגי משימות",
   "userInformation": "מידע משתמש",
   "fieldForms": "טפסי שדה",
   "inputType": "סוג קלט",
@@ -183,6 +180,8 @@
   "profile": "פּרוֹפִיל",
   "profileDescription": "הגדרות אישיות של המשתמש",
   "changeDetails": "שנה פרטים",
-  "updateInformation": "לעדכן מידע"
-
+  "updateInformation": "לעדכן מידע",
+  "filterByAgent": "סנן לפי סוכן",
+  "filterByDate": "סנן לפי תאריך",
+  "unDone": "לא הסתיים"
 }
