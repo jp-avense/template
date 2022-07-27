@@ -88,6 +88,7 @@ const FormBuilder = () => {
 
       const res = forms.filter((item) => !selected.includes(item._id));
       setForms(res)
+      setSelected([])
 
     } catch (error) {
       Swal.fire({
