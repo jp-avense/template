@@ -10,14 +10,19 @@ import {
   Checkbox,
   TableBody,
   CircularProgress,
+  TableSortLabel,
 } from "@mui/material";
 import { t } from "i18next";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 interface IHeader {
   key: string;
   label: string;
   render?: (value: any) => any;
+}
+
+interface State {
+  order: "asc" | "desc";
 }
 
 type Props = {
@@ -29,6 +34,12 @@ type Props = {
   title: string;
   selected: string[];
   action?: ReactNode | null;
+  sort?: boolean;
+  sortedRowInformation?: (data: any[], comparator: () => number) => any[];
+  createSortHandler?: (property: any) => (event: any) => void;
+  getComparator?: (orderDirection: string, valueToOrderBy: string) => any;
+  orderDirection?: State;
+  valueToOrderBy?: string;
 };
 
 const DynamicTable = ({
@@ -40,6 +51,12 @@ const DynamicTable = ({
   title,
   selected,
   action,
+  sort,
+  sortedRowInformation,
+  createSortHandler,
+  getComparator,
+  orderDirection,
+  valueToOrderBy,
 }: Props) => {
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
@@ -62,9 +79,34 @@ const DynamicTable = ({
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {headers.map((item) => {
-                return <TableCell key={item.key}>{item.label}</TableCell>;
-              })}
+              {sort ? (
+                <>
+                  {headers.map((item) => {
+                    return (
+                      <TableCell key={item.key}>
+                        <TableSortLabel
+                          key={item.key}
+                          active={valueToOrderBy === item.key}
+                          direction={
+                            valueToOrderBy === item.key
+                              ? orderDirection.order
+                              : "asc"
+                          }
+                          onClick={createSortHandler(item.key)}
+                        >
+                          {item.label}
+                        </TableSortLabel>
+                      </TableCell>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  {headers.map((item) => {
+                    return <TableCell key={item.key}>{item.label}</TableCell>;
+                  })}
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -79,62 +121,128 @@ const DynamicTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item) => {
-                const isSelected = selected.includes(item._id);
-                const { key } = item;
-                return (
-                  <TableRow
-                    key={key}
-                    onClick={(e) => {
-                      handleSelectOne(item._id);
-                    }}
-                    hover
-                    sx={[
-                      {
-                        cursor: "pointer",
-                      },
-                      selected.includes(item._id)
-                        ? { backgroundColor: "lavender" }
-                        : {},
-                    ]}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        color="primary"
-                        onClick={(e) => handleSelectOne(item._id)}
-                      />
-                    </TableCell>
-                    {headKeys.map((head, idx) => {
-                      const cellkey = `${key}-col${idx}`;
-
-                      const headerData = headers.find(
-                        (item) => item.key === head
-                      );
-
-                      const { render } = headerData;
-
-                      const value = item[head];
-
-                      let displayValue = value;
-
-                      switch (typeof value) {
-                        case "boolean":
-                          displayValue = value?.toString() || "false";
-                          break;
-                      }
-
-                      if (render) {
-                        displayValue = render(displayValue);
-                      }
-
+              <>
+                {sort
+                  ? sortedRowInformation(
+                      data,
+                      getComparator(orderDirection.order, valueToOrderBy)
+                    ).map((item) => {
+                      const isSelected = selected.includes(item._id);
+                      const { key } = item;
                       return (
-                        <TableCell key={cellkey}>{displayValue}</TableCell>
+                        <TableRow
+                          key={key}
+                          onClick={(e) => {
+                            handleSelectOne(item._id);
+                          }}
+                          hover
+                          sx={[
+                            {
+                              cursor: "pointer",
+                            },
+                            selected.includes(item._id)
+                              ? { backgroundColor: "lavender" }
+                              : {},
+                          ]}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isSelected}
+                              color="primary"
+                              onClick={(e) => handleSelectOne(item._id)}
+                            />
+                          </TableCell>
+                          {headKeys.map((head, idx) => {
+                            const cellkey = `${key}-col${idx}`;
+
+                            const headerData = headers.find(
+                              (item) => item.key === head
+                            );
+
+                            const { render } = headerData;
+
+                            const value = item[head];
+
+                            let displayValue = value;
+
+                            switch (typeof value) {
+                              case "boolean":
+                                displayValue = value?.toString() || "false";
+                                break;
+                            }
+
+                            if (render) {
+                              displayValue = render(displayValue);
+                            }
+
+                            return (
+                              <TableCell key={cellkey}>
+                                {displayValue}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })
+                  : data.map((item) => {
+                      const isSelected = selected.includes(item._id);
+                      const { key } = item;
+                      return (
+                        <TableRow
+                          key={key}
+                          onClick={(e) => {
+                            handleSelectOne(item._id);
+                          }}
+                          hover
+                          sx={[
+                            {
+                              cursor: "pointer",
+                            },
+                            selected.includes(item._id)
+                              ? { backgroundColor: "lavender" }
+                              : {},
+                          ]}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isSelected}
+                              color="primary"
+                              onClick={(e) => handleSelectOne(item._id)}
+                            />
+                          </TableCell>
+                          {headKeys.map((head, idx) => {
+                            const cellkey = `${key}-col${idx}`;
+
+                            const headerData = headers.find(
+                              (item) => item.key === head
+                            );
+
+                            const { render } = headerData;
+
+                            const value = item[head];
+
+                            let displayValue = value;
+
+                            switch (typeof value) {
+                              case "boolean":
+                                displayValue = value?.toString() || "false";
+                                break;
+                            }
+
+                            if (render) {
+                              displayValue = render(displayValue);
+                            }
+
+                            return (
+                              <TableCell key={cellkey}>
+                                {displayValue}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
                       );
                     })}
-                  </TableRow>
-                );
-              })
+              </>
             )}
           </TableBody>
         </Table>

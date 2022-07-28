@@ -185,5 +185,6 @@
   "updateInformation": "Update Information",
   "filterByAgent": "Filter by agent",
   "filterByDate": "Filter by date",
-  "unDone": "Undone"
+  "unDone": "Undone",
+  "duplicateInfo": "Input unique key for the duplicated form"
 }

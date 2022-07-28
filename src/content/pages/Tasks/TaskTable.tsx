@@ -163,7 +163,7 @@ const TaskTable = () => {
           return 1;
         }
       } else if (a.inputType === "string") {
-        return bVal.localCompare(aVal);
+        return bVal.localeCompare(aVal);
       } else {
         if (bVal?.value < aVal?.value) {
           return -1;
@@ -191,7 +191,6 @@ const TaskTable = () => {
       return a[1] - b[1];
     });
     const res = stabilizedRowArray.map((el) => el[0]);
-    console.log("res", res);
     return res;
   };
 
@@ -345,7 +344,6 @@ const TaskTable = () => {
       const details = item.dynamicDetails;
       const getValue = details.map((item) => {
         // const label = item.label;
-        console.log(item.value);
         // return item.value;
       });
       const data = {
@@ -359,7 +357,6 @@ const TaskTable = () => {
         lastUpdate: item.lastUpdate,
       };
 
-      // console.log(data);
       // csvContent +=
       //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
     });
@@ -374,8 +371,6 @@ const TaskTable = () => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
-
-  // console.log(tableData);
 
   return (
     <Card>
