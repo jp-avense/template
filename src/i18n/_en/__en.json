@@ -172,5 +172,9 @@
   "System": "System",
   "loggedInAs": "Logged in as",
   "roles": "Roles",
-  "taskManagementTask": "Task management - Tasks"
+  "taskManagementTask": "Task management - Tasks",
+  "filterByAgent": "Filter by agent",
+  "filterByDate": "Filter by date",
+  "unDone": "Undone",
+  "inProcess": "In Progress"
 }

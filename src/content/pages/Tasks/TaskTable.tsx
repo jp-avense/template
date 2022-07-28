@@ -46,7 +46,6 @@ interface Rows {
 
 const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
-  const [csvData, setCsvData] = useState([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
   const authContext = useContext(AuthContext);
@@ -271,10 +270,16 @@ const TaskTable = () => {
     ];
 
     const headKeys = xlsHeaders.map((item) => item.key);
-
-    let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
+    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
+    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
 
     tableData.map((item) => {
+      const details = item.dynamicDetails;
+      const getValue = details.map((item) => {
+        // const label = item.label;
+        console.log(item.value);
+        // return item.value;
+      });
       const data = {
         id: item.id,
         type: item.type,
@@ -285,19 +290,24 @@ const TaskTable = () => {
         createdAt: item.createdAt,
         lastUpdate: item.lastUpdate,
       };
-      csvContent += JSON.stringify(Object.values(data)) + "\r\n";
+
+      // console.log(data);
+      // csvContent +=
+      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
     });
-    var x = document.createElement("A");
-    x.setAttribute("href", csvContent);
-    x.setAttribute("download", "task_table.csv");
-    document.body.appendChild(x);
-    x.click();
+    // var x = document.createElement("A");
+    // x.setAttribute("href", csvContent);
+    // x.setAttribute("download", "task_table.csv");
+    // document.body.appendChild(x);
+    // x.click();
   };
 
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
+
+  // console.log(tableData);
 
   return (
     <Card>
@@ -418,7 +428,7 @@ const TaskTable = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button variant="contained" onClick={xlsExport}>
+        <Button disabled={loading} variant="contained" onClick={xlsExport}>
           <Typography variant="h5" sx={{ mr: "5px" }}>
             Download
           </Typography>{" "}

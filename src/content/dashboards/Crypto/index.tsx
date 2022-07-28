@@ -1,47 +1,52 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import PageHeader from "./PageHeader";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
-import {
-  Container,
-  Grid,
-  Card,
-  Typography,
-  Box,
-  Skeleton,
-  CircularProgress,
-} from "@mui/material";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import AssignmentLateIcon from "@mui/icons-material/AssignmentLate";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import AccountBalance from "./AccountBalance";
-import Wallets from "./Wallets";
-import AccountSecurity from "./AccountSecurity";
-import WatchList from "./WatchList";
-import { grey } from "@mui/material/colors";
+import { Container, Grid, Box, CircularProgress, Paper } from "@mui/material";
 import { taskService } from "src/services/task.service";
+import Chart from "react-apexcharts";
+import type { ApexOptions } from "apexcharts";
+import { useTranslation } from "react-i18next";
+import TaskHeader from "./Tasks/TaskHeader";
+import TaskGrid from "./Tasks/TaskGrid";
 
-const greyColor = grey[600];
+interface ITask {
+  date: any;
+}
 
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
+  const [date, setDate] = useState<ITask[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
     taskService
       .getAll()
       .then(({ data }) => {
-        // console.log(data);
         setStatus(data.tasks);
       })
       .finally(() => setLoading(false));
   }, []);
 
+  const filterDates = () => {
+    status.filter((item) => {
+      const getDate = {
+        date: item.createdAt,
+      };
+    });
+  };
+
+  filterDates();
+
   const newStatus = status.filter((item) => item.statusId === "new");
   const countNewStatus = newStatus.length;
 
-  const unDoneStatus = status.filter((item) => item.statusId === "undone");
+  const unDoneStatus = status.filter((item) => item.statusId !== "done");
   const countUndone = unDoneStatus.length;
 
   const doneStatus = status.filter((item) => item.statusId === "done");
@@ -52,176 +57,78 @@ function DashboardCrypto() {
   );
   const countProgress = progressStatus.length;
 
-  // console.log(countNewStatus);
-  // console.log(status);
+  const assignedTask = status.filter((item) => item.assignedTo);
+  const countAssignedTask = assignedTask.length;
+
+  const chartOptions: ApexOptions = {
+    chart: {
+      background: "transparent",
+      stacked: false,
+      toolbar: {
+        show: false,
+      },
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "60%",
+        },
+      },
+    },
+
+    colors: ["#57CA22", "#5569ff", "#FFA319", "#5c6ac0"],
+    labels: ["New", "Done", "In Progress", "Assigned"],
+    stroke: {
+      width: 0,
+    },
+  };
+
+  const chartSeries = [
+    countNewStatus,
+    countDone,
+    countProgress,
+    countAssignedTask,
+  ];
 
   return (
     <>
       <Helmet>
-        <title>Dashboard</title>
+        <title>{t("dashboard")}</title>
       </Helmet>
       <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <Typography variant="h3" sx={{ pb: 2 }}>
-          Tasks
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card>
-              <Box sx={{ m: 2, px: 1 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <AssignmentLateIcon
-                    fontSize="small"
-                    color="success"
-                    sx={{ mr: 1 }}
+        <TaskHeader />
+        <Grid container spacing={2} mt={1}>
+          <Grid item xs={12} lg={6}>
+            <Paper>
+              <Box p={3}>
+                {loading ? (
+                  <Box display="flex" justifyContent="center" py={11}>
+                    <CircularProgress size={50} />
+                  </Box>
+                ) : (
+                  <Chart
+                    height={250}
+                    options={chartOptions}
+                    series={chartSeries}
+                    type="pie"
                   />
-                  New
-                </Typography>
+                )}
               </Box>
-              <Box
-                sx={{ mx: 2, mt: 4, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h5" color={greyColor}>
-                  Total
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mb: 2, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h3">
-                  {loading ? <CircularProgress size={20} /> : countNewStatus}
-                </Typography>
-              </Box>
-            </Card>
+            </Paper>
           </Grid>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card>
-              <Box sx={{ m: 2, px: 1 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <AssignmentIcon
-                    fontSize="small"
-                    color="error"
-                    sx={{ mr: 1 }}
-                  />
-                  Undone
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mt: 4, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h5" color={greyColor}>
-                  Total
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mb: 2, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h3">
-                  {" "}
-                  {loading ? <CircularProgress size={20} /> : countUndone}
-                </Typography>
-              </Box>
-            </Card>
+
+          <Grid item xs={12} lg={6}>
+            <TaskGrid
+              countNewStatus={countNewStatus}
+              countUndone={countUndone}
+              countDone={countDone}
+              countProgress={countProgress}
+              loading={loading}
+            />
           </Grid>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card>
-              <Box sx={{ m: 2, px: 1 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <AssignmentTurnedInIcon
-                    fontSize="small"
-                    color="primary"
-                    sx={{ mr: 1 }}
-                  />
-                  Done
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mt: 4, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h5" color={greyColor}>
-                  Total
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mb: 2, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h3">
-                  {" "}
-                  {loading ? <CircularProgress size={20} /> : countDone}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card>
-              <Box sx={{ m: 2, px: 1 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <AssignmentIcon
-                    fontSize="small"
-                    color="warning"
-                    sx={{ mr: 1 }}
-                  />
-                  In Progress
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mt: 4, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h5" color={greyColor}>
-                  Total
-                </Typography>
-              </Box>
-              <Box
-                sx={{ mx: 2, mb: 2, px: 1 }}
-                display="flex"
-                justifyContent="start"
-              >
-                <Typography variant="h3">
-                  {" "}
-                  {loading ? <CircularProgress size={20} /> : countProgress}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-          {/* <Grid item xs={12}>
+        </Grid>
+        {/* <Grid item xs={12}>
             <AccountBalance />
           </Grid>
           <Grid item lg={8} xs={12}>
@@ -230,10 +137,9 @@ function DashboardCrypto() {
           <Grid item lg={4} xs={12}>
             <AccountSecurity />
           </Grid> */}
-          {/* <Grid item xs={12}>
+        {/* <Grid item xs={12}>
             <WatchList />
           </Grid> */}
-        </Grid>
       </Container>
     </>
   );
