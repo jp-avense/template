@@ -11,10 +11,16 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
+import MonthPicker from "@mui/x-date-pickers/MonthPicker";
 
-function TaskHeader() {
+type Props = {
+  filterByMonth: any;
+};
+
+function TaskHeader({ filterByMonth }: Props) {
   const [value, setValue] = useState(null);
   const [agent, setAgent] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const {
     t,
@@ -57,17 +63,16 @@ function TaskHeader() {
                 </Select>
               </FormControl>
             </Box>
-            {/* <Button variant="contained" sx={{ mr: 2 }}>
-              {t("filterByAgent")}
-            </Button> */}
-            {/* {t("filterByMonth")} */}
             <DatePicker
-              label={t("filterByDate")}
+              views={["year", "month"]}
+              label={t("filterByMonth")}
+              minDate={new Date("2022-01-01")}
+              maxDate={new Date("2023-06-01")}
               value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
+              onChange={(e) => filterByMonth(e)}
+              renderInput={(params) => (
+                <TextField {...params} helperText={null} />
+              )}
             />
           </Box>
         </Grid>

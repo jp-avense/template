@@ -9,13 +9,9 @@ import { useTranslation } from "react-i18next";
 import TaskHeader from "./Tasks/TaskHeader";
 import TaskGrid from "./Tasks/TaskGrid";
 
-interface ITask {
-  date: any;
-}
-
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
-  const [date, setDate] = useState<ITask[]>([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -33,15 +29,18 @@ function DashboardCrypto() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filterDates = () => {
-    status.filter((item) => {
-      const getDate = {
-        date: item.createdAt,
-      };
+  const filterByMonth = (e) => {
+    const d = new Date(e);
+    const dateString = d.getMonth() + 1 + "/" + d.getFullYear();
+    const getDates = status.filter((item) => {
+      const date = item.createdAt;
+      const x = new Date(date);
+      const dateData = x.getMonth() + 1 + "/" + x.getFullYear();
+      return dateData === dateString;
     });
+    // console.log(getDates);
+    setStatus(getDates);
   };
-
-  filterDates();
 
   const newStatus = status.filter((item) => item.statusId === "new");
   const countNewStatus = newStatus.length;
@@ -90,6 +89,7 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
+  // console.log(status);
   return (
     <>
       <Helmet>
@@ -97,7 +97,7 @@ function DashboardCrypto() {
       </Helmet>
       <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader />
+        <TaskHeader filterByMonth={filterByMonth} />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>

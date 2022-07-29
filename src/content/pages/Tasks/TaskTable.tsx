@@ -191,7 +191,7 @@ const TaskTable = () => {
       return a[1] - b[1];
     });
     const res = stabilizedRowArray.map((el) => el[0]);
-    console.log("res", res);
+    // console.log("res", res);
     return res;
   };
 
@@ -312,41 +312,39 @@ const TaskTable = () => {
   const xlsExport = () => {
     const xlsHeaders = [
       {
-        key: "id",
+        key: "Id",
       },
       {
-        key: "type",
+        key: "Type",
       },
       {
-        key: "assignedTo",
+        key: "Assigned To",
       },
       {
-        key: "status",
+        key: "Status",
       },
       {
-        key: "executionStartDate",
+        key: "Execution Start Date",
       },
       {
-        key: "updatedBy",
+        key: "Updated By",
       },
       {
-        key: "createdAt",
+        key: "Created At",
       },
       {
-        key: "lastUpdate",
+        key: "Last Update",
       },
     ];
 
     const headKeys = xlsHeaders.map((item) => item.key);
-    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
-    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
+    let csvContent =
+      "data:text/csv;charset=utf-8,%EF%BB%BF" + headKeys + "\r\n";
 
     tableData.map((item) => {
       const details = item.dynamicDetails;
       const getValue = details.map((item) => {
-        // const label = item.label;
-        console.log(item.value);
-        // return item.value;
+        return item.value;
       });
       const data = {
         id: item.id,
@@ -359,23 +357,20 @@ const TaskTable = () => {
         lastUpdate: item.lastUpdate,
       };
 
-      // console.log(data);
-      // csvContent +=
-      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
+      csvContent +=
+        JSON.stringify(Object.values(data)) + JSON.stringify(getValue) + "\r\n";
     });
-    // var x = document.createElement("A");
-    // x.setAttribute("href", csvContent);
-    // x.setAttribute("download", "task_table.csv");
-    // document.body.appendChild(x);
-    // x.click();
+    var x = document.createElement("A");
+    x.setAttribute("href", csvContent);
+    x.setAttribute("download", "task_table.csv");
+    document.body.appendChild(x);
+    x.click();
   };
 
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
-
-  // console.log(tableData);
 
   return (
     <Card>
@@ -516,6 +511,12 @@ const TaskTable = () => {
           </Typography>{" "}
           <FileDownloadIcon fontSize="small" />
         </Button>
+        {/* <Button disabled={loading} variant="contained" onClick={xlsExport}>
+          <Typography variant="h5" sx={{ mr: "5px" }}>
+            Download
+          </Typography>{" "}
+          <FileDownloadIcon fontSize="small" />
+        </Button> */}
         <TablePagination
           component="div"
           count={total}
