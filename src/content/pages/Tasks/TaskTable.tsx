@@ -445,12 +445,14 @@ const TaskTable = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              sortedRowInformation(
-                tableData,
-                getComparator(orderDirection.order, valueToOrderBy)
-              ).map((rows, index) => (
+              tableData.map((rows, index) => (
                 <TableRow
                   key={index}
+                  onClick={() =>
+                    selectedRows.indexOf(rows.id) >= 0
+                      ? unSelectRow(rows.id)
+                      : createSelectedRows(rows.id)
+                  }
                   sx={[
                     {
                       "&:hover": {
@@ -465,11 +467,6 @@ const TaskTable = () => {
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      onClick={() =>
-                        selectedRows.indexOf(rows.id) >= 0
-                          ? unSelectRow(rows.id)
-                          : createSelectedRows(rows.id)
-                      }
                       checked={
                         selectedRows.indexOf(rows.id) >= 0 ? true : false
                       }
