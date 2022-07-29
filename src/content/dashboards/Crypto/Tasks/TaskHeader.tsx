@@ -12,8 +12,12 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
 
-function TaskHeader() {
-  const [value, setValue] = useState(null);
+type Props = {
+  filterByMonth: any;
+  value: string;
+};
+
+function TaskHeader({ filterByMonth, value }: Props) {
   const [agent, setAgent] = useState("");
 
   const {
@@ -62,12 +66,15 @@ function TaskHeader() {
             </Button> */}
             {/* {t("filterByMonth")} */}
             <DatePicker
-              label={t("filterByDate")}
+              views={["year", "month"]}
+              label={t("filterByMonth")}
+              minDate={new Date("2022-01-01")}
+              maxDate={new Date("2023-06-01")}
               value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
+              onChange={(e) => filterByMonth(e)}
+              renderInput={(params) => (
+                <TextField {...params} helperText={null} />
+              )}
             />
           </Box>
         </Grid>

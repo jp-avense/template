@@ -17,6 +17,7 @@ function DashboardCrypto() {
   const [status, setStatus] = useState([]);
   const [date, setDate] = useState<ITask[]>([]);
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(null);
 
   const {
     t,
@@ -32,16 +33,6 @@ function DashboardCrypto() {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const filterDates = () => {
-    status.filter((item) => {
-      const getDate = {
-        date: item.createdAt,
-      };
-    });
-  };
-
-  filterDates();
 
   const newStatus = status.filter((item) => item.statusId === "new");
   const countNewStatus = newStatus.length;
@@ -90,6 +81,15 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
+  const filterByMonth = (e) => {
+    status.filter((item) => {
+      const getDate = item.createdAt;
+
+      console.log(getDate);
+    });
+    // setValue(e);
+  };
+
   return (
     <>
       <Helmet>
@@ -97,7 +97,7 @@ function DashboardCrypto() {
       </Helmet>
       <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader />
+        <TaskHeader filterByMonth={filterByMonth} value={value} />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>

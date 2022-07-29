@@ -174,7 +174,7 @@
   "roles": "תפקידים",
   "taskManagementTask": "ניהול משימות - משימות",
   "filterByAgent": "סנן לפי סוכן",
-  "filterByDate": "סנן לפי תאריך",
+  "filterByMonth": "סנן לפי חודש",
   "unDone": "לא הסתיים",
   "inProcess": "בתהליך"
 }
