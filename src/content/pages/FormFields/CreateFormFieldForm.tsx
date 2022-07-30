@@ -52,8 +52,8 @@ function FormFieldForm({ onDone }) {
     key: yup
       .string()
       .matches(
-        /^[a-zA-Z]+/,
-        "Key should only contain lower and uppercase letters"
+        /^[a-zA-Z0-9_]+$/,
+        "Key should only contain letters , numbers and underscore"
       )
       .required(t("keyIsRequred")),
     label: yup.string(),
@@ -80,14 +80,12 @@ function FormFieldForm({ onDone }) {
         setError("");
         setSuccess("");
 
-
         const res = { ...values } as any;
         res.inputType = type;
 
         let errors = [];
 
         if (type === "radios" || type === "checkboxes" || type === "dropdown") {
-
           const reduced = options.reduce((acc, x) => {
             return {
               ...acc,
@@ -96,8 +94,7 @@ function FormFieldForm({ onDone }) {
           }, {});
 
           res.options = reduced;
-          
-          console.log(res);
+
           if (
             res.defaultValue &&
             !Object.keys(res.options).includes(res.defaultValue)
@@ -107,8 +104,6 @@ function FormFieldForm({ onDone }) {
         }
 
         if (type === "textarea") res.rows = rows;
-
-        console.log(res);
 
         if (!errors.length) {
           console.log(res);
@@ -155,7 +150,7 @@ function FormFieldForm({ onDone }) {
     let current = options.slice();
     current.splice(current.length - 1, 1);
     setOptions(current);
-    formik.setFieldValue('defaultValue', "")
+    formik.setFieldValue("defaultValue", "");
   };
 
   const handleChange = (e) => {
@@ -273,7 +268,6 @@ function FormFieldForm({ onDone }) {
                         label={t("defaultValue")}
                         onChange={(e) => handleChange(e)}
                         value={formik.values.defaultValue}
-
                         error={
                           formik.touched.defaultValue &&
                           Boolean(formik.errors.defaultValue)

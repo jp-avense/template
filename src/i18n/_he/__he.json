@@ -183,5 +183,9 @@
   "updateInformation": "לעדכן מידע",
   "filterByAgent": "סנן לפי סוכן",
   "filterByMonth": "סנן לפי חודש",
-  "unDone": "לא הסתיים"
+  "filterByDate": "סנן לפי תאריך",
+  "unDone": "לא הסתיים",
+  "true": "נָכוֹן",
+  "false": "שֶׁקֶר",
+  "duplicateInfo": "הזן מפתח ייחודי עבור הטופס המשוכפל"
 }

@@ -45,8 +45,8 @@ interface IFields {
 
 interface IData {
   key: string;
-  conditions: string[];
-  rules: string[];
+  conditions: object;
+  rules: object;
 }
 
 type Props = {

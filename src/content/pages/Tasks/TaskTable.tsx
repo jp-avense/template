@@ -72,6 +72,8 @@ const TaskTable = () => {
       filter,
       page,
       setPage,
+      sort,
+      setSort,
       limit,
       setLimit,
       loading,
@@ -149,10 +151,17 @@ const TaskTable = () => {
       valueToOrderBy === property && orderDirection.order === "asc";
     setValueToOrderBy(property);
     setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+    sortTable(property, isAscending ? "desc" : "asc");
   };
 
   const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
+  };
+
+  const sortTable = (value, direction) => {
+    const val = { [value]: direction };
+    const res = JSON.stringify(val);
+    handleSortTable(val, res);
   };
 
   const descendingComparator = (a, b, orderBy) => {
@@ -174,7 +183,7 @@ const TaskTable = () => {
           return 1;
         }
       } else if (a.inputType === "string") {
-        return bVal.localCompare(aVal);
+        return bVal.localeCompare(aVal);
       } else {
         if (bVal?.value < aVal?.value) {
           return -1;
@@ -202,7 +211,6 @@ const TaskTable = () => {
       return a[1] - b[1];
     });
     const res = stabilizedRowArray.map((el) => el[0]);
-    // console.log("res", res);
     return res;
   };
 
@@ -270,7 +278,12 @@ const TaskTable = () => {
 
     originalData[0].taskDetails.map((c) => {
       if (c.showInTable)
-        headers.push({ id: c.label, label: c.label, order: c.order });
+        headers.push({
+          id: c.label,
+          label: c.label,
+          order: c.order,
+          key: c.key,
+        });
     });
     headers.sort((a, b) => a.order - b.order);
     return headers;
@@ -284,6 +297,26 @@ const TaskTable = () => {
 
       await getDataAndSet({
         page: newPage,
+      });
+    } catch (error) {
+      const msg = getAxiosErrorMessage(error);
+      swal.fire({
+        icon: "error",
+        title: "Error",
+        text: msg,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSortTable = async (e: any, details: string) => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      setSort(details);
+      await getDataAndSet({
+        sort: details,
       });
     } catch (error) {
       const msg = getAxiosErrorMessage(error);
@@ -460,14 +493,16 @@ const TaskTable = () => {
               </TableCell>
               {headers.length
                 ? headers.map((c) => (
-                    <TableCell key={c.id}>
+                    <TableCell key={c.key}>
                       <TableSortLabel
-                        key={c.id}
-                        active={valueToOrderBy === c.id}
+                        key={c.key}
+                        active={valueToOrderBy === c.key}
                         direction={
-                          valueToOrderBy === c.id ? orderDirection.order : "asc"
+                          valueToOrderBy === c.key
+                            ? orderDirection.order
+                            : "asc"
                         }
-                        onClick={createSortHandler(c.id)}
+                        onClick={createSortHandler(c.key)}
                       >
                         {t(c.label)}
                       </TableSortLabel>
@@ -490,12 +525,14 @@ const TaskTable = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              sortedRowInformation(
-                tableData,
-                getComparator(orderDirection.order, valueToOrderBy)
-              ).map((rows, index) => (
+              tableData.map((rows, index) => (
                 <TableRow
                   key={index}
+                  onClick={() =>
+                    selectedRows.indexOf(rows.id) >= 0
+                      ? unSelectRow(rows.id)
+                      : createSelectedRows(rows.id)
+                  }
                   sx={[
                     {
                       "&:hover": {
@@ -510,11 +547,6 @@ const TaskTable = () => {
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      onClick={() =>
-                        selectedRows.indexOf(rows.id) >= 0
-                          ? unSelectRow(rows.id)
-                          : createSelectedRows(rows.id)
-                      }
                       checked={
                         selectedRows.indexOf(rows.id) >= 0 ? true : false
                       }

@@ -51,6 +51,10 @@ export const formService = {
     return apiService.post(BASE_FORM_URL, values);
   },
 
+  async updateForm(id: string, values: CreateFormDto) {
+    return apiService.put(`${BASE_FORM_URL}/${id}`, values);
+  },
+
   async bulkDeleteForms(ids: string[]) {
     return apiService.delete(`${BASE_FORM_URL}/bulk`, { data: ids });
   },

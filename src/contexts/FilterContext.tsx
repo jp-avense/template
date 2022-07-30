@@ -24,9 +24,11 @@ type FilterContextT = {
     ) => Promise<AxiosResponse<any, any>>;
     page: number;
     limit: number;
+    sort: string;
     setLimit: React.Dispatch<React.SetStateAction<number>>;
     loading: boolean;
     setPage: React.Dispatch<React.SetStateAction<number>>;
+    setSort: React.Dispatch<React.SetStateAction<string>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     selectedRows: string[];
     setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
@@ -49,6 +51,7 @@ export const FilterProvider = ({ children }) => {
   const [originalData, setOriginalData] = useState([]);
   const [details, setDetails] = useState([]);
   const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState();
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -61,7 +64,7 @@ export const FilterProvider = ({ children }) => {
   const [dynamicFilters, setDynamicFilters] = useState([]);
 
   const getDataByFilters = async (parsedObject?: object) => {
-    setSelectedRows([])
+    setSelectedRows([]);
     const finalFilters = {};
 
     if (filter !== "clear_filters") finalFilters["statusId"] = filter;
@@ -91,6 +94,7 @@ export const FilterProvider = ({ children }) => {
 
     finalFilters["page"] = page;
     finalFilters["pageSize"] = limit;
+    finalFilters["sort"] = sort;
 
     if (parsedObject) {
       for (const [key, value] of Object.entries(parsedObject)) {
@@ -137,6 +141,8 @@ export const FilterProvider = ({ children }) => {
     getDataByFilters,
     page,
     setPage,
+    sort,
+    setSort,
     limit,
     setLimit,
     loading,

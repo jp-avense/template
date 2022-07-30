@@ -11,13 +11,21 @@ import { formService } from "src/services/form.service";
 import FormFieldForm from "./CreateFormFieldForm";
 import UpdateForms from "./UpdateForm";
 import UpdateFormField from "./UpdateForm/UpdateFormField";
+import DuplicateForm from "./DuplicateForm";
+import DuplicateFormField from "./DuplicateForm/DuplicateFormField";
 import { useTranslation } from "react-i18next";
+
+interface State {
+  order: "asc" | "desc";
+}
 
 const FormFields = () => {
   const [forms, setForms] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
+  const [valueToOrderBy, setValueToOrderBy] = useState("");
 
   const {
     t,
@@ -134,6 +142,41 @@ const FormFields = () => {
     }
   };
 
+  const handleRequestSort = (event, property) => {
+    const isAscending =
+      valueToOrderBy === property && orderDirection.order === "asc";
+    setValueToOrderBy(property);
+    setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+  };
+
+  const createSortHandler = (property) => (event) => {
+    handleRequestSort(event, property);
+  };
+
+  const descendingComparator = (a, b, orderBy) => {
+    if (orderBy) {
+      return b[orderBy].localeCompare(a[orderBy]);
+    }
+    return 0;
+  };
+
+  const getComparator = (order, orderBy) => {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  };
+
+  const sortedRowInformation = (rowArray, comparator) => {
+    const stabilizedRowArray = rowArray.map((el, index) => [el, index]);
+    stabilizedRowArray.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    const res = stabilizedRowArray.map((el) => el[0]);
+    return res;
+  };
+
   return (
     <>
       <Helmet>
@@ -154,6 +197,12 @@ const FormFields = () => {
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
+            sort={true}
+            sortedRowInformation={sortedRowInformation}
+            createSortHandler={createSortHandler}
+            getComparator={getComparator}
+            orderDirection={orderDirection}
+            valueToOrderBy={valueToOrderBy}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (
@@ -164,6 +213,13 @@ const FormFields = () => {
                         onFinish={onFinish}
                       />
                     </UpdateForms>
+
+                    <DuplicateForm>
+                      <DuplicateFormField
+                        selectedForm={updateForm}
+                        onFinish={onFinish}
+                      />
+                    </DuplicateForm>
                   </>
                 ) : null}
                 {selected.length ? (
