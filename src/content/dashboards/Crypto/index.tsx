@@ -13,6 +13,7 @@ function DashboardCrypto() {
   const [status, setStatus] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(null);
 
   const {
     t,
@@ -25,6 +26,7 @@ function DashboardCrypto() {
       .getAll()
       .then(({ data }) => {
         setStatus(data.tasks);
+        setFilteredData(data.tasks);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -38,26 +40,30 @@ function DashboardCrypto() {
       const dateData = x.getMonth() + 1 + "/" + x.getFullYear();
       return dateData === dateString;
     });
-    // console.log(getDates);
-    setStatus(getDates);
+    setValue(d);
+    setFilteredData(getDates);
   };
 
-  const newStatus = status.filter((item) => item.statusId === "new");
+  const newStatus = filteredData.filter((item) => item.statusId === "new");
   const countNewStatus = newStatus.length;
 
-  const unDoneStatus = status.filter((item) => item.statusId !== "done");
+  const unDoneStatus = filteredData.filter((item) => item.statusId !== "done");
   const countUndone = unDoneStatus.length;
 
-  const doneStatus = status.filter((item) => item.statusId === "done");
+  const doneStatus = filteredData.filter((item) => item.statusId === "done");
   const countDone = doneStatus.length;
 
-  const progressStatus = status.filter(
+  const progressStatus = filteredData.filter(
     (item) => item.statusId === "inProgress"
   );
   const countProgress = progressStatus.length;
 
-  const assignedTask = status.filter((item) => item.assignedTo);
+  const assignedTask = filteredData.filter((item) => item.assignedTo);
   const countAssignedTask = assignedTask.length;
+
+  const resetData = () => {
+    setFilteredData(status);
+  };
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -89,7 +95,8 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
-  // console.log(status);
+  console.log(filteredData);
+
   return (
     <>
       <Helmet>
@@ -97,7 +104,16 @@ function DashboardCrypto() {
       </Helmet>
       <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader filterByMonth={filterByMonth} />
+        <TaskHeader
+          filterByMonth={filterByMonth}
+          resetData={resetData}
+          value={value}
+          status={status}
+          loading={loading}
+          setLoading={setLoading}
+          setFilteredData={setFilteredData}
+          filteredData={filteredData}
+        />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>
@@ -128,18 +144,6 @@ function DashboardCrypto() {
             />
           </Grid>
         </Grid>
-        {/* <Grid item xs={12}>
-            <AccountBalance />
-          </Grid>
-          <Grid item lg={8} xs={12}>
-            <Wallets />
-          </Grid>
-          <Grid item lg={4} xs={12}>
-            <AccountSecurity />
-          </Grid> */}
-        {/* <Grid item xs={12}>
-            <WatchList />
-          </Grid> */}
       </Container>
     </>
   );
