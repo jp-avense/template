@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -8,24 +8,66 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Button,
+  IconButton,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { agentService } from "src/services/agent.service";
+import { IAgent } from "src/contexts/AgentContext";
 
 type Props = {
   filterByMonth: any;
+  resetData: any;
   value: string;
+  status: any[];
+  loading: any;
+  setLoading: any;
 };
 
-function TaskHeader({ filterByMonth, value }: Props) {
+function TaskHeader({
+  filterByMonth,
+  resetData,
+  value,
+  status,
+  loading,
+  setLoading,
+}: Props) {
+  const [data, setData] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("");
   const [agent, setAgent] = useState("");
+  const [selectAgent, setSelectAgent] = useState([]);
 
   const {
     t,
     i18n: { language },
   } = useTranslation();
 
-  const handleChange = (e) => {};
+  useEffect(() => {
+    setLoading(true);
+    agentService
+      .getAgents()
+      .then(({ data }) => {
+        setData(data);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const getAgent = (raw: any) => {
+    // const res: IAgent[] = raw.map((item) => {
+    //   const init = {
+    //     status: +item.Enabled,
+    //   } as IAgent;
+    //   return item.Attributes.reduce((acc, curr) => {
+    //     acc[curr.Name] = curr.Value;
+    //     return acc;
+    //   }, init);
+    // });
+    // return res;
+  };
+
+  console.log(data);
 
   return (
     <>
@@ -53,29 +95,33 @@ function TaskHeader({ filterByMonth, value }: Props) {
                   id="demo-simple-select"
                   value={agent}
                   label="Age"
-                  onChange={handleChange}
+                  onChange={(e) => getAgent(e)}
                 >
-                  <MenuItem value={10}>Agent</MenuItem>
-                  <MenuItem value={20}>Admin</MenuItem>
-                  <MenuItem value={30}>Backoffice</MenuItem>
+                  {status.map((item) => {
+                    <MenuItem key={item._id} value={item._id}>
+                      {item.assignedTo.agentName}
+                    </MenuItem>;
+                  })}
                 </Select>
               </FormControl>
             </Box>
-            {/* <Button variant="contained" sx={{ mr: 2 }}>
-              {t("filterByAgent")}
-            </Button> */}
-            {/* {t("filterByMonth")} */}
+
             <DatePicker
               views={["year", "month"]}
               label={t("filterByMonth")}
               minDate={new Date("2022-01-01")}
-              maxDate={new Date("2023-06-01")}
+              maxDate={new Date("2040-06-01")}
               value={value}
               onChange={(e) => filterByMonth(e)}
               renderInput={(params) => (
                 <TextField {...params} helperText={null} />
               )}
             />
+            <Box ml={2}>
+              <Button onClick={resetData}>
+                <RestartAltIcon />
+              </Button>
+            </Box>
           </Box>
         </Grid>
       </Grid>
