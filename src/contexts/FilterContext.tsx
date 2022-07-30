@@ -36,7 +36,7 @@ type FilterContextT = {
     setStatus: React.Dispatch<React.SetStateAction<any[]>>;
     types: any[];
     setTypes: React.Dispatch<React.SetStateAction<any[]>>;
-    getDataAndSet: (filterObject?: object) => Promise<void>;
+    getDataAndSet: (filterObject?: object) => Promise<any>;
     getTypesAndSet: () => Promise<any>;
     getStatusAndSet: () => Promise<any>;
   };

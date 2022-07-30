@@ -8,12 +8,17 @@ import type { ApexOptions } from "apexcharts";
 import { useTranslation } from "react-i18next";
 import TaskHeader from "./Tasks/TaskHeader";
 import TaskGrid from "./Tasks/TaskGrid";
+import { agentService } from "src/services/agent.service";
+import { parseAgentResponse } from "src/contexts/AgentContext";
+import { getAxiosErrorMessage } from "src/lib";
+import Swal from "sweetalert2";
 
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(null);
+  const [agents, setAgents] = useState([]);
 
   const {
     t,
@@ -21,15 +26,34 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    setLoading(true);
-    taskService
-      .getAll()
-      .then(({ data }) => {
-        setStatus(data.tasks);
-        setFilteredData(data.tasks);
-      })
-      .finally(() => setLoading(false));
+    init()
   }, []);
+
+  const init = async () => {
+    try {
+      setLoading(true);
+
+      const [taskData, agentData] = await Promise.all([
+        taskService.getAll(),
+        agentService.getAgents(),
+      ]);
+
+      setStatus(taskData.data.tasks);
+      setFilteredData(taskData.data.tasks);
+
+      const res = parseAgentResponse(agentData.data);
+
+      setAgents(res);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: getAxiosErrorMessage(error),
+        timer: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filterByMonth = (e) => {
     const d = new Date(e);
@@ -63,6 +87,7 @@ function DashboardCrypto() {
 
   const resetData = () => {
     setFilteredData(status);
+    setValue(null)
   };
 
   const chartOptions: ApexOptions = {
@@ -95,7 +120,6 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
-  console.log(filteredData);
 
   return (
     <>
@@ -110,9 +134,8 @@ function DashboardCrypto() {
           value={value}
           status={status}
           loading={loading}
-          setLoading={setLoading}
+          agents={agents}
           setFilteredData={setFilteredData}
-          filteredData={filteredData}
         />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>

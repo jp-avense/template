@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   Grid,
@@ -9,24 +9,20 @@ import {
   FormControl,
   InputLabel,
   Button,
-  IconButton,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
-import MonthPicker from "@mui/x-date-pickers/MonthPicker";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import { agentService } from "src/services/agent.service";
-import { parseAgentResponse } from "src/contexts/AgentContext";
+import { IAgent, parseAgentResponse } from "src/contexts/AgentContext";
 
 type Props = {
   filterByMonth: any;
   resetData: any;
   value: string;
   status: any[];
-  loading: any;
-  setLoading: any;
   setFilteredData: any;
-  filteredData: any[];
+  agents: IAgent[]
+  loading: boolean
 };
 
 function TaskHeader({
@@ -34,12 +30,10 @@ function TaskHeader({
   resetData,
   value,
   status,
-  loading,
-  setLoading,
   setFilteredData,
-  filteredData,
+  agents,
+  loading
 }: Props) {
-  const [data, setData] = useState([]);
   const [dataAgent, setDataAgent] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState("");
 
@@ -49,16 +43,8 @@ function TaskHeader({
   } = useTranslation();
 
   useEffect(() => {
-    setLoading(true);
-    agentService
-      .getAgents()
-      .then(({ data }) => {
-        const x = parseAgentResponse(data);
-        setDataAgent(x);
-        setData(data);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    setDataAgent(agents)
+  }, [agents])
 
   const getAgent = (e) => {
     const getVal = e.target.value;
@@ -66,10 +52,14 @@ function TaskHeader({
       const fac = item.assignedTo.agentName;
       return fac === getVal;
     });
-    console.log(d);
     setSelectedAgent(getVal);
     setFilteredData(d);
   };
+
+  const reset = () => {
+    setSelectedAgent("")
+    resetData()
+  }
 
   return (
     <>
@@ -89,15 +79,15 @@ function TaskHeader({
             <Box sx={{ width: 270 }} mr={2}>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
-                  {" "}
                   {t("filterByAgent")}
                 </InputLabel>
                 <Select
                   onChange={(e) => getAgent(e)}
                   id="user"
                   labelId="user"
-                  label={t("user")}
+                  label={t("filterByAgent")}
                   value={selectedAgent}
+                  disabled={loading}
                 >
                   {dataAgent.map((item) => (
                     <MenuItem key={item.name} value={item.name}>
@@ -112,6 +102,7 @@ function TaskHeader({
               label={t("filterByMonth")}
               minDate={new Date("2022-01-01")}
               maxDate={new Date("2023-06-01")}
+              disabled={loading}
               value={value}
               onChange={(e) => filterByMonth(e)}
               renderInput={(params) => (
@@ -119,7 +110,7 @@ function TaskHeader({
               )}
             />
             <Box ml={2}>
-              <Button onClick={resetData}>
+              <Button onClick={reset}>
                 <RestartAltIcon />
               </Button>
             </Box>

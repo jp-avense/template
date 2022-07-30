@@ -92,19 +92,12 @@ const TaskTable = () => {
 
   useEffect(() => {
     setLoading(true);
-    taskService
-      .getAll()
-      .then(({ data }) => {
-        setXlsData(data.tasks);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
     setSelectedRows([]);
 
     getDataAndSet()
+      .then((data) => {
+        setXlsData(data.tasks);
+      })
       .catch()
       .finally(() => {
         setLoading(false);
