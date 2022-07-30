@@ -51,7 +51,7 @@ function Profile() {
         bgcolor: stringToColor(name),
         width: 120,
         height: 120,
-        ml: 3,
+        ml: 5,
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
@@ -80,35 +80,44 @@ function Profile() {
               <Avatar {...stringAvatar(`${user.name} ${user.family_name}`)} />
             </ListItem>
             <ListItem>
-              <Typography sx={{ ml: "10px" }} variant="h3" color="primary">
+              <Typography sx={{ ml: 4 }} variant="h3" color="primary">
                 {user.name} {user.family_name}
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography variant="h5" color="primary">
+              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
                 <span>{t("phoneNumber")}: </span>
               </Typography>
-              <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
+            </ListItem>
+            <ListItem>
+              {" "}
+              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
                 {user.phone_number}
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography variant="h5" color="primary">
+              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
                 <span>{t("email")}: </span>
               </Typography>
-              <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
+            </ListItem>
+            <ListItem>
+              {" "}
+              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
                 {user.email}
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography variant="h5" color="primary">
+              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
                 <span>{t("password")}: </span>
-              </Typography>
-              <Typography sx={{ ml: "10px" }} variant="h6" color="secondary">
-                ***********
               </Typography>
             </ListItem>
             <ListItem>
+              {" "}
+              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
+                ***********
+              </Typography>
+            </ListItem>
+            <ListItem sx={{ ml: 3 }}>
               <ModalButton
                 text={t("changeDetails")}
                 buttonProps={{

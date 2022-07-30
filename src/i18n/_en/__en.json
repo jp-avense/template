@@ -187,5 +187,6 @@
   "filterByDate": "Filter by date",
   "unDone": "Undone",
   "true": "True",
-  "false": "False"
+  "false": "False",
+  "duplicateInfo": "Input unique key for the duplicated form"
 }
