@@ -19,6 +19,7 @@ import "./style.css";
 interface IHeader {
   key: string;
   label: string;
+  render?: (value: any) => any;
 }
 
 type Props = {
@@ -72,7 +73,6 @@ const DynamicTable = ({
   const onDragOver = (e) => e.preventDefault();
 
   const onDrop = (e, dragTarget: string) => {
-
     e.currentTarget.classList.remove("drag-target");
 
     if (dragTarget !== dragItem) handleDragDrop(e, dragItem, dragTarget);
@@ -149,14 +149,13 @@ const DynamicTable = ({
                     </TableCell>
                     {headKeys.map((head, idx) => {
                       const cellkey = `${key}-col${idx}`;
+                      const { render } = headers[idx];
 
                       const value = item[head];
                       let displayValue = value;
 
-                      switch (typeof value) {
-                        case "boolean":
-                          displayValue = value?.toString() || "false";
-                          break;
+                      if (render) {
+                        displayValue = render(value);
                       }
 
                       return (

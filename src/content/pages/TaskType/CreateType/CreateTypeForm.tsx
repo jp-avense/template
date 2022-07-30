@@ -19,11 +19,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
-  key: yup
-    .number()
-    .required("required")
-    .positive()
-    .min(1, "Must be at least 1 minimum number"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
 });
@@ -44,7 +39,6 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
     enableReinitialize: true,
     validationSchema,
     initialValues: {
-      key: "",
       label: "",
       description: "",
       form: "",
@@ -54,10 +48,7 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
         setSuccess("");
         setError("");
 
-        await taskService.createTaskTypes({
-          ...values,
-          key: values.key.toString(),
-        });
+        await taskService.createTaskTypes(values);
         actions.resetForm();
         setSuccess("Added new task type");
         await onFinish();
@@ -106,18 +97,6 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           </Grid>
           <Grid item>
             <TextField
-              label={t("key")}
-              name="key"
-              onChange={(e) => handleChange(e)}
-              error={formik.touched.key && Boolean(formik.errors.key)}
-              value={formik.values.key}
-              helperText={formik.touched.key && formik.errors.key}
-              fullWidth
-              type="number"
-            />
-          </Grid>
-          <Grid item>
-            <TextField
               label={t("label")}
               name="label"
               onChange={(e) => handleChange(e)}
@@ -143,24 +122,26 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
             />
           </Grid>
           <Grid item>
-            <FormControl fullWidth>
-              <InputLabel id="form">{t("form")}</InputLabel>
-              <Select
-                labelId="form"
-                id="form"
-                value={formik.values.form}
-                label={t("form")}
-                name="form"
-                onChange={(e) => handleFormChange(e)}
-              >
-                {forms.map((item) => (
-                  <MenuItem key={item._id} value={item._id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-                <MenuItem value="new">{t("createNewForm")}</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              select
+              value={formik.values.form || ""}
+              label={t("form")}
+              InputLabelProps={{ shrink: !formik.values.form }}
+              name="form"
+              onChange={(e) => handleFormChange(e)}
+              SelectProps={{
+                displayEmpty: true,
+              }}
+              fullWidth
+            >
+              {forms.map((item) => (
+                <MenuItem key={item._id} value={item._id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+              <MenuItem value="">{t("none")}</MenuItem>
+              <MenuItem value="new">{t("createNewForm")}</MenuItem>
+            </TextField>
           </Grid>
           <Grid item>
             <Button

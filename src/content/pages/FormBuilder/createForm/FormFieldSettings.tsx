@@ -23,6 +23,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { cloneDeep } from "lodash";
 import CircleIcon from "@mui/icons-material/Circle";
 import Select from "react-select";
+import { Form } from "../form.interface";
 
 type Props = {
   selected: any[];
@@ -36,6 +37,7 @@ type Props = {
       description: string;
       form: string;
     };
+    formTableData: Form;
   };
   taskTypes: TaskType[];
   fieldSettings: any[];
@@ -206,6 +208,7 @@ function FormFieldSettings({
   useEffect(() => {
     const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
     if (index > -1) {
+      // here
       const condition = Object.entries(fieldSettings[index].conditions)
         .map(([key, value]: [string, any]) => {
           const forms = cloneDeep(activeForms);
@@ -216,6 +219,7 @@ function FormFieldSettings({
           }
         })
         .filter(Boolean);
+
       setSelectedForm(condition);
       setAction(fieldSettings[index].rules.action);
       setRequired(fieldSettings[index].rules.required);
@@ -273,8 +277,6 @@ function FormFieldSettings({
   };
 
   const changeTab = (e, newTab) => setCurrentTab(newTab);
-
-  console.log(selected);
 
   return (
     <Paper square elevation={0} sx={{ minHeight: "100%" }}>

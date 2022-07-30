@@ -183,5 +183,7 @@
   "updateInformation": "לעדכן מידע",
   "filterByAgent": "סנן לפי סוכן",
   "filterByDate": "סנן לפי תאריך",
-  "unDone": "לא הסתיים"
+  "unDone": "לא הסתיים",
+  "true": "נָכוֹן",
+  "false": "שֶׁקֶר"
 }

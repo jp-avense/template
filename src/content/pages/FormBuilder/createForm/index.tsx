@@ -25,6 +25,9 @@ import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
 import hebFlag from "../../../../assets/images/icons/hebFlag.svg";
 import enFlag from "../../../../assets/images/icons/enFlag.svg";
+import { FormField } from "../../FormFields/form-field.interface";
+import { Form } from "../form.interface";
+import { CollectionsBookmarkOutlined } from "@mui/icons-material";
 
 type Values = {
   name: string;
@@ -32,10 +35,16 @@ type Values = {
   type: string;
 };
 
+interface IDragData {
+  key: string;
+  conditions: object;
+  rules: object;
+}
+
 function CreateForm() {
   const [loading, setLoading] = useState(false);
   const [fieldForms, setFieldForms] = useState([]);
-  const [dragData, setDragData] = useState([]);
+  const [dragData, setDragData] = useState<IDragData[]>([]);
   const [drag, setDrag] = useState(null);
   const [selected, setSelected] = useState([]);
   const [selectedData, setSelectedData] = useState<any>([]);
@@ -54,7 +63,9 @@ function CreateForm() {
 
   useEffect(() => {
     setLoading(true);
-    init();
+    init().then(({ types, fields }) => {
+      initLocationData(fields);
+    });
   }, []);
 
   useEffect(() => {
@@ -90,6 +101,11 @@ function CreateForm() {
 
       const { data: data2 } = await formService.getFields();
       setFieldForms(data2);
+
+      return {
+        types: data,
+        fields: data2,
+      };
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -99,6 +115,54 @@ function CreateForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const initLocationData = (availableFields: FormField[]) => {
+    const {
+      state: { formTableData },
+    } = location as {
+      state: {
+        formTableData: Form;
+        mode: "update" | "create";
+      };
+    };
+
+    if (!formTableData) return;
+
+    const { formFields, name, description, type } = formTableData;
+
+    setGSettings({
+      name,
+      description,
+      type: ''
+    });
+
+    const map = availableFields.reduce((acc, x) => {
+      return {
+        ...acc,
+        [x.key]: x._id,
+      };
+    }, {});
+
+    const res = [];
+    const res2 = [];
+
+    formFields.forEach((item) => {
+      res.push({
+        key: map[item.key],
+        conditions: item.conditions,
+        rules: item.rules,
+      });
+
+      res2.push({
+        _id: item._id,
+        conditions: item.conditions,
+        rules: item.rules,
+      });
+    });
+
+    setDragData(cloneDeep(res));
+    setFieldSettings(cloneDeep(res2));
   };
 
   const onDragStart = (e, id: string) => {
@@ -187,6 +251,10 @@ function CreateForm() {
 
     const dup = cloneDeep(dragData);
 
+    console.log(dup)
+    console.log(location.state)
+    console.log(fieldSettings);
+
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 
@@ -201,12 +269,21 @@ function CreateForm() {
       d.key = key;
     }
 
+    const mode = (location.state as any)?.mode;
+    const formTableData = (location.state as any)?.formTableData;
+
     try {
-      await formService.createForm({
+      let params = {
         ...gSettings,
         type: `${gSettings.type}`,
-        formFields: dup,
-      });
+        formFields: dup as any,
+      };
+
+      if (mode === "update" && formTableData._id) {
+        await formService.updateForm(formTableData._id, params);
+      } else {
+        await formService.createForm(params);
+      }
     } catch (error) {
       setIsSubmitting(false);
       throw error;

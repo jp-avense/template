@@ -13,6 +13,7 @@ import UpdateStatus from "./UpdateStatus";
 import UpdateStatusForm from "./UpdateStatus/UpdateStatusForm";
 import ConfirmModal from "src/components/ConfirmModal";
 import { useTranslation } from "react-i18next";
+import Label from "src/components/Label";
 
 const TaskStatusPage = () => {
   const [status, setStatus] = useState<ITaskStatus[]>([]);
@@ -53,10 +54,24 @@ const TaskStatusPage = () => {
       {
         key: "isSystemStatus",
         label: t("isSystemStatus"),
+        render: (value) => {
+          return (
+            <Label color={value ? "success" : "error"}>
+              {t(value?.toString()) || t("false")}
+            </Label>
+          );
+        },
       },
       {
         key: "state",
         label: t("state"),
+        render: (value) => {
+          return (
+            <Label color={value === "enabled" ? "success" : "error"}>
+              {t(value)}
+            </Label>
+          );
+        },
       },
       {
         key: "systemStatusKey",
