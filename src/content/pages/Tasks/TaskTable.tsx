@@ -31,8 +31,7 @@ import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
-import { isNamedExportBindings, isTemplateLiteral } from "typescript";
-
+import Swal from "sweetalert2";
 interface State {
   order: "asc" | "desc";
 }
@@ -58,6 +57,7 @@ const TaskTable = () => {
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
   const [xlsData, setXlsData] = useState([]);
+  const [downloading, setDownloading] = useState(false);
 
   const isAdmin = roles.includes("admin");
 
@@ -95,9 +95,6 @@ const TaskTable = () => {
     setSelectedRows([]);
 
     getDataAndSet()
-      .then((data) => {
-        setXlsData(data.tasks);
-      })
       .catch()
       .finally(() => {
         setLoading(false);
@@ -358,8 +355,8 @@ const TaskTable = () => {
     document.body.removeChild(a);
   };
 
-  const objectToCsv = (data) => {
-    const details = xlsData[0].taskDetails;
+  const objectToCsv = (data, allTasks) => {
+    const details = allTasks[0].taskDetails;
     const getLabel = details.map((item) => {
       return item.label;
     });
@@ -373,7 +370,7 @@ const TaskTable = () => {
     const x = headers.concat(getLabel);
     csvRows.push(x.join(","));
 
-    const getValues = Object.values(xlsData).map((item) => {
+    const getValues = Object.values(allTasks).map((item: any) => {
       const values = item.taskDetails;
       return values.reduce(
         (acc, item) => ({
@@ -418,24 +415,42 @@ const TaskTable = () => {
     return csvRows.join("\r\n");
   };
 
-  const xlsExport = () => {
-    const table = xlsData.map((item) => ({
-      id: item._id,
-      taskId: item.taskId,
-      executionStartDate: item.executionStartDate
-        ? new Date(item.executionStartDate).toLocaleDateString()
-        : "",
-      executionEndDate: item.executionEndDate
-        ? new Date(item.executionEndDate).toLocaleDateString()
-        : "",
-      lastUpdatedAt: item.lastUpdatedAt
-        ? new Date(item.lastUpdatedAt).toLocaleDateString()
-        : "",
-      newTaskUuid: item.newTaskUuid,
-    }));
+  const xlsExport = async () => {
+    try {
+      setDownloading(true);
 
-    const csvData = objectToCsv(table);
-    download(csvData);
+      const res = await taskService.getAllTask();
+      const tasks = res.data.tasks;
+
+      setXlsData(tasks);
+
+      const table = tasks.map((item) => ({
+        id: item._id,
+        taskId: item.taskId,
+        executionStartDate: item.executionStartDate
+          ? new Date(item.executionStartDate).toLocaleDateString()
+          : "",
+        executionEndDate: item.executionEndDate
+          ? new Date(item.executionEndDate).toLocaleDateString()
+          : "",
+        lastUpdatedAt: item.lastUpdatedAt
+          ? new Date(item.lastUpdatedAt).toLocaleDateString()
+          : "",
+        newTaskUuid: item.newTaskUuid,
+      }));
+
+      const csvData = objectToCsv(table, tasks);
+      download(csvData);
+    } catch (error) {
+      console.log(error)
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setDownloading(false);
+    }
   };
 
   useEffect(() => {
@@ -575,11 +590,21 @@ const TaskTable = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button disabled={loading} variant="contained" onClick={xlsExport}>
-          <Typography variant="h5" sx={{ mr: "5px" }}>
-            Download
-          </Typography>{" "}
-          <FileDownloadIcon fontSize="small" />
+        <Button
+          disabled={loading || downloading}
+          variant="contained"
+          onClick={xlsExport}
+        >
+          {loading || downloading ? (
+            <CircularProgress size={18} />
+          ) : (
+            <>
+              <Typography variant="h5" sx={{ mr: "5px" }}>
+                {t("download")}
+              </Typography>
+              <FileDownloadIcon fontSize="small" />
+            </>
+          )}
         </Button>
         {/* <Button disabled={loading} variant="contained" onClick={xlsExport}>
           <Typography variant="h5" sx={{ mr: "5px" }}>
