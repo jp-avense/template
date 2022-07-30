@@ -57,6 +57,7 @@ const TaskTable = () => {
   const roles = useRoles();
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
+  const [xlsData, setXlsData] = useState([]);
 
   const isAdmin = roles.includes("admin");
 
@@ -86,6 +87,16 @@ const TaskTable = () => {
   const {
     handleTabs: { setTabsData },
   } = tabsContext;
+
+  useEffect(() => {
+    setLoading(true);
+    taskService
+      .getAll()
+      .then(({ data }) => {
+        setXlsData(data.tasks);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -191,7 +202,7 @@ const TaskTable = () => {
       return a[1] - b[1];
     });
     const res = stabilizedRowArray.map((el) => el[0]);
-    console.log("res", res);
+    // console.log("res", res);
     return res;
   };
 
@@ -309,73 +320,102 @@ const TaskTable = () => {
     }
   };
 
-  const xlsExport = () => {
-    const xlsHeaders = [
-      {
-        key: "id",
-      },
-      {
-        key: "type",
-      },
-      {
-        key: "assignedTo",
-      },
-      {
-        key: "status",
-      },
-      {
-        key: "executionStartDate",
-      },
-      {
-        key: "updatedBy",
-      },
-      {
-        key: "createdAt",
-      },
-      {
-        key: "lastUpdate",
-      },
-    ];
+  const download = (data) => {
+    const blob = new Blob([data], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "task_table.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
-    const headKeys = xlsHeaders.map((item) => item.key);
-    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
-    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
-
-    tableData.map((item) => {
-      const details = item.dynamicDetails;
-      const getValue = details.map((item) => {
-        // const label = item.label;
-        console.log(item.value);
-        // return item.value;
-      });
-      const data = {
-        id: item.id,
-        type: item.type,
-        assignedTo: item.assignedTo,
-        status: item.status,
-        executionStartDate: item.executionStartDate,
-        updatedBy: item.updatedBy,
-        createdAt: item.createdAt,
-        lastUpdate: item.lastUpdate,
-      };
-
-      // console.log(data);
-      // csvContent +=
-      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
+  const objectToCsv = (data) => {
+    const details = xlsData[0].taskDetails;
+    const getLabel = details.map((item) => {
+      return item.label;
     });
-    // var x = document.createElement("A");
-    // x.setAttribute("href", csvContent);
-    // x.setAttribute("download", "task_table.csv");
-    // document.body.appendChild(x);
-    // x.click();
+
+    const getKey = details.map((item) => {
+      return item.key;
+    });
+
+    const csvRows = [];
+    const headers = Object.keys(data[0]);
+    const x = headers.concat(getLabel);
+    csvRows.push(x.join(","));
+
+    const getValues = Object.values(xlsData).map((item) => {
+      const values = item.taskDetails;
+      return values.reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    });
+
+    for (const index in data) {
+      const row = data[index];
+      let values = headers.map((header) => {
+        const escaped = ("" + row[header])
+          .replace(/\n/g, "")
+          .replace(/,/g, "")
+          .replace(/"/g, '\\"');
+        return `${escaped}`.replace(" ", "");
+      });
+
+      const rowX = getValues[index];
+
+      const val = getKey.map((head, index) => {
+        const x = rowX[head];
+
+        if (typeof x === "string" || typeof x === "number") {
+          const escape = ("" + rowX[head])
+            .replace(/\n/g, "")
+            .replace(/,/g, "")
+            .replace(/"/g, '\\"');
+          return `${escape}`;
+        }
+
+        if (typeof x === "object") {
+          return x.value;
+        }
+      });
+      values = values.concat(val);
+      csvRows.push(values.join(","));
+    }
+
+    return csvRows.join("\r\n");
+  };
+
+  const xlsExport = () => {
+    const table = xlsData.map((item) => ({
+      id: item._id,
+      taskId: item.taskId,
+      executionStartDate: item.executionStartDate
+        ? new Date(item.executionStartDate).toLocaleDateString()
+        : "",
+      executionEndDate: item.executionEndDate
+        ? new Date(item.executionEndDate).toLocaleDateString()
+        : "",
+      lastUpdatedAt: item.lastUpdatedAt
+        ? new Date(item.lastUpdatedAt).toLocaleDateString()
+        : "",
+      newTaskUuid: item.newTaskUuid,
+    }));
+
+    const csvData = objectToCsv(table);
+    download(csvData);
   };
 
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
-
-  // console.log(tableData);
 
   return (
     <Card>
@@ -516,6 +556,12 @@ const TaskTable = () => {
           </Typography>{" "}
           <FileDownloadIcon fontSize="small" />
         </Button>
+        {/* <Button disabled={loading} variant="contained" onClick={xlsExport}>
+          <Typography variant="h5" sx={{ mr: "5px" }}>
+            Download
+          </Typography>{" "}
+          <FileDownloadIcon fontSize="small" />
+        </Button> */}
         <TablePagination
           component="div"
           count={total}

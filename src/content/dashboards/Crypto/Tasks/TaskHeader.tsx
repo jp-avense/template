@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Typography,
   Grid,
@@ -8,20 +8,68 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Button,
+  IconButton,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
+import MonthPicker from "@mui/x-date-pickers/MonthPicker";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { agentService } from "src/services/agent.service";
+import { parseAgentResponse } from "src/contexts/AgentContext";
 
-function TaskHeader() {
-  const [value, setValue] = useState(null);
-  const [agent, setAgent] = useState("");
+type Props = {
+  filterByMonth: any;
+  resetData: any;
+  value: string;
+  status: any[];
+  loading: any;
+  setLoading: any;
+  setFilteredData: any;
+  filteredData: any[];
+};
+
+function TaskHeader({
+  filterByMonth,
+  resetData,
+  value,
+  status,
+  loading,
+  setLoading,
+  setFilteredData,
+  filteredData,
+}: Props) {
+  const [data, setData] = useState([]);
+  const [dataAgent, setDataAgent] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState("");
 
   const {
     t,
     i18n: { language },
   } = useTranslation();
 
-  const handleChange = (e) => {};
+  useEffect(() => {
+    setLoading(true);
+    agentService
+      .getAgents()
+      .then(({ data }) => {
+        const x = parseAgentResponse(data);
+        setDataAgent(x);
+        setData(data);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const getAgent = (e) => {
+    const getVal = e.target.value;
+    const d = status.filter((item) => {
+      const fac = item.assignedTo.agentName;
+      return fac === getVal;
+    });
+    console.log(d);
+    setSelectedAgent(getVal);
+    setFilteredData(d);
+  };
 
   return (
     <>
@@ -45,30 +93,36 @@ function TaskHeader() {
                   {t("filterByAgent")}
                 </InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={agent}
-                  label="Age"
-                  onChange={handleChange}
+                  onChange={(e) => getAgent(e)}
+                  id="user"
+                  labelId="user"
+                  label={t("user")}
+                  value={selectedAgent}
                 >
-                  <MenuItem value={10}>Agent</MenuItem>
-                  <MenuItem value={20}>Admin</MenuItem>
-                  <MenuItem value={30}>Backoffice</MenuItem>
+                  {dataAgent.map((item) => (
+                    <MenuItem key={item.name} value={item.name}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
-            {/* <Button variant="contained" sx={{ mr: 2 }}>
-              {t("filterByAgent")}
-            </Button> */}
-            {/* {t("filterByMonth")} */}
             <DatePicker
-              label={t("filterByDate")}
+              views={["year", "month"]}
+              label={t("filterByMonth")}
+              minDate={new Date("2022-01-01")}
+              maxDate={new Date("2023-06-01")}
               value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
+              onChange={(e) => filterByMonth(e)}
+              renderInput={(params) => (
+                <TextField {...params} helperText={null} />
+              )}
             />
+            <Box ml={2}>
+              <Button onClick={resetData}>
+                <RestartAltIcon />
+              </Button>
+            </Box>
           </Box>
         </Grid>
       </Grid>
