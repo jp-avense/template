@@ -52,7 +52,7 @@ const CreateTaskForm = ({ selected }: Props) => {
   const {
     handleFilter: { details, originalData },
   } = context;
-
+  
   const initialValues = details
     ? details.reduce((acc, x) => {
         const { inputType, key } = x;

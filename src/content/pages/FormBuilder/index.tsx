@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Card, Avatar } from "@mui/material";
+import { Box, Card, Avatar, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
@@ -12,12 +12,15 @@ import PreviewTable from "./PreviewTable";
 import ModalButton from "src/components/ModalButton";
 import UpdateForm from "./UpdateForm";
 import { Form } from "./form.interface";
+import { useNavigate } from "react-router";
 
 const FormBuilder = () => {
   const [forms, setForms] = useState<Form[]>([]);
   const [headers, setHeaders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+
+  const navigate = useNavigate();
 
   const {
     t,
@@ -87,8 +90,8 @@ const FormBuilder = () => {
       await formService.bulkDeleteForms(selected);
 
       const res = forms.filter((item) => !selected.includes(item._id));
-      setForms(res)
-
+      setForms(res);
+      setSelected([]);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -98,6 +101,15 @@ const FormBuilder = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFormUpdate = () => {
+    navigate("/create-form", {
+      state: {
+        mode: "update",
+        formTableData: editForm,
+      },
+    });
   };
 
   return (
@@ -121,13 +133,9 @@ const FormBuilder = () => {
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (
-                  <ModalButton
-                    text={t("update")}
-                    buttonProps={{ variant: "contained" }}
-                    title={t("update")}
-                  >
-                    <UpdateForm data={editForm}></UpdateForm>
-                  </ModalButton>
+                  <Button onClick={handleFormUpdate} variant="contained">
+                    {t("update")}
+                  </Button>
                 ) : null}
                 {selected.length ? (
                   <ConfirmModal

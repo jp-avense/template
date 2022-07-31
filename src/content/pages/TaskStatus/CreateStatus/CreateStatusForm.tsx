@@ -18,11 +18,6 @@ import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
-  Key: yup
-    .string()
-    .required("required")
-    .matches(/^[a-zA-Z]+$/, "Must only contain lowercase and uppercase letters")
-    .min(3, "Must be at least 3 characters long"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
   systemStatusKey: yup.string().required(),
@@ -38,7 +33,6 @@ const CreateStatusForm = ({ onDone }) => {
     enableReinitialize: true,
     validationSchema,
     initialValues: {
-      Key: "",
       label: "",
       description: "",
       systemStatusKey: "none",
@@ -70,17 +64,6 @@ const CreateStatusForm = ({ onDone }) => {
         <Grid item>
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
-        </Grid>
-        <Grid item>
-          <TextField
-            label={t("key")}
-            name="Key"
-            onChange={(e) => handleChange(e)}
-            error={formik.touched.Key && Boolean(formik.errors.Key)}
-            value={formik.values.Key}
-            helperText={formik.touched.Key && formik.errors.Key}
-            fullWidth
-          />
         </Grid>
         <Grid item>
           <TextField

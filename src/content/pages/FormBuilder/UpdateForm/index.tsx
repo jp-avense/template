@@ -14,6 +14,8 @@ import {
   InputLabel,
 } from "@mui/material";
 import LoadingButton from "../../Components/LoadingButton";
+import { getAxiosErrorMessage } from "src/lib";
+import { formService } from "src/services/form.service";
 
 type Props = {
   data: Form;
@@ -35,7 +37,16 @@ const UpdateForm = ({ data }: Props) => {
   const formik = useFormik({
     initialValues: data,
     validationSchema,
-    onSubmit: () => {},
+    onSubmit: async (values) => {
+      setError("");
+      setSuccess("");
+      try {
+        // await formService.updateForm(values);
+        setSuccess(t("success"));
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
+    },
   });
   return (
     <Box flexDirection="column" display="flex" gap={2} pt={2}>
@@ -55,13 +66,6 @@ const UpdateForm = ({ data }: Props) => {
         error={Boolean(formik.touched.description && formik.errors.description)}
         helperText={formik.errors.description}
       />
-
-      <FormControl fullWidth>
-        <InputLabel>Type</InputLabel>
-        <Select label="Type">
-          <MenuItem value={10}>Not yet done</MenuItem>
-        </Select>
-      </FormControl>
 
       <LoadingButton
         loading={formik.isSubmitting}

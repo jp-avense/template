@@ -5,6 +5,7 @@ import LoadingButton from "src/content/pages/Components/LoadingButton";
 import { useTranslation } from "react-i18next";
 import { getAxiosErrorMessage } from "src/lib";
 import { AxiosError } from "axios";
+import { Form } from "../form.interface";
 
 type Props = {
   data?: {
@@ -15,6 +16,7 @@ type Props = {
       description: string;
       form: string;
     };
+    formTableData: Form
   };
   taskTypes: TaskType[];
   settings: Values;
@@ -45,7 +47,7 @@ const FormGeneralSettings = ({
   useEffect(() => {
     setValues({
       ...values,
-      type: data ? data.value.key : "",
+      type: data?.value?.key || "",
     });
   }, []);
 
@@ -110,9 +112,10 @@ const FormGeneralSettings = ({
           onChange={handleChange}
           name="type"
           value={values.type}
-          disabled={!!data?.value.key}
+          disabled={!!data?.value?.key}
+          displayEmpty
         >
-          {data?.value.key ? (
+          {data?.value?.key ? (
             <MenuItem value={data.value.key} selected>
               {data.value.label || data.value.key}
             </MenuItem>
@@ -122,6 +125,7 @@ const FormGeneralSettings = ({
               {item.label}
             </MenuItem>
           ))}
+          <MenuItem value="">None</MenuItem>
         </Select>
       </Box>
       <LoadingButton

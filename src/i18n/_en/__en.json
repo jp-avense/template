@@ -184,6 +184,11 @@
   "changeDetails": "Change Details",
   "updateInformation": "Update Information",
   "filterByAgent": "Filter by agent",
+  "filterByMonth": "Filter by month",
   "filterByDate": "Filter by date",
-  "unDone": "Undone"
+  "unDone": "Undone",
+  "true": "True",
+  "false": "False",
+  "duplicateInfo": "Input unique key for the duplicated form",
+  "download": "Download"
 }

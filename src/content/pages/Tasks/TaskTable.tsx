@@ -31,8 +31,7 @@ import swal from "sweetalert2";
 import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
-import { isNamedExportBindings, isTemplateLiteral } from "typescript";
-
+import Swal from "sweetalert2";
 interface State {
   order: "asc" | "desc";
 }
@@ -57,6 +56,8 @@ const TaskTable = () => {
   const roles = useRoles();
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
+  const [xlsData, setXlsData] = useState([]);
+  const [downloading, setDownloading] = useState(false);
 
   const isAdmin = roles.includes("admin");
 
@@ -71,6 +72,8 @@ const TaskTable = () => {
       filter,
       page,
       setPage,
+      sort,
+      setSort,
       limit,
       setLimit,
       loading,
@@ -138,10 +141,17 @@ const TaskTable = () => {
       valueToOrderBy === property && orderDirection.order === "asc";
     setValueToOrderBy(property);
     setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+    sortTable(property, isAscending ? "desc" : "asc");
   };
 
   const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
+  };
+
+  const sortTable = (value, direction) => {
+    const val = { [value]: direction };
+    const res = JSON.stringify(val);
+    handleSortTable(val, res);
   };
 
   const descendingComparator = (a, b, orderBy) => {
@@ -163,7 +173,7 @@ const TaskTable = () => {
           return 1;
         }
       } else if (a.inputType === "string") {
-        return bVal.localCompare(aVal);
+        return bVal.localeCompare(aVal);
       } else {
         if (bVal?.value < aVal?.value) {
           return -1;
@@ -191,7 +201,6 @@ const TaskTable = () => {
       return a[1] - b[1];
     });
     const res = stabilizedRowArray.map((el) => el[0]);
-    console.log("res", res);
     return res;
   };
 
@@ -259,7 +268,12 @@ const TaskTable = () => {
 
     originalData[0].taskDetails.map((c) => {
       if (c.showInTable)
-        headers.push({ id: c.label, label: c.label, order: c.order });
+        headers.push({
+          id: c.label,
+          label: c.label,
+          order: c.order,
+          key: c.key,
+        });
     });
     headers.sort((a, b) => a.order - b.order);
     return headers;
@@ -273,6 +287,26 @@ const TaskTable = () => {
 
       await getDataAndSet({
         page: newPage,
+      });
+    } catch (error) {
+      const msg = getAxiosErrorMessage(error);
+      swal.fire({
+        icon: "error",
+        title: "Error",
+        text: msg,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSortTable = async (e: any, details: string) => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      setSort(details);
+      await getDataAndSet({
+        sort: details,
       });
     } catch (error) {
       const msg = getAxiosErrorMessage(error);
@@ -309,73 +343,120 @@ const TaskTable = () => {
     }
   };
 
-  const xlsExport = () => {
-    const xlsHeaders = [
-      {
-        key: "id",
-      },
-      {
-        key: "type",
-      },
-      {
-        key: "assignedTo",
-      },
-      {
-        key: "status",
-      },
-      {
-        key: "executionStartDate",
-      },
-      {
-        key: "updatedBy",
-      },
-      {
-        key: "createdAt",
-      },
-      {
-        key: "lastUpdate",
-      },
-    ];
+  const download = (data) => {
+    const blob = new Blob([data], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "task_table.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
-    const headKeys = xlsHeaders.map((item) => item.key);
-    // let csvContent = "data:application/vnd.ms-excel," + headKeys + "\r\n";
-    let csvContent = "data:text/csv;charset=utf-8," + headKeys + "\r\n";
-
-    tableData.map((item) => {
-      const details = item.dynamicDetails;
-      const getValue = details.map((item) => {
-        // const label = item.label;
-        console.log(item.value);
-        // return item.value;
-      });
-      const data = {
-        id: item.id,
-        type: item.type,
-        assignedTo: item.assignedTo,
-        status: item.status,
-        executionStartDate: item.executionStartDate,
-        updatedBy: item.updatedBy,
-        createdAt: item.createdAt,
-        lastUpdate: item.lastUpdate,
-      };
-
-      // console.log(data);
-      // csvContent +=
-      //   JSON.stringify(Object.values(data)) + Object.values(getValue) + "\r\n";
+  const objectToCsv = (data, allTasks) => {
+    const details = allTasks[0].taskDetails;
+    const getLabel = details.map((item) => {
+      return item.label;
     });
-    // var x = document.createElement("A");
-    // x.setAttribute("href", csvContent);
-    // x.setAttribute("download", "task_table.csv");
-    // document.body.appendChild(x);
-    // x.click();
+
+    const getKey = details.map((item) => {
+      return item.key;
+    });
+
+    const csvRows = [];
+    const headers = Object.keys(data[0]);
+    const x = headers.concat(getLabel);
+    csvRows.push(x.join(","));
+
+    const getValues = Object.values(allTasks).map((item: any) => {
+      const values = item.taskDetails;
+      return values.reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    });
+
+    for (const index in data) {
+      const row = data[index];
+      let values = headers.map((header) => {
+        const escaped = ("" + row[header])
+          .replace(/\n/g, "")
+          .replace(/,/g, "")
+          .replace(/"/g, '\\"');
+        return `${escaped}`.replace(" ", "");
+      });
+
+      const rowX = getValues[index];
+
+      const val = getKey.map((head, index) => {
+        const x = rowX[head];
+
+        if (typeof x === "string" || typeof x === "number") {
+          const escape = ("" + rowX[head])
+            .replace(/\n/g, "")
+            .replace(/,/g, "")
+            .replace(/"/g, '\\"');
+          return `${escape}`;
+        }
+
+        if (typeof x === "object") {
+          return x.value;
+        }
+      });
+      values = values.concat(val);
+      csvRows.push(values.join(","));
+    }
+
+    return csvRows.join("\r\n");
+  };
+
+  const xlsExport = async () => {
+    try {
+      setDownloading(true);
+
+      const res = await taskService.getAllTask();
+      const tasks = res.data.tasks;
+
+      setXlsData(tasks);
+
+      const table = tasks.map((item) => ({
+        id: item._id,
+        taskId: item.taskId,
+        executionStartDate: item.executionStartDate
+          ? new Date(item.executionStartDate).toLocaleDateString()
+          : "",
+        executionEndDate: item.executionEndDate
+          ? new Date(item.executionEndDate).toLocaleDateString()
+          : "",
+        lastUpdatedAt: item.lastUpdatedAt
+          ? new Date(item.lastUpdatedAt).toLocaleDateString()
+          : "",
+        newTaskUuid: item.newTaskUuid,
+      }));
+
+      const csvData = objectToCsv(table, tasks);
+      download(csvData);
+    } catch (error) {
+      console.log(error)
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setDownloading(false);
+    }
   };
 
   useEffect(() => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
-
-  // console.log(tableData);
 
   return (
     <Card>
@@ -420,14 +501,16 @@ const TaskTable = () => {
               </TableCell>
               {headers.length
                 ? headers.map((c) => (
-                    <TableCell key={c.id}>
+                    <TableCell key={c.key}>
                       <TableSortLabel
-                        key={c.id}
-                        active={valueToOrderBy === c.id}
+                        key={c.key}
+                        active={valueToOrderBy === c.key}
                         direction={
-                          valueToOrderBy === c.id ? orderDirection.order : "asc"
+                          valueToOrderBy === c.key
+                            ? orderDirection.order
+                            : "asc"
                         }
-                        onClick={createSortHandler(c.id)}
+                        onClick={createSortHandler(c.key)}
                       >
                         {t(c.label)}
                       </TableSortLabel>
@@ -450,12 +533,14 @@ const TaskTable = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              sortedRowInformation(
-                tableData,
-                getComparator(orderDirection.order, valueToOrderBy)
-              ).map((rows, index) => (
+              tableData.map((rows, index) => (
                 <TableRow
                   key={index}
+                  onClick={() =>
+                    selectedRows.indexOf(rows.id) >= 0
+                      ? unSelectRow(rows.id)
+                      : createSelectedRows(rows.id)
+                  }
                   sx={[
                     {
                       "&:hover": {
@@ -470,11 +555,6 @@ const TaskTable = () => {
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      onClick={() =>
-                        selectedRows.indexOf(rows.id) >= 0
-                          ? unSelectRow(rows.id)
-                          : createSelectedRows(rows.id)
-                      }
                       checked={
                         selectedRows.indexOf(rows.id) >= 0 ? true : false
                       }
@@ -510,12 +590,28 @@ const TaskTable = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button disabled={loading} variant="contained" onClick={xlsExport}>
+        <Button
+          disabled={loading || downloading}
+          variant="contained"
+          onClick={xlsExport}
+        >
+          {loading || downloading ? (
+            <CircularProgress size={18} />
+          ) : (
+            <>
+              <Typography variant="h5" sx={{ mr: "5px" }}>
+                {t("download")}
+              </Typography>
+              <FileDownloadIcon fontSize="small" />
+            </>
+          )}
+        </Button>
+        {/* <Button disabled={loading} variant="contained" onClick={xlsExport}>
           <Typography variant="h5" sx={{ mr: "5px" }}>
             Download
           </Typography>{" "}
           <FileDownloadIcon fontSize="small" />
-        </Button>
+        </Button> */}
         <TablePagination
           component="div"
           count={total}

@@ -8,15 +8,17 @@ import type { ApexOptions } from "apexcharts";
 import { useTranslation } from "react-i18next";
 import TaskHeader from "./Tasks/TaskHeader";
 import TaskGrid from "./Tasks/TaskGrid";
-
-interface ITask {
-  date: any;
-}
+import { agentService } from "src/services/agent.service";
+import { parseAgentResponse } from "src/contexts/AgentContext";
+import { getAxiosErrorMessage } from "src/lib";
+import Swal from "sweetalert2";
 
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
-  const [date, setDate] = useState<ITask[]>([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(null);
+  const [agents, setAgents] = useState([]);
 
   const {
     t,
@@ -24,41 +26,69 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    setLoading(true);
-    taskService
-      .getAll()
-      .then(({ data }) => {
-        setStatus(data.tasks);
-      })
-      .finally(() => setLoading(false));
+    init()
   }, []);
 
-  const filterDates = () => {
-    status.filter((item) => {
-      const getDate = {
-        date: item.createdAt,
-      };
-    });
+  const init = async () => {
+    try {
+      setLoading(true);
+
+      const [taskData, agentData] = await Promise.all([
+        taskService.getAll(),
+        agentService.getAgents(),
+      ]);
+
+      setStatus(taskData.data.tasks);
+      setFilteredData(taskData.data.tasks);
+
+      const res = parseAgentResponse(agentData.data);
+
+      setAgents(res);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: getAxiosErrorMessage(error),
+        timer: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  filterDates();
+  const filterByMonth = (e) => {
+    const d = new Date(e);
+    const dateString = d.getMonth() + 1 + "/" + d.getFullYear();
+    const getDates = status.filter((item) => {
+      const date = item.createdAt;
+      const x = new Date(date);
+      const dateData = x.getMonth() + 1 + "/" + x.getFullYear();
+      return dateData === dateString;
+    });
+    setValue(d);
+    setFilteredData(getDates);
+  };
 
-  const newStatus = status.filter((item) => item.statusId === "new");
+  const newStatus = filteredData.filter((item) => item.statusId === "new");
   const countNewStatus = newStatus.length;
 
-  const unDoneStatus = status.filter((item) => item.statusId !== "done");
+  const unDoneStatus = filteredData.filter((item) => item.statusId !== "done");
   const countUndone = unDoneStatus.length;
 
-  const doneStatus = status.filter((item) => item.statusId === "done");
+  const doneStatus = filteredData.filter((item) => item.statusId === "done");
   const countDone = doneStatus.length;
 
-  const progressStatus = status.filter(
+  const progressStatus = filteredData.filter(
     (item) => item.statusId === "inProgress"
   );
   const countProgress = progressStatus.length;
 
-  const assignedTask = status.filter((item) => item.assignedTo);
+  const assignedTask = filteredData.filter((item) => item.assignedTo);
   const countAssignedTask = assignedTask.length;
+
+  const resetData = () => {
+    setFilteredData(status);
+    setValue(null)
+  };
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -90,6 +120,7 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
+
   return (
     <>
       <Helmet>
@@ -97,7 +128,15 @@ function DashboardCrypto() {
       </Helmet>
       <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader />
+        <TaskHeader
+          filterByMonth={filterByMonth}
+          resetData={resetData}
+          value={value}
+          status={status}
+          loading={loading}
+          agents={agents}
+          setFilteredData={setFilteredData}
+        />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>
@@ -128,18 +167,6 @@ function DashboardCrypto() {
             />
           </Grid>
         </Grid>
-        {/* <Grid item xs={12}>
-            <AccountBalance />
-          </Grid>
-          <Grid item lg={8} xs={12}>
-            <Wallets />
-          </Grid>
-          <Grid item lg={4} xs={12}>
-            <AccountSecurity />
-          </Grid> */}
-        {/* <Grid item xs={12}>
-            <WatchList />
-          </Grid> */}
       </Container>
     </>
   );
