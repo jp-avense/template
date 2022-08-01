@@ -28,6 +28,8 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sortedForms, setSortedForms] = useState([]);
+  const [expandedVal, setExpandedVal] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const { t } = useTranslation();
 
@@ -57,6 +59,13 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
       });
       setSortedForms(sort);
     }
+  };
+
+  const handleAccordian = (e) => {
+    if (e === expandedVal) {
+      setExpanded(!expanded);
+    } else setExpanded(true);
+    setExpandedVal(e);
   };
 
   return (
@@ -90,7 +99,11 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
             ) : (
               <Box>
                 {sortedForms.map((x) => (
-                  <Accordion key={x.inputType}>
+                  <Accordion
+                    key={x.inputType}
+                    onChange={() => handleAccordian(t(x.inputType))}
+                    expanded={expandedVal === t(x.inputType) ? expanded : false}
+                  >
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
