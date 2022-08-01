@@ -9,6 +9,7 @@ import {
   FormControl,
   InputLabel,
   Button,
+  Tooltip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useTranslation } from "react-i18next";
@@ -21,8 +22,11 @@ type Props = {
   value: string;
   status: any[];
   setFilteredData: any;
-  agents: IAgent[]
-  loading: boolean
+  agents: IAgent[];
+  loading: boolean;
+  selectedAgent: any;
+  setSelectedAgent: any;
+  setValue: any;
 };
 
 function TaskHeader({
@@ -32,10 +36,13 @@ function TaskHeader({
   status,
   setFilteredData,
   agents,
-  loading
+  loading,
+  selectedAgent,
+  setSelectedAgent,
+  setValue,
 }: Props) {
   const [dataAgent, setDataAgent] = useState([]);
-  const [selectedAgent, setSelectedAgent] = useState("");
+  // const [selectedAgent, setSelectedAgent] = useState("");
 
   const {
     t,
@@ -43,8 +50,8 @@ function TaskHeader({
   } = useTranslation();
 
   useEffect(() => {
-    setDataAgent(agents)
-  }, [agents])
+    setDataAgent(agents);
+  }, [agents]);
 
   const getAgent = (e) => {
     const getVal = e.target.value;
@@ -54,12 +61,13 @@ function TaskHeader({
     });
     setSelectedAgent(getVal);
     setFilteredData(d);
+    setValue(null);
   };
 
   const reset = () => {
-    setSelectedAgent("")
-    resetData()
-  }
+    setSelectedAgent("");
+    resetData();
+  };
 
   return (
     <>
@@ -110,9 +118,11 @@ function TaskHeader({
               )}
             />
             <Box ml={2}>
-              <Button onClick={reset}>
-                <RestartAltIcon />
-              </Button>
+              <Tooltip title="Reset filter" placement="top">
+                <Button onClick={reset}>
+                  <RestartAltIcon />
+                </Button>
+              </Tooltip>
             </Box>
           </Box>
         </Grid>

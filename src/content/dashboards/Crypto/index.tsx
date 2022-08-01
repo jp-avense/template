@@ -19,6 +19,7 @@ function DashboardCrypto() {
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(null);
   const [agents, setAgents] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState("");
 
   const {
     t,
@@ -26,7 +27,7 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    init()
+    init();
   }, []);
 
   const init = async () => {
@@ -64,6 +65,7 @@ function DashboardCrypto() {
       const dateData = x.getMonth() + 1 + "/" + x.getFullYear();
       return dateData === dateString;
     });
+    setSelectedAgent("");
     setValue(d);
     setFilteredData(getDates);
   };
@@ -87,7 +89,7 @@ function DashboardCrypto() {
 
   const resetData = () => {
     setFilteredData(status);
-    setValue(null)
+    setValue(null);
   };
 
   const chartOptions: ApexOptions = {
@@ -120,6 +122,64 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
+  const getTo = agents.map((item, index) => {
+    const x = item.name;
+    return x;
+
+    // const x = {
+    //   label: item.name,
+    //   values: [countNewStatus, countDone, countProgress, countAssignedTask],
+    // };
+    // let labelArr = [];
+    // let values = [];
+
+    // labelArr.push(item.name);
+
+    // for (const index in labelArr) {
+    //   const row = labelArr[index];
+    //   values.push();
+    // }
+  });
+  // console.log(getTo);
+
+  const barOptions: ApexOptions = {
+    chart: {
+      background: "transparent",
+      toolbar: {
+        show: false,
+      },
+      stacked: true,
+    },
+    tooltip: {
+      followCursor: true,
+    },
+    xaxis: {
+      categories: getTo,
+    },
+  };
+
+  const barGraphData = [
+    {
+      name: "New",
+      data: [20, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      color: "#57CA22",
+    },
+    {
+      name: "Undone",
+      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      color: "#FF1943",
+    },
+    {
+      name: "Done",
+      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      color: "#5569ff",
+    },
+    {
+      name: "In Progress",
+      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      color: "#FFA319",
+    },
+  ];
 
   return (
     <>
@@ -136,6 +196,9 @@ function DashboardCrypto() {
           loading={loading}
           agents={agents}
           setFilteredData={setFilteredData}
+          selectedAgent={selectedAgent}
+          setSelectedAgent={setSelectedAgent}
+          setValue={setValue}
         />
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
@@ -165,6 +228,21 @@ function DashboardCrypto() {
               countProgress={countProgress}
               loading={loading}
             />
+          </Grid>
+        </Grid>
+        <Grid container mt={3}>
+          <Grid item xs={12} lg={12} mb={4}>
+            <Paper>
+              <Box py={3}>
+                <Chart
+                  type="bar"
+                  fullWidth
+                  height={400}
+                  series={barGraphData}
+                  options={barOptions}
+                />
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Container>

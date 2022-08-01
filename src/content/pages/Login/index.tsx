@@ -9,6 +9,8 @@ import {
   CircularProgress,
   Grid,
   TextField,
+  Paper,
+  Avatar,
 } from "@mui/material";
 import { useState, useRef, useContext } from "react";
 import { Helmet } from "react-helmet-async";
@@ -20,9 +22,11 @@ import { AuthContext } from "src/contexts/AuthContext";
 import { useCookies } from "react-cookie";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
+import hebFlag from "../../../assets/images/icons/hebFlag.svg";
+import enFlag from "../../../assets/images/icons/enFlag.svg";
 
 const LoginPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const validationSchema = yup.object({
@@ -83,9 +87,43 @@ const LoginPage = () => {
     return <Navigate to="/dashboard" />;
   }
 
+  const handleDirection = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
+
   return (
     <>
       <Helmet>{t("login")}</Helmet>
+      <Paper>
+        <Grid container justifyContent="end" alignItems="center" mb={2}>
+          <Grid item py={0.5} px={2} spacing={2}>
+            <Button
+              onClick={() => handleDirection("en")}
+              startIcon={
+                <Avatar
+                  sx={{ width: 24, height: 24 }}
+                  variant="square"
+                  src={enFlag}
+                />
+              }
+            >
+              {t("english")}
+            </Button>
+            <Button
+              onClick={() => handleDirection("he")}
+              startIcon={
+                <Avatar
+                  sx={{ width: 24, height: 24 }}
+                  variant="square"
+                  src={hebFlag}
+                />
+              }
+            >
+              {t("hebrew")}
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
       <Grid
         container
         direction="column"
