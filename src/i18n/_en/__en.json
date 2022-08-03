@@ -129,6 +129,7 @@
   "signature": "Signature",
   "keyIsRequred": "Key is required",
   "values": "Values",
+  "value": "Value",
   "createField": "Create field",
   "addField": "Add field",
   "formFields": "Form Fields",
@@ -193,5 +194,10 @@
   "download": "Download",
   "myAccount": "My Account",
   "agent": "Agent",
-  "controls": "Controls"
+  "controls": "Controls",
+  "viewValue": "View Value",
+  "appSettings": "App Settings",
+  "addSettings": "Add Settings",
+  "arrayValues": "Array Values",
+  "objectValues": "Object Values"
 }

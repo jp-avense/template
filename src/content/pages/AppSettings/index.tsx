@@ -10,6 +10,7 @@ import Modals from "../Components/Modals";
 import Swal from "sweetalert2";
 import Label from "src/components/Label";
 import ValueModal from "./ValueModal";
+import { settingsService } from "src/services/settings.service";
 
 import { useTranslation } from "react-i18next";
 import AddAppSettingsForm from "./AddAppSettingsForm";
@@ -30,20 +31,25 @@ const AppSettings = () => {
   } = useTranslation();
 
   useEffect(() => {
-    const res = require("./settings.json");
+    const fetchData = async () => {
+      const res = await settingsService.getAll();
+      return res.data;
+    };
 
-    const current = res.reduce((acc, item) => {
-      try {
-        const val = JSON.parse(item.value);
-        item.value = val;
-      } catch (e) {
-        item.value = item.value;
-      }
-      acc = [...acc, item];
+    fetchData().then((res) => {
+      const current = res.reduce((acc, item: any) => {
+        try {
+          const val = JSON.parse(item.value);
+          item.value = val;
+        } catch (e) {
+          item.value = item.value;
+        }
+        acc = [...acc, item];
 
-      return acc;
-    }, []);
-    setData(current);
+        return acc;
+      }, []);
+      setData(current);
+    });
   }, []);
 
   useEffect(() => {
@@ -128,8 +134,25 @@ const AppSettings = () => {
   const onDone = async () => {
     setLoading(true);
     try {
-      //   const { data } = await formService.getFields();
-      //   setForms(data);
+      const fetchData = async () => {
+        const res = await settingsService.getAll();
+        return res.data;
+      };
+
+      fetchData().then((res) => {
+        const current = res.reduce((acc, item: any) => {
+          try {
+            const val = JSON.parse(item.value);
+            item.value = val;
+          } catch (e) {
+            item.value = item.value;
+          }
+          acc = [...acc, item];
+
+          return acc;
+        }, []);
+        setData(current);
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -148,7 +171,7 @@ const AppSettings = () => {
       </Helmet>
       <PageTitleWrapper>
         <FormFieldHeader>
-          <AddAppSettingsForm data={data} />
+          <AddAppSettingsForm onDone={onDone} data={data} />
         </FormFieldHeader>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center" pb={5}>

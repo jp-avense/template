@@ -14,16 +14,23 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { settingsService } from "src/services/settings.service";
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getAxiosErrorMessage } from "src/lib";
 
 interface KeyValuePair {
   key: string;
   value: any;
 }
 
-const AddAppSettingsForm = (data) => {
+interface Props {
+  data: any;
+  onDone: () => any;
+}
+
+const AddAppSettingsForm = ({ data, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [type, setType] = useState("");
@@ -46,7 +53,7 @@ const AddAppSettingsForm = (data) => {
   };
 
   useEffect(() => {
-    setCurrentData(data.data);
+    setCurrentData(data);
   }, [data]);
 
   useEffect(() => {
@@ -99,13 +106,27 @@ const AddAppSettingsForm = (data) => {
     setValue(res);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const val = JSON.stringify(value);
     const res = {
       key: key,
       value: val,
     };
+    try {
+      setError("");
+      setSuccess("");
+      setIsSubmitting(true);
+      await settingsService.addSetting(res);
+
+      setSuccess("Success");
+      setIsSubmitting(false);
+      await onDone();
+    } catch (error) {
+      console.log(error);
+      setIsSubmitting(false);
+      setError(getAxiosErrorMessage(error));
+    }
   };
 
   return (
@@ -175,7 +196,7 @@ const AddAppSettingsForm = (data) => {
                   sx={{ mt: 2 }}
                   id="value"
                   name="value"
-                  label={t("Value")}
+                  label={t("value")}
                   fullWidth
                   required
                   value={value}
@@ -191,7 +212,7 @@ const AddAppSettingsForm = (data) => {
                   sx={{ mt: 2 }}
                   id="value"
                   name="value"
-                  label={t("Value")}
+                  label={t("value")}
                   fullWidth
                   value={value}
                   required
@@ -206,7 +227,7 @@ const AddAppSettingsForm = (data) => {
               <>
                 <Grid sx={{ mt: 2 }} container justifyContent={"space-between"}>
                   <Typography sx={{ mt: 1.5 }} variant="h5">
-                    Array Values
+                    {t("arrayValues")}
                   </Typography>
                   <div>
                     <IconButton onClick={removeOption} color="error">
@@ -222,7 +243,7 @@ const AddAppSettingsForm = (data) => {
                       sx={{ mt: 2 }}
                       id="value"
                       name="value"
-                      label={t("Value")}
+                      label={t("value")}
                       fullWidth
                       value={c}
                       required
@@ -238,7 +259,7 @@ const AddAppSettingsForm = (data) => {
               <>
                 <Grid sx={{ mt: 2 }} container justifyContent={"space-between"}>
                   <Typography sx={{ mt: 1.5 }} variant="h5">
-                    Object Values
+                    {t("objectValues")}
                   </Typography>
                   <div>
                     <IconButton onClick={removeObject} color="error">
@@ -256,7 +277,7 @@ const AddAppSettingsForm = (data) => {
                       sx={{ mt: 2 }}
                       id="key"
                       name="key"
-                      label={t("Key")}
+                      label={t("key")}
                       value={c.key}
                       required
                       onChange={(e) => setObject(e.target.value, index, "key")}
@@ -266,7 +287,7 @@ const AddAppSettingsForm = (data) => {
                       sx={{ mt: 2 }}
                       id="value"
                       name="value"
-                      label={t("Value")}
+                      label={t("value")}
                       value={c.value}
                       required
                       onChange={(e) =>
@@ -286,7 +307,7 @@ const AddAppSettingsForm = (data) => {
                   variant="contained"
                   fullWidth
                   type="submit"
-                  disabled={value.length < 1 || !unique}
+                  disabled={value.length < 1 || !unique || isSubmitting}
                 >
                   {isSubmitting ? <CircularProgress size={18} /> : t("submit")}
                 </Button>

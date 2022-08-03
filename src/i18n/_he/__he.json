@@ -129,6 +129,7 @@
   "signature": "חתימה",
   "keyIsRequred": "דרוש מפתח",
   "values": "ערכים",
+  "value": "ערך",
   "createField": "צור שדה",
   "addField": "הוסף שדה",
   "formFields": "שדות טופס",
@@ -191,5 +192,10 @@
   "download": "הורד",
   "myAccount": "החשבון שלי",
   "agent": "סוֹכֵן",
-  "controls": "בקרות"
+  "controls": "בקרות",
+  "viewValue": "הצג ערך",
+  "appSettings": "הגדרות אפליקציה",
+  "addSettings": "הוסף הגדרות",
+  "arrayValues": "ערכי מערך",
+  "objectValues": "ערכי אובייקט"
 }
