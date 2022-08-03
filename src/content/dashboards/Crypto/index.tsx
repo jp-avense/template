@@ -13,6 +13,15 @@ import { parseAgentResponse } from "src/contexts/AgentContext";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 
+interface IBarData {
+  id: string;
+  new: number;
+  assigned: number;
+  inProgress: number;
+  done: number;
+  total: number;
+}
+
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -20,6 +29,7 @@ function DashboardCrypto() {
   const [value, setValue] = useState(null);
   const [agents, setAgents] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState("");
+  const [barData, setBarData] = useState<IBarData[]>([]);
 
   const {
     t,
@@ -122,25 +132,61 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
-  const getTo = agents.map((item, index) => {
-    const x = item.name;
-    return x;
+  const headers = agents.map((item) => {
+    // const x = status.reduce((acc, c) => {
+    //   acc[c.statusId] = (acc[c.statusId] || 0) + 1;
+    //   return acc;
+    // }, {});
 
-    // const x = {
-    //   label: item.name,
-    //   values: [countNewStatus, countDone, countProgress, countAssignedTask],
+    // const x = status.reduce(
+    //   (acc, cur) => ({
+    //     ...acc,
+    //     [cur.assignedTo.agentName]: {
+    //       status: (acc[cur.statusId] = (acc[cur.statusId] || 0) + 1),
+    //       name: cur.assignedTo.agentName,
+    //     },
+    //   }),
+    //   {}
+    // );
+
+    const x = status.reduce((acc, cur) => {
+      acc[cur.assignedTo.agentName] = acc[cur.assignedTo.agentName] || {
+        agentName: cur.assignedTo.agentName,
+        new: 0,
+        assigned: 0,
+        inProgress: 0,
+        done: 0,
+      };
+
+      if (cur.statusId === "new") {
+        acc[cur.assignedTo.agentName].new = (acc[cur.statusId] || 0) + 1;
+      }
+
+      if (cur.statusId === "done") {
+        acc[cur.assignedTo.agentName].done = (acc[cur.statusId] || 0) + 1;
+      }
+
+      if (cur.statusId === "inProgress") {
+        acc[cur.assignedTo.agentName].inProgress = (acc[cur.statusId] || 0) + 1;
+      }
+
+      return acc;
+    });
+
+    console.log(x);
+
+    // const key = {
+    //   id: item.sub,
+    //   name: item.name,
+    //   new: x.new,
+    //   assigned: x.assigned,
+    //   inProgress: x.inProgress,
+    //   done: x.done,
+    //   total: x.new + x.assigned + x.inProgress + x.done,
     // };
-    // let labelArr = [];
-    // let values = [];
 
-    // labelArr.push(item.name);
-
-    // for (const index in labelArr) {
-    //   const row = labelArr[index];
-    //   values.push();
-    // }
+    // return key;
   });
-  // console.log(getTo);
 
   const barOptions: ApexOptions = {
     chart: {
@@ -154,29 +200,44 @@ function DashboardCrypto() {
       followCursor: true,
     },
     xaxis: {
-      categories: getTo,
+      categories: [1, 2, 3, 4, 5],
+      // categories: headers.map((item) => {
+      //   return item.name;
+      // }),
     },
   };
 
   const barGraphData = [
     {
       name: "New",
-      data: [20, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      data: [1, 2, 3, 4, 5],
+      // data: headers.map((item) => {
+      //   return item.new;
+      // }),
       color: "#57CA22",
     },
     {
-      name: "Undone",
-      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
-      color: "#FF1943",
+      name: "Assigned To",
+      data: [1, 2, 3, 4, 5],
+      // data: headers.map((item) => {
+      //   return item.assigned;
+      // }),
+      color: "#5C6AC0",
     },
     {
       name: "Done",
-      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      data: [1, 2, 3, 4, 5],
+      // data: headers.map((item) => {
+      //   return item.done;
+      // }),
       color: "#5569ff",
     },
     {
       name: "In Progress",
-      data: [55, 57, 48, 46, 58, 46, 58, 23, 53, 20],
+      data: [1, 2, 3, 4, 5],
+      // data: headers.map((item) => {
+      //   return item.inProgress;
+      // }),
       color: "#FFA319",
     },
   ];
@@ -186,20 +247,23 @@ function DashboardCrypto() {
       <Helmet>
         <title>{t("dashboard")}</title>
       </Helmet>
-      <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader
-          filterByMonth={filterByMonth}
-          resetData={resetData}
-          value={value}
-          status={status}
-          loading={loading}
-          agents={agents}
-          setFilteredData={setFilteredData}
-          selectedAgent={selectedAgent}
-          setSelectedAgent={setSelectedAgent}
-          setValue={setValue}
-        />
+        <Grid container>
+          <Grid item xs={12} lg={12} mt={5}>
+            <TaskHeader
+              filterByMonth={filterByMonth}
+              resetData={resetData}
+              value={value}
+              status={status}
+              loading={loading}
+              agents={agents}
+              setFilteredData={setFilteredData}
+              selectedAgent={selectedAgent}
+              setSelectedAgent={setSelectedAgent}
+              setValue={setValue}
+            />
+          </Grid>
+        </Grid>
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>
