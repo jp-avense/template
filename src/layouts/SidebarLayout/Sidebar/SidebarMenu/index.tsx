@@ -310,6 +310,17 @@ function SidebarMenu() {
                       {t("formBuilder")}
                     </Button>
                   </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/app-settings"
+                      startIcon={<BuildIcon />}
+                    >
+                      {t("appSettings")}
+                    </Button>
+                  </ListItem>
                 </List>
               </SubMenuWrapper>
             </List>

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { Button, Grid } from "@mui/material";
@@ -16,16 +16,42 @@ function TaskFilter() {
   ];
   const context = useContext(FilterContext);
   const {
-    handleFilter: { filter, setFilter, setLoading, loading, getDataAndSet },
+    handleFilter: {
+      filter,
+      setFilter,
+      setLoading,
+      loading,
+      getDataAndSet,
+      setDynamicFilters,
+      dynamicFilters,
+    },
   } = context;
+
+  useEffect(() => {
+    if (filter === "clear_filters" && dynamicFilters.length === 0) {
+      handleRefresh();
+    }
+  }, [dynamicFilters]);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+
+    await getDataAndSet({
+      statusId: undefined,
+    });
+    setLoading(false);
+  };
 
   const handleChange = async (value: string) => {
     setFilter(value);
 
     setLoading(true);
-    await getDataAndSet({
-      statusId: value === "clear_filters" ? undefined : value,
-    });
+    if (value === "clear_filters" && dynamicFilters.length > 0) {
+      setDynamicFilters([]);
+    } else
+      await getDataAndSet({
+        statusId: value === "clear_filters" ? undefined : value,
+      });
     setLoading(false);
   };
 
