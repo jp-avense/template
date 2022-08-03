@@ -20,6 +20,7 @@ function DashboardCrypto() {
   const [value, setValue] = useState(null);
   const [agents, setAgents] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState("");
+  const [barData, setBarData] = useState([]);
 
   const {
     t,
@@ -122,25 +123,22 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
-  const getTo = agents.map((item, index) => {
-    const x = item.name;
-    return x;
+  const headers = agents.map((item) => {
+    const key = {
+      id: item.sub,
+      new: 0,
+      assigned: 0,
+      inProgress: 0,
+      done: 0,
+      total: 0,
+    };
 
-    // const x = {
-    //   label: item.name,
-    //   values: [countNewStatus, countDone, countProgress, countAssignedTask],
-    // };
-    // let labelArr = [];
-    // let values = [];
+    // const filterData = status.map((item) => {});
 
-    // labelArr.push(item.name);
-
-    // for (const index in labelArr) {
-    //   const row = labelArr[index];
-    //   values.push();
-    // }
+    return key;
   });
-  // console.log(getTo);
+
+  console.log(headers);
 
   const barOptions: ApexOptions = {
     chart: {
@@ -154,7 +152,7 @@ function DashboardCrypto() {
       followCursor: true,
     },
     xaxis: {
-      categories: getTo,
+      categories: headers,
     },
   };
 
@@ -186,20 +184,23 @@ function DashboardCrypto() {
       <Helmet>
         <title>{t("dashboard")}</title>
       </Helmet>
-      <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader
-          filterByMonth={filterByMonth}
-          resetData={resetData}
-          value={value}
-          status={status}
-          loading={loading}
-          agents={agents}
-          setFilteredData={setFilteredData}
-          selectedAgent={selectedAgent}
-          setSelectedAgent={setSelectedAgent}
-          setValue={setValue}
-        />
+        <Grid container>
+          <Grid item xs={12} lg={12} mt={5}>
+            <TaskHeader
+              filterByMonth={filterByMonth}
+              resetData={resetData}
+              value={value}
+              status={status}
+              loading={loading}
+              agents={agents}
+              setFilteredData={setFilteredData}
+              selectedAgent={selectedAgent}
+              setSelectedAgent={setSelectedAgent}
+              setValue={setValue}
+            />
+          </Grid>
+        </Grid>
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>
