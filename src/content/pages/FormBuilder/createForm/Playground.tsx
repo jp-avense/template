@@ -27,7 +27,8 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import "./style.css";
-
+import { InputTypeEnum } from "../../FormFields/form-field.interface";
+import _ from "lodash";
 interface IFields {
   _id: string;
   key: string;
@@ -41,6 +42,7 @@ interface IFields {
   options?: {
     [key: string]: string;
   };
+  value?: any;
 }
 
 interface IData {
@@ -147,20 +149,12 @@ const Playground = ({
             <FormHelperText>{item.description}</FormHelperText>
           </>
         );
-      case "markup":
-        return (
-          <>
-            <InputLabel>{item.label}</InputLabel>
-            <Box
-              sx={{
-                borderStyle: "dotted",
-                height: "75px",
-                width: "100%",
-              }}
-            ></Box>
-            <FormHelperText>{item.description}</FormHelperText>
-          </>
-        );
+      case InputTypeEnum.MARKUP:
+        let res = item.value || item.defaultValue;
+        res = _.unescape(res);
+
+        return <div dangerouslySetInnerHTML={{ __html: res }} />;
+
       case "dateTimeRegister":
         return (
           <>

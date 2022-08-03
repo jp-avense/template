@@ -71,7 +71,7 @@ const AgentsForm = () => {
         setError("");
         await agentService.register({
           ...values,
-          roles,
+          role: roles,
         });
 
         setSuccess(t("successAgent"));
@@ -176,8 +176,14 @@ const AgentsForm = () => {
             />
           </Grid>
           <Grid item>
-            <Box display="flex" gap={2} alignItems="center">
-              <Box mr={2}>{t("userRoles")}</Box>
+            <Box mr={2} mb={2}>{t("userRoles")}</Box>
+            <Box
+              display="flex"
+              gap={2}
+              alignItems="center"
+              flexDirection="row"
+              flexWrap="wrap"
+            >
               <FormControlLabel
                 value="start"
                 control={

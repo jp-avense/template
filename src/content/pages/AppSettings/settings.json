@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "62b2eba7415b983b3e3ad517",
+    "key": "bucketName",
+    "value": "product-client-dev2"
+  },
+  {
+    "_id": "62b2ebcf415b983b3e3ad518",
+    "key": "s3Region",
+    "value": "eu-central-1"
+  },
+  {
+    "_id": "62b303cf415b983b3e3ad51f",
+    "key": "sendStatusChange",
+    "value": "1"
+  },
+  {
+    "_id": "62b30400415b983b3e3ad520",
+    "key": "sendStatusChangeUrl",
+    "value": "https://someting.something/something"
+  },
+  {
+    "_id": "62b30447415b983b3e3ad521",
+    "key": "sendStatusChangeMethod",
+    "value": "post"
+  },
+  {
+    "_id": "62b30544415b983b3e3ad523",
+    "key": "sendStatusChangeSchema",
+    "value": "[{\"apiKey\":\"key1\",\"value\":\"value1\"},{\"apiKey\":\"key2\",\"value\":\"value2\"}]"
+  },
+  {
+    "_id": "62ba9ee14fac485cc2a257f3",
+    "key": "sendStatusChangeHeaders",
+    "value": "[\"Authorization: Basic dXNlcm5hbWU6cGFzc3c8PlJk\",\"Content-Type: application/json\"]"
+  },
+  {
+    "_id": "62bd56707d92a26a3e1974ac",
+    "key": "casheir",
+    "value": "1"
+  },
+  {
+    "_id": "62bd61f47d92a26a3e1974be",
+    "key": "casheirs",
+    "value": "[\"creditguard\",\"tranzila\"]"
+  },
+  {
+    "_id": "62bd62397d92a26a3e1974c1",
+    "key": "availableCashiers",
+    "value": "[\"creditguard\",\"tranzila\",\"bit\"]"
+  },
+  {
+    "_id": "62d513bf2612352b34fcf000",
+    "key": "appTasksDefaultSortOrder",
+    "value": "{\"executionEndDate\":1,\"executionStartDate\":1}"
+  },
+  {
+    "_id": "62b1528b0a82576794e0a166",
+    "key": "taskNumber",
+    "value": "209"
+  }
+]

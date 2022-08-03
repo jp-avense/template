@@ -190,5 +190,8 @@
   "true": "True",
   "false": "False",
   "duplicateInfo": "Input unique key for the duplicated form",
-  "download": "Download"
+  "download": "Download",
+  "myAccount": "My Account",
+  "agent": "Agent",
+  "controls": "Controls"
 }
