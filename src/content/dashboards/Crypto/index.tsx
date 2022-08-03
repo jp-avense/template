@@ -132,61 +132,69 @@ function DashboardCrypto() {
     countAssignedTask,
   ];
 
-  const headers = agents.map((item) => {
-    // const x = status.reduce((acc, c) => {
-    //   acc[c.statusId] = (acc[c.statusId] || 0) + 1;
-    //   return acc;
-    // }, {});
+  // const x = status.reduce((acc, c) => {
+  //   acc[c.statusId] = (acc[c.statusId] || 0) + 1;
+  //   return acc;
+  // }, {});
 
-    // const x = status.reduce(
-    //   (acc, cur) => ({
-    //     ...acc,
-    //     [cur.assignedTo.agentName]: {
-    //       status: (acc[cur.statusId] = (acc[cur.statusId] || 0) + 1),
-    //       name: cur.assignedTo.agentName,
-    //     },
-    //   }),
-    //   {}
-    // );
+  // const x = status.reduce(
+  //   (acc, cur) => ({
+  //     ...acc,
+  //     [cur.assignedTo.agentName]: {
+  //       status: (acc[cur.statusId] = (acc[cur.statusId] || 0) + 1),
+  //       name: cur.assignedTo.agentName,
+  //     },
+  //   }),
+  //   {}
+  // );
 
-    const x = status.reduce((acc, cur) => {
-      acc[cur.assignedTo.agentName] = acc[cur.assignedTo.agentName] || {
-        agentName: cur.assignedTo.agentName,
-        new: 0,
-        assigned: 0,
-        inProgress: 0,
-        done: 0,
-      };
+  // const x = status.map((item) => {
+  //   const c = item.assignedTo.agentSub == item.assignedTo.agentSub;
 
-      if (cur.statusId === "new") {
-        acc[cur.assignedTo.agentName].new = (acc[cur.statusId] || 0) + 1;
-      }
+  //   const key = {
+  //     id: c,
+  //     new: 0,
+  //     inProgress: 0,
+  //     done: 0,
+  //     total: 0,
+  //   };
+  //   return key;
+  // });
+  const x = status.reduce((acc, cur) => {
+    acc[cur.assignedTo.agentSub] = acc[cur.assignedTo.agentSub] || {
+      agentName: cur.assignedTo.agentName,
+      new: 0,
+      progress: 0,
+      done: 0,
+      unDone: 0,
+      assigned: 0,
+      total: 0,
+    };
 
-      if (cur.statusId === "done") {
-        acc[cur.assignedTo.agentName].done = (acc[cur.statusId] || 0) + 1;
-      }
+    if (cur.statusId === "new") {
+      acc[cur.assignedTo.agentSub].new += (acc[cur.statusId] || 0) + 1;
+    }
 
-      if (cur.statusId === "inProgress") {
-        acc[cur.assignedTo.agentName].inProgress = (acc[cur.statusId] || 0) + 1;
-      }
+    if (cur.statusId === "inProgress") {
+      acc[cur.assignedTo.agentSub].progress += (acc[cur.statusId] || 0) + 1;
+    }
 
-      return acc;
-    });
+    if (cur.statusId === "done") {
+      acc[cur.assignedTo.agentSub].done += (acc[cur.statusId] || 0) + 1;
+    }
 
-    console.log(x);
+    if (cur.statusId !== "done") {
+      acc[cur.assignedTo.agentSub].unDone += (acc[cur.statusId] || 0) + 1;
+    }
 
-    // const key = {
-    //   id: item.sub,
-    //   name: item.name,
-    //   new: x.new,
-    //   assigned: x.assigned,
-    //   inProgress: x.inProgress,
-    //   done: x.done,
-    //   total: x.new + x.assigned + x.inProgress + x.done,
-    // };
+    if (cur.statusId === "assigned") {
+      acc[cur.assignedTo.agentSub].assigned += (acc[cur.statusId] || 0) + 1;
+    }
 
-    // return key;
-  });
+    return acc;
+  }, {});
+
+  console.log(x);
 
   const barOptions: ApexOptions = {
     chart: {
