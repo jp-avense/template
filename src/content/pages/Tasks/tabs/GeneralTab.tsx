@@ -45,32 +45,40 @@ const GeneralTab = () => {
             <></>
           )}
 
-          {data.dynamicDetails.map((c, index) => (
-            <>
-              {!c.showInTable && c.value ? (
-                <ListItem key={index}>
-                  {c.value ? (
-                    <>
-                      <Typography variant="h5" color="primary">
-                        <span>{t(c.label) + ":"}</span>
-                      </Typography>
-                      <Typography
-                        sx={{ ml: "10px" }}
-                        variant="h6"
-                        color="secondary"
-                      >
-                        <span>{c.value}</span>
-                      </Typography>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                </ListItem>
-              ) : (
-                <></>
-              )}
-            </>
-          ))}
+          {data.dynamicDetails.map((c, index) => {
+            const blacklisted = [
+              "docDrisha1Url",
+              "docDrisha2Url",
+              "docIkulRishum",
+            ].includes(c.key);
+
+            return (
+              <>
+                {!c.showInTable && c.value && !blacklisted ? (
+                  <ListItem key={index}>
+                    {c.value ? (
+                      <>
+                        <Typography variant="h5" color="primary">
+                          <span>{t(c.label) + ":"}</span>
+                        </Typography>
+                        <Typography
+                          sx={{ ml: "10px" }}
+                          variant="h6"
+                          color="secondary"
+                        >
+                          <span>{c.value}</span>
+                        </Typography>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </ListItem>
+                ) : (
+                  <></>
+                )}
+              </>
+            );
+          })}
 
           <ListItem>
             {data.createdAt ? (

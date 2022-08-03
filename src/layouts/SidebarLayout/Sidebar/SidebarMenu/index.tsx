@@ -221,7 +221,7 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              {t("taskManagement")}
+              {t("controls")}
             </ListSubheader>
           }
         >
@@ -238,6 +238,19 @@ function SidebarMenu() {
                   {t("tasks")}
                 </Button>
               </ListItem>
+              {isAdmin ? (
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/agents"
+                    startIcon={<PersonIcon />}
+                  >
+                    {t("users")}
+                  </Button>
+                </ListItem>
+              ) : null}
             </List>
           </SubMenuWrapper>
         </List>
@@ -312,19 +325,6 @@ function SidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
-              {isAdmin ? (
-                <ListItem component="div">
-                  <Button
-                    disableRipple
-                    component={RouterLink}
-                    onClick={closeSidebar}
-                    to="/agents"
-                    startIcon={<PersonIcon />}
-                  >
-                    {t("users")}
-                  </Button>
-                </ListItem>
-              ) : null}
               <ListItem component="div">
                 <Button
                   disableRipple
@@ -333,7 +333,7 @@ function SidebarMenu() {
                   to="/profile"
                   startIcon={<SettingsTwoToneIcon />}
                 >
-                  {t("settings")}
+                  {t("myAccount")}
                 </Button>
               </ListItem>
               <ListItem component="div">

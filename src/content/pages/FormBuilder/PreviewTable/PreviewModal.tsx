@@ -30,6 +30,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import SignaturePad from "signature_pad";
 import "./style.css";
 import { useTranslation } from "react-i18next";
+import _ from 'lodash';
 
 type Props = {
   data: Form;
@@ -311,7 +312,12 @@ const PreviewModal = ({ data, text, title }: Props) => {
         );
 
       case InputTypeEnum.MARKUP:
-        return <div dangerouslySetInnerHTML={{ __html: value }} />;
+        let res = value || defaultValue
+        res = _.unescape(res)
+
+        return (
+          <div dangerouslySetInnerHTML={{ __html: res }} />
+        );
 
       case InputTypeEnum.SIGNATURE:
         return (

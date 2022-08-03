@@ -14,7 +14,7 @@ export enum UserRoles {
 export interface RegisterDto {
   email: string;
   password: string;
-  roles: string[];
+  role: string[];
   name: string;
   familyName: string;
   phoneNumber: string;

@@ -101,7 +101,6 @@ function FormFieldSettings({
   const [required, setRequired] = useState(true);
   const [selectedForm, setSelectedForm] = useState<any>([]);
   const [currentTab, setCurrentTab] = useState(0);
-  const [markUpVal, setMarkUpval] = useState();
 
   const actions = [
     { value: "closeForm", label: t("closeForm") },
@@ -173,20 +172,12 @@ function FormFieldSettings({
 
       const settings = fieldSettings.slice();
       let res;
-      if (selected[0].inputType === "markup") {
-        res = {
-          rules: { required: required, action: action },
-          conditions: current,
-          value: markUpVal,
-          _id: selected[0]?._id,
-        };
-      } else {
-        res = {
-          rules: { required: required, action: action },
-          conditions: current,
-          _id: selected[0]?._id,
-        };
-      }
+      res = {
+        rules: { required: required, action: action },
+        conditions: current,
+        _id: selected[0]?._id,
+      };
+      
       if (fieldSettings.length > 0) {
         const index = fieldSettings.findIndex(
           (c) => c._id === selected[0]?._id
@@ -203,7 +194,7 @@ function FormFieldSettings({
         setFieldSettings(settings);
       }
     }
-  }, [conditions, required, action, markUpVal]);
+  }, [conditions, required, action]);
 
   useEffect(() => {
     const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
@@ -223,14 +214,10 @@ function FormFieldSettings({
       setSelectedForm(condition);
       setAction(fieldSettings[index].rules.action);
       setRequired(fieldSettings[index].rules.required);
-      if (selected[0].inputType === "markup") {
-        setMarkUpval(fieldSettings[index].value);
-      }
     } else {
       setSelectedForm([]);
       setAction([]);
       setRequired(true);
-      setMarkUpval(undefined);
     }
   }, [selected]);
 
@@ -238,10 +225,6 @@ function FormFieldSettings({
     const res = e.map((c) => c.value);
 
     setAction(res);
-  };
-
-  const setSelectedMarkUpValue = (e) => {
-    setMarkUpval(e.target.value);
   };
 
   const handleClick = (e) => {
@@ -322,20 +305,6 @@ function FormFieldSettings({
                 value={currentFormAction}
                 onChange={(e) => setSelectedAction(e)}
               />
-              {selected[0].inputType == "markup" ? (
-                <>
-                  <TextField
-                    sx={{ mt: 2 }}
-                    fullWidth
-                    onChange={(e) => setSelectedMarkUpValue(e)}
-                    label="Markup value"
-                    value={markUpVal || ""}
-                  ></TextField>
-                </>
-              ) : (
-                <></>
-              )}
-
               {activeForms.length > 0 ? (
                 <>
                   <Grid
