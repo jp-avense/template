@@ -20,6 +20,7 @@ import PersonIcon from "@mui/icons-material/PersonTwoTone";
 import LogoutIcon from "@mui/icons-material/LogoutTwoTone";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
+import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import BuildIcon from "@mui/icons-material/Build";
 import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
@@ -316,7 +317,7 @@ function SidebarMenu() {
                       component={RouterLink}
                       onClick={closeSidebar}
                       to="/app-settings"
-                      startIcon={<BuildIcon />}
+                      startIcon={<AppSettingsAltIcon />}
                     >
                       {t("appSettings")}
                     </Button>

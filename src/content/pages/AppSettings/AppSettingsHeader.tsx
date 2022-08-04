@@ -20,7 +20,7 @@ function PageHeader({ children }) {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h3" component="h3" gutterBottom>
-          {t("App Settings")}
+          {t("appSettings")}
         </Typography>
       </Grid>
       {isAdmin ? (
