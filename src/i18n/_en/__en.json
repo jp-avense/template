@@ -199,5 +199,6 @@
   "appSettings": "App Settings",
   "addSettings": "Add Settings",
   "arrayValues": "Array Values",
-  "objectValues": "Object Values"
+  "objectValues": "Object Values",
+  "search": "Search"
 }
