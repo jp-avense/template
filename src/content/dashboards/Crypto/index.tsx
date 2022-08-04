@@ -19,6 +19,7 @@ function DashboardCrypto() {
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(null);
   const [agents, setAgents] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState("");
 
   const {
     t,
@@ -26,7 +27,7 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    init()
+    init();
   }, []);
 
   const init = async () => {
@@ -64,6 +65,7 @@ function DashboardCrypto() {
       const dateData = x.getMonth() + 1 + "/" + x.getFullYear();
       return dateData === dateString;
     });
+    setSelectedAgent("");
     setValue(d);
     setFilteredData(getDates);
   };
@@ -82,12 +84,14 @@ function DashboardCrypto() {
   );
   const countProgress = progressStatus.length;
 
-  const assignedTask = filteredData.filter((item) => item.assignedTo);
-  const countAssignedTask = assignedTask.length;
+  const assignedTo = filteredData.filter(
+    (item) => item.statusId === "assigned"
+  );
+  const countAssignedTo = assignedTo.length;
 
   const resetData = () => {
     setFilteredData(status);
-    setValue(null)
+    setValue(null);
   };
 
   const chartOptions: ApexOptions = {
@@ -95,7 +99,7 @@ function DashboardCrypto() {
       background: "transparent",
       stacked: false,
       toolbar: {
-        show: false,
+        show: true,
       },
     },
     plotOptions: {
@@ -117,26 +121,141 @@ function DashboardCrypto() {
     countNewStatus,
     countDone,
     countProgress,
-    countAssignedTask,
+    countAssignedTo,
   ];
 
+  const x = status.reduce((acc, cur) => {
+    acc[cur.assignedTo.agentSub] = acc[cur.assignedTo.agentSub] || {
+      agentName: cur.assignedTo.agentName,
+      new: 0,
+      inProgress: 0,
+      done: 0,
+      unDone: 0,
+      xAssign: 0,
+      total: 0,
+    };
+
+    if (cur.statusId === "new") {
+      acc[cur.assignedTo.agentSub].new += (acc[cur.statusId] || 0) + 1;
+    }
+
+    if (cur.statusId === "inProgress") {
+      acc[cur.assignedTo.agentSub].inProgress += (acc[cur.statusId] || 0) + 1;
+    }
+
+    if (cur.statusId === "done") {
+      acc[cur.assignedTo.agentSub].done += (acc[cur.statusId] || 0) + 1;
+    }
+
+    if (cur.statusId === "assigned") {
+      acc[cur.assignedTo.agentSub].xAssign += (acc[cur.statusId] || 0) + 1;
+    }
+
+    if (cur.statusId !== "done") {
+      acc[cur.assignedTo.agentSub].unDone += (acc[cur.statusId] || 0) + 1;
+    }
+
+    acc[cur.assignedTo.agentSub].total =
+      acc[cur.assignedTo.agentSub].new +
+      acc[cur.assignedTo.agentSub].inProgress +
+      acc[cur.assignedTo.agentSub].done +
+      acc[cur.assignedTo.agentSub].xAssign +
+      acc[cur.assignedTo.agentSub].unDone;
+
+    return acc;
+  }, {});
+
+  const d = Object.values(x).map((item: any) => ({
+    agentHeads: item.agentName,
+    new: item.new,
+    inProgress: item.inProgress,
+    done: item.done,
+    unDone: item.unDone,
+    assi: item.xAssign,
+    total: item.total,
+  }));
+
+  const filteredHasValue = d.filter((item) => {
+    return item.agentHeads !== undefined;
+  });
+
+  const p = filteredHasValue.map((item) => {
+    return item;
+  });
+
+  p.sort((a, b) => b.total - a.total);
+
+  const barOptions: ApexOptions = {
+    chart: {
+      background: "transparent",
+      toolbar: {
+        show: true,
+      },
+      stacked: true,
+    },
+    tooltip: {
+      followCursor: true,
+    },
+    xaxis: {
+      categories: p.map((item) => {
+        return item.agentHeads;
+      }),
+    },
+  };
+
+  const barGraphData = [
+    {
+      name: "New",
+      data: p.map((item) => {
+        return item.new;
+      }),
+      color: "#57CA22",
+    },
+    {
+      name: "Assigned",
+      data: p.map((item) => {
+        return item.assi;
+      }),
+      color: "#5C6AC0",
+    },
+    {
+      name: "Done",
+      data: p.map((item) => {
+        return item.done;
+      }),
+      color: "#5569ff",
+    },
+    {
+      name: "In Progress",
+      data: p.map((item) => {
+        return item.inProgress;
+      }),
+      color: "#FFA319",
+    },
+  ];
 
   return (
     <>
       <Helmet>
         <title>{t("dashboard")}</title>
       </Helmet>
-      <PageTitleWrapper></PageTitleWrapper>
       <Container maxWidth="lg">
-        <TaskHeader
-          filterByMonth={filterByMonth}
-          resetData={resetData}
-          value={value}
-          status={status}
-          loading={loading}
-          agents={agents}
-          setFilteredData={setFilteredData}
-        />
+        <Grid container>
+          <Grid item xs={12} lg={12} mt={5}>
+            <TaskHeader
+              filterByMonth={filterByMonth}
+              resetData={resetData}
+              value={value}
+              status={status}
+              loading={loading}
+              agents={agents}
+              setFilteredData={setFilteredData}
+              selectedAgent={selectedAgent}
+              setSelectedAgent={setSelectedAgent}
+              setValue={setValue}
+            />
+          </Grid>
+        </Grid>
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} lg={6}>
             <Paper>
@@ -165,6 +284,21 @@ function DashboardCrypto() {
               countProgress={countProgress}
               loading={loading}
             />
+          </Grid>
+        </Grid>
+        <Grid container mt={3}>
+          <Grid item xs={12} lg={12} mb={4}>
+            <Paper>
+              <Box py={3}>
+                <Chart
+                  type="bar"
+                  fullWidth
+                  height={400}
+                  series={barGraphData}
+                  options={barOptions}
+                />
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Container>
