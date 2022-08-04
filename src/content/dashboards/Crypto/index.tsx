@@ -13,15 +13,6 @@ import { parseAgentResponse } from "src/contexts/AgentContext";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 
-interface IBarData {
-  id: string;
-  new: number;
-  assigned: number;
-  inProgress: number;
-  done: number;
-  total: number;
-}
-
 function DashboardCrypto() {
   const [status, setStatus] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -29,7 +20,6 @@ function DashboardCrypto() {
   const [value, setValue] = useState(null);
   const [agents, setAgents] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState("");
-  const [barData, setBarData] = useState<IBarData[]>([]);
 
   const {
     t,
@@ -94,8 +84,10 @@ function DashboardCrypto() {
   );
   const countProgress = progressStatus.length;
 
-  const assignedTask = filteredData.filter((item) => item.assignedTo);
-  const countAssignedTask = assignedTask.length;
+  const assignedTo = filteredData.filter(
+    (item) => item.statusId === "assigned"
+  );
+  const countAssignedTo = assignedTo.length;
 
   const resetData = () => {
     setFilteredData(status);
@@ -107,7 +99,7 @@ function DashboardCrypto() {
       background: "transparent",
       stacked: false,
       toolbar: {
-        show: false,
+        show: true,
       },
     },
     plotOptions: {
@@ -129,70 +121,75 @@ function DashboardCrypto() {
     countNewStatus,
     countDone,
     countProgress,
-    countAssignedTask,
+    countAssignedTo,
   ];
 
-  const headers = agents.map((item) => {
-    // const x = status.reduce((acc, c) => {
-    //   acc[c.statusId] = (acc[c.statusId] || 0) + 1;
-    //   return acc;
-    // }, {});
+  const x = status.reduce((acc, cur) => {
+    acc[cur.assignedTo.agentSub] = acc[cur.assignedTo.agentSub] || {
+      agentName: cur.assignedTo.agentName,
+      new: 0,
+      inProgress: 0,
+      done: 0,
+      unDone: 0,
+      xAssign: 0,
+      total: 0,
+    };
 
-    // const x = status.reduce(
-    //   (acc, cur) => ({
-    //     ...acc,
-    //     [cur.assignedTo.agentName]: {
-    //       status: (acc[cur.statusId] = (acc[cur.statusId] || 0) + 1),
-    //       name: cur.assignedTo.agentName,
-    //     },
-    //   }),
-    //   {}
-    // );
+    if (cur.statusId === "new") {
+      acc[cur.assignedTo.agentSub].new += (acc[cur.statusId] || 0) + 1;
+    }
 
-    const x = status.reduce((acc, cur) => {
-      acc[cur.assignedTo.agentName] = acc[cur.assignedTo.agentName] || {
-        agentName: cur.assignedTo.agentName,
-        new: 0,
-        assigned: 0,
-        inProgress: 0,
-        done: 0,
-      };
+    if (cur.statusId === "inProgress") {
+      acc[cur.assignedTo.agentSub].inProgress += (acc[cur.statusId] || 0) + 1;
+    }
 
-      if (cur.statusId === "new") {
-        acc[cur.assignedTo.agentName].new = (acc[cur.statusId] || 0) + 1;
-      }
+    if (cur.statusId === "done") {
+      acc[cur.assignedTo.agentSub].done += (acc[cur.statusId] || 0) + 1;
+    }
 
-      if (cur.statusId === "done") {
-        acc[cur.assignedTo.agentName].done = (acc[cur.statusId] || 0) + 1;
-      }
+    if (cur.statusId === "assigned") {
+      acc[cur.assignedTo.agentSub].xAssign += (acc[cur.statusId] || 0) + 1;
+    }
 
-      if (cur.statusId === "inProgress") {
-        acc[cur.assignedTo.agentName].inProgress = (acc[cur.statusId] || 0) + 1;
-      }
+    if (cur.statusId !== "done") {
+      acc[cur.assignedTo.agentSub].unDone += (acc[cur.statusId] || 0) + 1;
+    }
 
-      return acc;
-    });
+    acc[cur.assignedTo.agentSub].total =
+      acc[cur.assignedTo.agentSub].new +
+      acc[cur.assignedTo.agentSub].inProgress +
+      acc[cur.assignedTo.agentSub].done +
+      acc[cur.assignedTo.agentSub].xAssign +
+      acc[cur.assignedTo.agentSub].unDone;
 
-    console.log(x);
+    return acc;
+  }, {});
 
-    // const key = {
-    //   id: item.sub,
-    //   name: item.name,
-    //   new: x.new,
-    //   assigned: x.assigned,
-    //   inProgress: x.inProgress,
-    //   done: x.done,
-    //   total: x.new + x.assigned + x.inProgress + x.done,
-    // };
+  const d = Object.values(x).map((item: any) => ({
+    agentHeads: item.agentName,
+    new: item.new,
+    inProgress: item.inProgress,
+    done: item.done,
+    unDone: item.unDone,
+    assi: item.xAssign,
+    total: item.total,
+  }));
 
-    // return key;
+  const filteredHasValue = d.filter((item) => {
+    return item.agentHeads !== undefined;
   });
+
+  const p = filteredHasValue.map((item) => {
+    return item;
+  });
+
+  p.sort((a, b) => b.total - a.total);
 
   const barOptions: ApexOptions = {
     chart: {
       background: "transparent",
       toolbar: {
-        show: false,
+        show: true,
       },
       stacked: true,
     },
@@ -200,44 +197,39 @@ function DashboardCrypto() {
       followCursor: true,
     },
     xaxis: {
-      categories: [1, 2, 3, 4, 5],
-      // categories: headers.map((item) => {
-      //   return item.name;
-      // }),
+      categories: p.map((item) => {
+        return item.agentHeads;
+      }),
     },
   };
 
   const barGraphData = [
     {
       name: "New",
-      data: [1, 2, 3, 4, 5],
-      // data: headers.map((item) => {
-      //   return item.new;
-      // }),
+      data: p.map((item) => {
+        return item.new;
+      }),
       color: "#57CA22",
     },
     {
-      name: "Assigned To",
-      data: [1, 2, 3, 4, 5],
-      // data: headers.map((item) => {
-      //   return item.assigned;
-      // }),
+      name: "Assigned",
+      data: p.map((item) => {
+        return item.assi;
+      }),
       color: "#5C6AC0",
     },
     {
       name: "Done",
-      data: [1, 2, 3, 4, 5],
-      // data: headers.map((item) => {
-      //   return item.done;
-      // }),
+      data: p.map((item) => {
+        return item.done;
+      }),
       color: "#5569ff",
     },
     {
       name: "In Progress",
-      data: [1, 2, 3, 4, 5],
-      // data: headers.map((item) => {
-      //   return item.inProgress;
-      // }),
+      data: p.map((item) => {
+        return item.inProgress;
+      }),
       color: "#FFA319",
     },
   ];
