@@ -29,7 +29,7 @@ function TaskGrid({
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={6} md={6} lg={6}>
         <Card>
           <Box sx={{ m: 2, px: 1 }}>
             <Typography
@@ -67,7 +67,7 @@ function TaskGrid({
           </Box>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={6} md={6} lg={6}>
         <Card>
           <Box sx={{ m: 2, px: 1 }}>
             <Typography
@@ -102,7 +102,7 @@ function TaskGrid({
           </Box>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={6} md={6} lg={6}>
         <Card>
           <Box sx={{ m: 2, px: 1 }}>
             <Typography
@@ -141,7 +141,7 @@ function TaskGrid({
           </Box>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={6} md={6} lg={6}>
         <Card>
           <Box sx={{ m: 2, px: 1 }}>
             <Typography

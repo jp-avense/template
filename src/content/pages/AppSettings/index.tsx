@@ -10,6 +10,9 @@ import Modals from "../Components/Modals";
 import Swal from "sweetalert2";
 import Label from "src/components/Label";
 import ValueModal from "./ValueModal";
+import UpdateAppSettings from "./UpdateAppSettings";
+import UpdateAppSettingsForm from "./UpdateAppSettings/UpdateAppSettingsForm";
+import { settingsService } from "src/services/settings.service";
 
 import { useTranslation } from "react-i18next";
 import AddAppSettingsForm from "./AddAppSettingsForm";
@@ -30,20 +33,25 @@ const AppSettings = () => {
   } = useTranslation();
 
   useEffect(() => {
-    const res = require("./settings.json");
+    const fetchData = async () => {
+      const res = await settingsService.getAll();
+      return res.data;
+    };
 
-    const current = res.reduce((acc, item) => {
-      try {
-        const val = JSON.parse(item.value);
-        item.value = val;
-      } catch (e) {
-        item.value = item.value;
-      }
-      acc = [...acc, item];
+    fetchData().then((res) => {
+      const current = res.reduce((acc, item: any) => {
+        try {
+          const val = JSON.parse(item.value);
+          item.value = val;
+        } catch (e) {
+          item.value = item.value;
+        }
+        acc = [...acc, item];
 
-      return acc;
-    }, []);
-    setData(current);
+        return acc;
+      }, []);
+      setData(current);
+    });
   }, []);
 
   useEffect(() => {
@@ -77,9 +85,26 @@ const AppSettings = () => {
     setSelected(res);
   };
 
-  // const updateForm = useMemo(() => {
-  //   return data.find((item) => item._id === selected[0]);
-  // }, [selected, data]);
+  const updateForm = useMemo(() => {
+    if (selected.length === 1) {
+      const res = data.find((item) => item._id === selected[0]);
+      if (typeof res.value === "object" && Array.isArray(res.value)) {
+        if (typeof res.value[0] === "object") {
+          res.type = "Object";
+        } else if (typeof res.value[0] === "string") {
+          res.type = "Array";
+        }
+      } else if (typeof res.value === "object") {
+        res.type = "Object";
+      } else if (typeof res.value === "string") {
+        res.type = "String";
+      } else if (typeof res.value === "number") {
+        res.type = "Number";
+      }
+
+      return res;
+    }
+  }, [selected, data]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -93,7 +118,7 @@ const AppSettings = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      //   await formService.bulkDeleteFormFields(selected);
+      await settingsService.bulkDeleteAppSettings(selected);
 
       const filtered = data.filter((item) => !selected.includes(item._id));
       setSelected([]);
@@ -128,8 +153,25 @@ const AppSettings = () => {
   const onDone = async () => {
     setLoading(true);
     try {
-      //   const { data } = await formService.getFields();
-      //   setForms(data);
+      const fetchData = async () => {
+        const res = await settingsService.getAll();
+        return res.data;
+      };
+
+      fetchData().then((res) => {
+        const current = res.reduce((acc, item: any) => {
+          try {
+            const val = JSON.parse(item.value);
+            item.value = val;
+          } catch (e) {
+            item.value = item.value;
+          }
+          acc = [...acc, item];
+
+          return acc;
+        }, []);
+        setData(current);
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -148,7 +190,7 @@ const AppSettings = () => {
       </Helmet>
       <PageTitleWrapper>
         <FormFieldHeader>
-          <AddAppSettingsForm data={data} />
+          <AddAppSettingsForm onDone={onDone} data={data} />
         </FormFieldHeader>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center" pb={5}>
@@ -163,29 +205,30 @@ const AppSettings = () => {
             handleSelectAll={handleSelectAll}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
-                {/* {selected.length === 1 ? (
+                {selected.length === 1 ? (
                   <>
-                    <UpdateForms>
-                      <UpdateFormField
-                        selectedForm={updateForm}
-                        onFinish={onFinish}
+                    <UpdateAppSettings>
+                      <UpdateAppSettingsForm
+                        data={data}
+                        selected={updateForm}
+                        onDone={onDone}
                       />
-                    </UpdateForms>
+                    </UpdateAppSettings>
                   </>
-                ) : null} */}
-                {/* {selected.length ? (
+                ) : null}
+                {selected.length ? (
                   <ConfirmModal
                     buttonText={t("delete")}
                     title={t("delete")}
                     handleConfirm={() => handleDelete()}
-                    confirmMessage={t("deleteSomeFields")}
+                    confirmMessage={t("deleteSomeSettings")}
                     confirmText={t("submit")}
                     buttonProps={{
                       variant: "contained",
                       color: "warning",
                     }}
                   />
-                ) : null} */}
+                ) : null}
               </Box>
             }
           ></DynamicTable>

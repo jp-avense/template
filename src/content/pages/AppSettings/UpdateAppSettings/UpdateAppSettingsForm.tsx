@@ -27,10 +27,11 @@ interface KeyValuePair {
 
 interface Props {
   data: any;
+  selected: any;
   onDone: () => any;
 }
 
-const AddAppSettingsForm = ({ data, onDone }: Props) => {
+const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [type, setType] = useState("");
@@ -53,6 +54,11 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
   };
 
   useEffect(() => {
+    setType(selected.type);
+    setKey(selected.key);
+  }, [selected]);
+
+  useEffect(() => {
     setCurrentData(data);
   }, [data]);
 
@@ -62,10 +68,23 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
   }, [key]);
 
   useEffect(() => {
-    setKey("");
-    setValue([]);
-    setArr([]);
-    setObj([]);
+    if (type === selected.type) {
+      if (type === "Object") {
+        setObj(selected.value);
+        setValue(selected.value);
+      } else if (type === "Array") {
+        setArr(selected.value);
+        setValue(selected.value);
+      } else if (type === "String") {
+        setValue(selected.value);
+      } else if (type === "Number") {
+        setValue(selected.value);
+      }
+    } else {
+      setObj([]);
+      setValue("");
+      setArr([]);
+    }
   }, [type]);
 
   const addOption = () => {
@@ -108,12 +127,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let val;
-    if (type === "Object" && value.length === 1) {
-      val = JSON.stringify(value[0]);
-    } else {
-      val = JSON.stringify(value);
-    }
+    const val = JSON.stringify(value);
     const res = {
       key: key,
       value: val,
@@ -122,7 +136,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
       setError("");
       setSuccess("");
       setIsSubmitting(true);
-      await settingsService.addSetting(res);
+      await settingsService.updateSettings(res);
 
       setSuccess("Success");
       setIsSubmitting(false);
@@ -142,7 +156,6 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
         spacing={1}
         paddingBottom={1}
         paddingLeft={1}
-        sx={{ minHeight: 500 }}
       >
         <Grid item>
           <form onSubmit={handleSubmit} style={{ paddingTop: "1rem" }}>
@@ -180,17 +193,9 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                   name="Key"
                   label={t("key")}
                   fullWidth
-                  required
                   value={key}
-                  onChange={(e) => setKey(e.target.value)}
+                  disabled={true}
                 ></TextField>
-                {!unique ? (
-                  <>
-                    <Typography color={"red"}>Key already exists</Typography>
-                  </>
-                ) : (
-                  <></>
-                )}
               </>
             ) : (
               <></>
@@ -312,7 +317,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                   variant="contained"
                   fullWidth
                   type="submit"
-                  disabled={value.length < 1 || !unique || isSubmitting}
+                  disabled={value?.length < 1 || isSubmitting}
                 >
                   {isSubmitting ? <CircularProgress size={18} /> : t("submit")}
                 </Button>
@@ -327,4 +332,4 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
   );
 };
 
-export default AddAppSettingsForm;
+export default UpdateAppSettingsForm;

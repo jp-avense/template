@@ -93,4 +93,8 @@ export const taskService = {
   async bulkDeleteType(ids: string[]) {
     return apiService.delete(`${TASK_TYPE_URL}/bulk`, { data: ids });
   },
+
+  async updateTask(id: string, taskObject) {
+    return apiService.put(`${TASK_URL}/${id}`, taskObject);
+  },
 };

@@ -33,6 +33,7 @@ const AssignTaskForm = ({ selected }: Props) => {
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState([]);
+  const [isValid, setIsValid] = useState(true);
 
   const context = useContext(AgentContext);
   const auth = useContext(AuthContext);
@@ -68,7 +69,18 @@ const AssignTaskForm = ({ selected }: Props) => {
     setSelectedTasks(res);
   }, [selected]);
 
-  const isValid = selectedTasks.every((item) => item.statusId === "new");
+  useEffect(() => {
+    if (selectedTasks.length === 1) {
+      if (
+        selectedTasks[0].statusId === "assigned" ||
+        selectedTasks[0].statusId === "new"
+      ) {
+        setIsValid(true);
+      } else setIsValid(false);
+    } else {
+      setIsValid(selectedTasks.every((item) => item.statusId === "new"));
+    }
+  }, [selectedTasks]);
 
   const handleClose = () => {
     setOpenPopup(false);

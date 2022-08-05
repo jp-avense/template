@@ -2,7 +2,7 @@
   "loginText": "התחבר לאפליקציה",
   "login": "התחברות",
   "email": "אימייל",
-  "password": "Password",
+  "password": "סיסמה",
   "dashboards": "סיסמה",
   "dashboard": "ראשי",
   "taskManagement": "ניהול משימות",
@@ -129,6 +129,7 @@
   "signature": "חתימה",
   "keyIsRequred": "דרוש מפתח",
   "values": "ערכים",
+  "value": "ערך",
   "createField": "צור שדה",
   "addField": "הוסף שדה",
   "formFields": "שדות טופס",
@@ -153,6 +154,7 @@
   "chooseSystemStatus": "בחר סטטוס מערכת הקשור לסטטוס החדש הזה",
   "deleteSomeFields": "אתה עומד למחוק כמה שדות טופס. להמשיך?",
   "deleteSomeForms": "אתה עומד למחוק כמה טפסים. להמשיך?",
+  "deleteSomeSettings": "אתה עומד למחוק כמה הגדרות. לְהַמשִׁיך?",
   "preview": "תצוגה מקדימה",
   "conditions": "תנאים",
   "success": "הצלחה",
@@ -191,5 +193,12 @@
   "download": "הורד",
   "myAccount": "החשבון שלי",
   "agent": "סוֹכֵן",
-  "controls": "בקרות"
+  "controls": "בקרות",
+  "viewValue": "הצג ערך",
+  "appSettings": "הגדרות אפליקציה",
+  "addSettings": "הוסף הגדרות",
+  "arrayValues": "ערכי מערך",
+  "objectValues": "ערכי אובייקט",
+  "search": "לחפש",
+  "updateOnlyIfNew": "You can only update a new or assigned task"
 }

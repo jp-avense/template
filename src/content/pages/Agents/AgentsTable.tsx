@@ -45,27 +45,26 @@ const applyPagination = (agents: IAgent[], page: number, limit: number) => {
   return agents.slice(page * limit, page * limit + limit);
 };
 
-const AgentTable: FC = () => {
+const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
   const { t } = useTranslation();
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+
   const context = useContext(AgentContext);
-  const authContext = useContext(AuthContext);
   const tabsContext = useContext(TabsContext);
-  const { getAgents, agents: Agents } = context.handleAgents;
+
+  const { getAgents } = context.handleAgents;
   const { setLoading, loading } = context.handleLoading;
-  const {
-    handleId: { idToken },
-  } = authContext;
+
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
-
-  useEffect(() => {
-    getAgents();
-  }, [idToken]);
 
   const {
     handleTabs: { setTabsData },
   } = tabsContext;
+
+  useEffect(() => {
+    setPage(0);
+  }, [agentData]);
 
   const getStatusLabel = (status: 0 | 1) => {
     const map = {
@@ -96,7 +95,7 @@ const AgentTable: FC = () => {
   );
 
   const handleSelectAll = (event) => {
-    const res = event.target.checked ? Agents.map((item) => item.email) : [];
+    const res = event.target.checked ? agentData.map((item) => item.email) : [];
     setSelectedAgents(res);
     setTabsData(res);
   };
@@ -122,15 +121,15 @@ const AgentTable: FC = () => {
     setPage(0);
   };
 
-  const paginatedAgents = applyPagination(Agents, page, limit);
+  const paginatedAgents = applyPagination(agentData, page, limit);
   const indeterminate =
-    selectedAgents.length > 0 && selectedAgents.length < Agents.length;
-  const selectedAllAgents = selectedAgents.length === Agents.length;
+    selectedAgents.length > 0 && selectedAgents.length < agentData.length;
+  const selectedAllAgents = selectedAgents.length === agentData.length;
 
   const callback = async () => {
     await getAgents();
     setSelectedAgents([]);
-    setTabsData([])
+    setTabsData([]);
   };
 
   return (
@@ -267,7 +266,7 @@ const AgentTable: FC = () => {
       <Box p={2}>
         <TablePagination
           component="div"
-          count={Agents.length}
+          count={agentData.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
