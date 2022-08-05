@@ -154,6 +154,7 @@
   "chooseSystemStatus": "Choose a system status that is related to this new status",
   "deleteSomeFields": "You are about to delete some form fields. Continue?",
   "deleteSomeForms": "You are about to delete some forms. Continue?",
+  "deleteSomeSettings": "You are about to delete some settings. Continue?",
   "preview": "Preview",
   "conditions": "Conditions",
   "success": "Success",
@@ -201,5 +202,6 @@
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
   "search": "Search",
-  "updateOnlyIfNew": "You can only update a new or assigned task"
+  "updateOnlyIfNew": "You can only update a new or assigned task",
+  "objectValues": "Object Values"
 }

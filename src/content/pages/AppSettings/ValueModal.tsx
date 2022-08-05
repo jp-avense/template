@@ -60,19 +60,31 @@ const ValueModal = ({ data, text, title }: Props) => {
           const element = keys.map((c) => {
             const res = (
               <ListItem>
+                <Typography variant="h5" color="secondary">
+                  "{[c]}":&nbsp;
+                </Typography>
                 <Typography variant="h5" color="primary">
-                  {[c]}: {item[c]}
+                  "{item[c]}",
                 </Typography>
               </ListItem>
             );
             return res;
           });
-          acc = [...acc, element];
+          const show = (
+            <>
+              <div>
+                {"{"}
+                {element}
+                {"}"},
+              </div>
+            </>
+          );
+          acc = [...acc, show];
         } else if (typeof item === "string") {
           const element = (
             <ListItem>
               <Typography variant="h5" color="primary">
-                {item}
+                "{item}",
               </Typography>
             </ListItem>
           );
@@ -81,20 +93,34 @@ const ValueModal = ({ data, text, title }: Props) => {
 
         return acc;
       }, []);
-      setShowData(res);
+
+      const show = (
+        <span>
+          {"["}
+          {res}
+
+          {"]"}
+        </span>
+      );
+      setShowData(show);
     } else if (dataType === "object") {
       const keys = Object.keys(data);
-      const element = keys.map((c) => {
+      const element = keys.map((c, index) => {
         const res = (
           <ListItem>
             <Typography variant="h5" color="primary">
-              {[c]}: {data[c]}
+              "{[c]}": "{data[c]}",
             </Typography>
           </ListItem>
         );
         return res;
       });
-      setShowData(element);
+      const res = (
+        <span>
+          {"{"} {element} {"}"}
+        </span>
+      );
+      setShowData(res);
     }
   };
 

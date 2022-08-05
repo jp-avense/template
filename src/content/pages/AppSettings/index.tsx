@@ -118,7 +118,7 @@ const AppSettings = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      //   await formService.bulkDeleteFormFields(selected);
+      await settingsService.bulkDeleteAppSettings(selected);
 
       const filtered = data.filter((item) => !selected.includes(item._id));
       setSelected([]);
@@ -216,19 +216,19 @@ const AppSettings = () => {
                     </UpdateAppSettings>
                   </>
                 ) : null}
-                {/* {selected.length ? (
+                {selected.length ? (
                   <ConfirmModal
                     buttonText={t("delete")}
                     title={t("delete")}
                     handleConfirm={() => handleDelete()}
-                    confirmMessage={t("deleteSomeFields")}
+                    confirmMessage={t("deleteSomeSettings")}
                     confirmText={t("submit")}
                     buttonProps={{
                       variant: "contained",
                       color: "warning",
                     }}
                   />
-                ) : null} */}
+                ) : null}
               </Box>
             }
           ></DynamicTable>

@@ -16,4 +16,8 @@ export const settingsService = {
   async updateSettings(values) {
     return apiService.patch(UPDATE_URL, values);
   },
+
+  async bulkDeleteAppSettings(ids: string[]) {
+    return apiService.delete("bulk", { data: ids });
+  },
 };
