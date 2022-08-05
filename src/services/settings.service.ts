@@ -18,6 +18,6 @@ export const settingsService = {
   },
 
   async bulkDeleteAppSettings(ids: string[]) {
-    return apiService.delete("bulk", { data: ids });
+    return apiService.delete(`${SETTINGS_URL}/bulk`, { data: { ids } });
   },
 };
