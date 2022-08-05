@@ -108,7 +108,12 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const val = JSON.stringify(value);
+    let val;
+    if (type === "Object" && value.length === 1) {
+      val = JSON.stringify(value[0]);
+    } else {
+      val = JSON.stringify(value);
+    }
     const res = {
       key: key,
       value: val,
