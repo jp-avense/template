@@ -200,5 +200,6 @@
   "addSettings": "Add Settings",
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
-  "search": "Search"
+  "search": "Search",
+  "updateOnlyIfNew": "You can only update a new or assigned task"
 }

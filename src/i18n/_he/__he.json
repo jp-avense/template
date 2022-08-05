@@ -198,5 +198,6 @@
   "addSettings": "הוסף הגדרות",
   "arrayValues": "ערכי מערך",
   "objectValues": "ערכי אובייקט",
-  "search": "לחפש"
+  "search": "לחפש",
+  "updateOnlyIfNew": "You can only update a new or assigned task"
 }

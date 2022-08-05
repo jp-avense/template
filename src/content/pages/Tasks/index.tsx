@@ -53,7 +53,11 @@ const TaskPage = () => {
         setOriginalData(taskRes.tasks);
 
         setDetails(details);
+        
+        statuses.sort((a, b) => a.label.localeCompare(b.label));
         setStatus(statuses);
+        
+        types.sort((a, b) => a.label.localeCompare(b.label));
         setTypes(types);
         setTotal(taskRes.totalDocuments);
       })
