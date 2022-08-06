@@ -81,6 +81,7 @@ const TaskTable = () => {
       selectedRows,
       setSelectedRows,
       getDataAndSet,
+      status,
     },
   } = filterContext;
 
@@ -186,7 +187,6 @@ const TaskTable = () => {
       return 0;
     }
   };
-
 
   const createRows = (data) => {
     let rows = [];
@@ -426,7 +426,7 @@ const TaskTable = () => {
       const csvData = objectToCsv(table, tasks);
       download(csvData);
     } catch (error) {
-      console.log(error)
+      // console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -548,6 +548,14 @@ const TaskTable = () => {
 
                   {rows.dynamicDetails.map((dynamic) => {
                     if (dynamic.showInTable) {
+                      if (dynamic.id == "Status") {
+                        status.map((x) => {
+                          if (x.Key === dynamic.value) {
+                            return (dynamic.value = x.label);
+                          }
+                        });
+                      }
+
                       let value =
                         dynamic.id == "Status"
                           ? t(dynamic.value)
