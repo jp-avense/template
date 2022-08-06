@@ -51,7 +51,6 @@ const TaskPage = () => {
         );
 
         setOriginalData(taskRes.tasks);
-
         setDetails(details);
         setStatus(statuses);
         setTypes(types);
