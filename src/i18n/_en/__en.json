@@ -202,6 +202,5 @@
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
   "search": "Search",
-  "updateOnlyIfNew": "You can only update a new or assigned task",
-  "objectValues": "Object Values"
+  "updateOnlyIfNew": "You can only update a new or assigned task"
 }

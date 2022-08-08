@@ -91,17 +91,6 @@ const TaskTable = () => {
   } = tabsContext;
 
   useEffect(() => {
-    setLoading(true);
-    setSelectedRows([]);
-
-    getDataAndSet()
-      .catch()
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [idToken]);
-
-  useEffect(() => {
     createRows(originalData);
   }, [originalData]);
 
