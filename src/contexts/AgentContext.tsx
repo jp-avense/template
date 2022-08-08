@@ -25,6 +25,8 @@ type AgentContextT = {
     agents: IAgent[];
     setAgents: React.Dispatch<React.SetStateAction<IAgent[]>>;
     getAgents: () => Promise<IAgent[]>;
+    filter: string;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
   };
   handleLoading: {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,6 +54,7 @@ export const AgentContext = createContext<AgentContextT>({} as AgentContextT);
 export const AgentProvider = ({ children }) => {
   const [agents, setAgents] = useState<IAgent[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("none");
 
   const getAgents = async () => {
     setLoading(true);
@@ -73,7 +76,7 @@ export const AgentProvider = ({ children }) => {
     }
   };
 
-  const handleAgents = { agents, setAgents, getAgents };
+  const handleAgents = { agents, setAgents, getAgents, filter, setFilter };
   const handleLoading = { setLoading, loading };
 
   return (

@@ -91,17 +91,6 @@ const TaskTable = () => {
   } = tabsContext;
 
   useEffect(() => {
-    setLoading(true);
-    setSelectedRows([]);
-
-    getDataAndSet()
-      .catch()
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [idToken]);
-
-  useEffect(() => {
     createRows(originalData);
   }, [originalData]);
 
@@ -118,6 +107,10 @@ const TaskTable = () => {
 
     setTabsData(res);
   }, [tableData, selectedRows]);
+
+  useEffect(() => {
+    setSelectedRows([])
+  }, [page])
 
   const unSelectRow = (currentRowId: string) => {
     const filtered = selectedRows.filter((item) => item !== currentRowId);
@@ -152,39 +145,6 @@ const TaskTable = () => {
     const val = { [value]: direction };
     const res = JSON.stringify(val);
     handleSortTable(val, res);
-  };
-
-  const descendingComparator = (a, b, orderBy) => {
-    if (orderBy) {
-      const bVal = b.dynamicDetails.find((c) => c.id === orderBy);
-      const aVal = a.dynamicDetails.find((c) => c.id === orderBy);
-      if (orderBy == "Balance") {
-        if (parseInt(bVal?.value) < parseInt(aVal?.value)) {
-          return -1;
-        }
-        if (parseInt(bVal?.value) > parseInt(aVal?.value)) {
-          return 1;
-        }
-      } else if (a.inputType === "number") {
-        if (parseInt(bVal?.value) < parseInt(aVal?.value)) {
-          return -1;
-        }
-        if (parseInt(bVal?.value) > parseInt(aVal?.value)) {
-          return 1;
-        }
-      } else if (a.inputType === "string") {
-        return bVal.localeCompare(aVal);
-      } else {
-        if (bVal?.value < aVal?.value) {
-          return -1;
-        }
-        if (bVal?.value > aVal?.value) {
-          return 1;
-        }
-      }
-
-      return 0;
-    }
   };
 
 

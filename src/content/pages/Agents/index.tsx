@@ -11,6 +11,7 @@ import { AgentContext, IAgent } from "src/contexts/AgentContext";
 import _ from "lodash";
 import { AuthContext } from "src/contexts/AuthContext";
 import AgentsTable from "./AgentsTable";
+import AgentFilter from "./AgentFilter";
 
 const AgentsPage = () => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const AgentsPage = () => {
   const authContext = useContext(AuthContext);
 
   const {
-    handleAgents: { agents, getAgents },
+    handleAgents: { agents, getAgents, filter },
     handleLoading: { setLoading },
   } = context;
 
@@ -49,9 +50,17 @@ const AgentsPage = () => {
   };
 
   const filteredAgents = useMemo(() => {
-    if (deferredSearch === "") return agents;
+    if (deferredSearch === "" && filter === "none") return agents;
+    let res = agents.slice();
+    if (filter !== "none") {
+      if (filter === "1" || filter === "0") {
+        res = agents.filter((c) => c.status === parseInt(filter));
+      } else {
+        res = agents.filter((c) => c["custom:role"].includes(filter));
+      }
+    }
 
-    return agents.filter((x) => {
+    return res.filter((x) => {
       const fullName = `${x.name} ${x.family_name}`;
       const { email, phone_number } = x;
 
@@ -59,7 +68,7 @@ const AgentsPage = () => {
         value.includes(deferredSearch)
       );
     });
-  }, [deferredSearch, agents]);
+  }, [deferredSearch, agents, filter]);
 
   return (
     <>
@@ -69,16 +78,24 @@ const AgentsPage = () => {
       <PageTitleWrapper>
         <AgentsHeader />
       </PageTitleWrapper>
+
       <Container maxWidth="xl">
-        <Box mb={2}>
-          <TextField
-            name="search"
-            placeholder={t("search")}
-            value={search}
-            inputProps={{ style: { padding: ".9rem 1.2rem" } }}
-            onChange={handleChange}
-          />
-        </Box>
+        <Grid container justifyContent={"space-between"} xs={8}>
+          <Grid item>
+            <Box mb={2}>
+              <TextField
+                name="search"
+                placeholder={t("search")}
+                value={search}
+                inputProps={{ style: { padding: ".9rem 1.2rem" } }}
+                onChange={handleChange}
+              />
+            </Box>
+          </Grid>
+          <Grid item>
+            <AgentFilter />
+          </Grid>
+        </Grid>
         <Grid container direction="row" alignItems="stretch" spacing={3}>
           <Grid item xs={8}>
             <Card>
