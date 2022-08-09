@@ -240,6 +240,7 @@ function DynamicFilter() {
 
   const createValueComponent = (item) => {
     const details = keyComponentMap[item.selectedType];
+
     let inputType = details ? details.inputType : "none";
 
     const defaultDropdowns = [
@@ -391,9 +392,9 @@ function DynamicFilter() {
       setLoading(false);
     }
   };
-
-  taskDetails.sort((a, b) => a.label.localeCompare(b.label));
-
+  taskDetails.sort((a, b) => {
+    return a.label.localeCompare(b.label);
+  });
   return (
     <Grid
       container

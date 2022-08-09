@@ -219,10 +219,27 @@ const TaskTable = () => {
             id: e.label,
             order: e.order,
           });
+
+        if (e.id === "Status") {
+          const getDynamicStatusLabel = status.find((x) => {
+            if (x.Key === e.value) {
+              return x.label;
+            }
+          });
+
+          return getDynamicStatusLabel;
+        }
       });
+
+      const getStatusLabel = status.find((x) => {
+        if (x.Key == c.statusId) {
+          return x.label;
+        }
+      });
+
       dynamicDetails.sort((a, b) => a.order - b.order);
       details.dynamicDetails = dynamicDetails;
-      details.status = c.statusId;
+      details.status = getStatusLabel;
 
       details.type = c.taskType;
       details.createdAt = c.createdAt?.replace(
@@ -238,6 +255,8 @@ const TaskTable = () => {
       details.executionStartDate = c.executionStartDate;
       details.id = c._id;
       rows.push(details);
+
+      console.log(rows);
     });
 
     setTableData(() => {
