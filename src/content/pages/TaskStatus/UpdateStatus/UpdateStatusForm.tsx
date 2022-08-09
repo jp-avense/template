@@ -126,10 +126,10 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
               }
             >
               <MenuItem value="none">{t("none")}</MenuItem>
-              <MenuItem value="new">{t("new")}</MenuItem>
               <MenuItem value="assigned">{t("assigned")}</MenuItem>
-              <MenuItem value="inProgress">{t("inProgress")}</MenuItem>
               <MenuItem value="done">{t("done")}</MenuItem>
+              <MenuItem value="inProgress">{t("inProgress")}</MenuItem>
+              <MenuItem value="new">{t("new")}</MenuItem>
             </Select>
           </FormControl>
         </Grid>

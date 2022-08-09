@@ -187,5 +187,13 @@
   "unDone": "לא הסתיים",
   "true": "נָכוֹן",
   "false": "שֶׁקֶר",
-  "duplicateInfo": "הזן מפתח ייחודי עבור הטופס המשוכפל"
+  "duplicateInfo": "הזן מפתח ייחודי עבור הטופס המשוכפל",
+  "taskDetails": "פרטי משימה",
+  "showInTable": "הצג בטבלה",
+  "any": "כל",
+  "boolean": "בוליאנית",
+  "date": "תַאֲרִיך",
+  "string": "חוּט",
+  "number": "מספר",
+  "createTaskDetail": "צור פרטי משימה"
 }

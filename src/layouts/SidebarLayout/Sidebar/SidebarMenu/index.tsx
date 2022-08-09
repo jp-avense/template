@@ -280,6 +280,17 @@ function SidebarMenu() {
                       disableRipple
                       component={RouterLink}
                       onClick={closeSidebar}
+                      to="/task-details"
+                      startIcon={<DashboardIcon />}
+                    >
+                      {t("taskDetails")}
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
                       to="/form-field"
                       startIcon={<TextFieldsIcon />}
                     >

@@ -189,5 +189,13 @@
   "unDone": "Undone",
   "true": "True",
   "false": "False",
-  "duplicateInfo": "Input unique key for the duplicated form"
+  "duplicateInfo": "Input unique key for the duplicated form",
+  "taskDetails": "Task Details",
+  "showInTable": "Show in table",
+  "any": "Any",
+  "boolean": "Boolean",
+  "date": "Date",
+  "string": "String",
+  "number": "Number",
+  "createTaskDetail": "Create task detail"
 }

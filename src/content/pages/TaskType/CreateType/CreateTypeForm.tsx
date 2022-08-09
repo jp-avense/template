@@ -134,11 +134,13 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
               }}
               fullWidth
             >
-              {forms.map((item) => (
-                <MenuItem key={item._id} value={item._id}>
-                  {item.name}
-                </MenuItem>
-              ))}
+              {forms
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((item) => (
+                  <MenuItem key={item._id} value={item._id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
               <MenuItem value="">{t("none")}</MenuItem>
               <MenuItem value="new">{t("createNewForm")}</MenuItem>
             </TextField>
