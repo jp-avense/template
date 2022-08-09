@@ -129,6 +129,7 @@
   "signature": "Signature",
   "keyIsRequred": "Key is required",
   "values": "Values",
+  "value": "Value",
   "createField": "Create field",
   "addField": "Add field",
   "formFields": "Form Fields",
@@ -153,6 +154,7 @@
   "chooseSystemStatus": "Choose a system status that is related to this new status",
   "deleteSomeFields": "You are about to delete some form fields. Continue?",
   "deleteSomeForms": "You are about to delete some forms. Continue?",
+  "deleteSomeSettings": "You are about to delete some settings. Continue?",
   "preview": "Preview",
   "conditions": "Conditions",
   "success": "Success",
@@ -198,4 +200,16 @@
   "string": "String",
   "number": "Number",
   "createTaskDetail": "Create task detail"
+  "download": "Download",
+  "myAccount": "My Account",
+  "agent": "Agent",
+  "controls": "Controls",
+  "viewValue": "View Value",
+  "appSettings": "App Settings",
+  "addSettings": "Add Settings",
+  "arrayValues": "Array Values",
+  "objectValues": "Object Values",
+  "search": "Search",
+  "updateOnlyIfNew": "You can only update a new or assigned task",
+  "objectValues": "Object Values"
 }

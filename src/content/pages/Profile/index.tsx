@@ -6,6 +6,7 @@ import {
   Box,
   Avatar,
   Button,
+  Paper,
 } from "@mui/material";
 import { useContext } from "react";
 import { AuthContext } from "src/contexts/AuthContext";
@@ -51,13 +52,11 @@ function Profile() {
         bgcolor: stringToColor(name),
         width: 120,
         height: 120,
-        ml: 5,
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
   }
 
-  console.log("lmao", user);
   return (
     <>
       <Helmet>
@@ -67,57 +66,73 @@ function Profile() {
         <ProfileHeader />
       </PageTitleWrapper>
       {user ? (
-        <Box justifyContent={"center"} display={"flex"}>
-          <List
+        <Box>
+          <Paper
             sx={{
-              backgroundColor: "white",
-              pl: 20,
-              pr: 20,
-              height: "70vh",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              padding: 2,
+              width: "40%",
+              mx: "auto",
+              alignItems: "center"
             }}
           >
-            <ListItem>
-              <Avatar {...stringAvatar(`${user.name} ${user.family_name}`)} />
-            </ListItem>
-            <ListItem>
-              <Typography sx={{ ml: 4 }} variant="h3" color="primary">
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              alignItems="center"
+            >
+              <Box>
+                <Avatar {...stringAvatar(`${user.name} ${user.family_name}`)} />
+              </Box>
+              <Typography variant="h3" color="primary" align="center">
                 {user.name} {user.family_name}
               </Typography>
-            </ListItem>
-            <ListItem>
-              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
-                <span>{t("phoneNumber")}: </span>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              alignItems="center"
+            >
+              <Typography variant="h5" color="primary" align="center">
+                {t("phoneNumber")}:
               </Typography>
-            </ListItem>
-            <ListItem>
-              {" "}
-              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
+              <Typography variant="h6" color="secondary">
                 {user.phone_number}
               </Typography>
-            </ListItem>
-            <ListItem>
-              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
-                <span>{t("email")}: </span>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              alignItems="center"
+            >
+              <Typography variant="h5" color="primary" align="center">
+                {t("email")}:
               </Typography>
-            </ListItem>
-            <ListItem>
-              {" "}
-              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
+
+              <Typography variant="h6" color="secondary">
                 {user.email}
               </Typography>
-            </ListItem>
-            <ListItem>
-              <Typography sx={{ ml: 4, mt: 2 }} variant="h5" color="primary">
-                <span>{t("password")}: </span>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              alignItems="center"
+            >
+              <Typography variant="h5" color="primary" align="center">
+                {t("password")}:
               </Typography>
-            </ListItem>
-            <ListItem>
-              {" "}
-              <Typography sx={{ ml: 4 }} variant="h6" color="secondary">
+
+              <Typography variant="h6" color="secondary">
                 ***********
               </Typography>
-            </ListItem>
-            <ListItem sx={{ ml: 3 }}>
+            </Box>
+            <div>
               <ModalButton
                 text={t("changeDetails")}
                 buttonProps={{
@@ -127,8 +142,8 @@ function Profile() {
               >
                 <ProfileForm userinfo={user} />
               </ModalButton>
-            </ListItem>
-          </List>
+            </div>
+          </Paper>
         </Box>
       ) : (
         <></>

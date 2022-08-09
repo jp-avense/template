@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
+import _ from 'lodash'
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -104,6 +105,12 @@ function FormFieldForm({ onDone }) {
         }
 
         if (type === "textarea") res.rows = rows;
+        if (type === "markup" && res.defaultValue) {
+          const hasScript = /<script.+>/g.test(res.defaultValue);
+
+          if (hasScript) errors.unshift("Default value invalid");
+          else res.defaultValue = _.escape(res.defaultValue);
+        }
 
         if (!errors.length) {
           console.log(res);

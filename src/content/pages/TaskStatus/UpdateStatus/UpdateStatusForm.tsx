@@ -114,7 +114,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
           <FormControl fullWidth>
             <InputLabel id="select">{t("systemStatusKey")}</InputLabel>
             <Select
-              label={t("systemStatus")}
+              label={t("systemStatusKey")}
               name="systemStatusKey"
               value={formik.values.systemStatusKey}
               fullWidth

@@ -323,7 +323,7 @@ function DynamicFilter() {
                 if (typeof a === "string")
                   return (
                     <MenuItem value={a} key={idx}>
-                      {a}``
+                      {a}
                     </MenuItem>
                   );
                 else if (typeof a === "object")
@@ -392,11 +392,9 @@ function DynamicFilter() {
       setLoading(false);
     }
   };
-
   taskDetails.sort((a, b) => {
     return a.label.localeCompare(b.label);
   });
-
   return (
     <Grid
       container

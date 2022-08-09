@@ -20,6 +20,7 @@ import PersonIcon from "@mui/icons-material/PersonTwoTone";
 import LogoutIcon from "@mui/icons-material/LogoutTwoTone";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
+import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import BuildIcon from "@mui/icons-material/Build";
 import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
@@ -221,7 +222,7 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              {t("taskManagement")}
+              {t("controls")}
             </ListSubheader>
           }
         >
@@ -238,6 +239,19 @@ function SidebarMenu() {
                   {t("tasks")}
                 </Button>
               </ListItem>
+              {isAdmin ? (
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/agents"
+                    startIcon={<PersonIcon />}
+                  >
+                    {t("users")}
+                  </Button>
+                </ListItem>
+              ) : null}
             </List>
           </SubMenuWrapper>
         </List>
@@ -308,6 +322,17 @@ function SidebarMenu() {
                       {t("formBuilder")}
                     </Button>
                   </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/app-settings"
+                      startIcon={<AppSettingsAltIcon />}
+                    >
+                      {t("appSettings")}
+                    </Button>
+                  </ListItem>
                 </List>
               </SubMenuWrapper>
             </List>
@@ -323,19 +348,6 @@ function SidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
-              {isAdmin ? (
-                <ListItem component="div">
-                  <Button
-                    disableRipple
-                    component={RouterLink}
-                    onClick={closeSidebar}
-                    to="/agents"
-                    startIcon={<PersonIcon />}
-                  >
-                    {t("users")}
-                  </Button>
-                </ListItem>
-              ) : null}
               <ListItem component="div">
                 <Button
                   disableRipple
@@ -344,7 +356,7 @@ function SidebarMenu() {
                   to="/profile"
                   startIcon={<SettingsTwoToneIcon />}
                 >
-                  {t("settings")}
+                  {t("myAccount")}
                 </Button>
               </ListItem>
               <ListItem component="div">

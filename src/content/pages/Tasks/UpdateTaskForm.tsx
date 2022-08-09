@@ -13,34 +13,23 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useFormik } from "formik";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { FilterContext } from "src/contexts/FilterContext";
 import { useTranslation } from "react-i18next";
 import Modals from "../Components/Modals";
+import { taskService } from "src/services/task.service";
+import { getAxiosErrorMessage } from "src/lib";
 
-const defaultMapping = {
-  date: null,
-  datetime: null,
-  time: null,
-  file: null,
-  image: null,
-  number: 0,
-  boolean: false,
-  text: "",
-  textarea: "",
-  enum: "",
-};
 type Props = {
   selected: string;
 };
 
-const CreateTaskForm = ({ selected }: Props) => {
+const UpdateTaskForm = ({ selected }: Props) => {
   const { t } = useTranslation();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const context = useContext(FilterContext);
   const [open, setOpenPopup] = useState(false);
-  const [selectedTasks, setSelectedTasks] = useState([]);
 
   const handleClose = () => {
     setOpenPopup(false);
@@ -50,31 +39,100 @@ const CreateTaskForm = ({ selected }: Props) => {
   };
 
   const {
-    handleFilter: { details, originalData },
+    handleFilter: { details, originalData, status, types },
   } = context;
-  
+
+  const taskObj = useMemo(() => {
+    let res = originalData.filter((item) => selected.includes(item._id));
+    return res[0];
+  }, [originalData, selected]);
+
+  const taskDeets = taskObj.taskDetails;
+
+  const statusId = taskDeets.find((item) => item.key === "statusId")?.value;
+
+  const detailsMapping = useMemo(() => {
+    return taskDeets.reduce((acc, x) => {
+      acc[x.key] = x;
+
+      return acc;
+    }, {});
+  }, [taskDeets]);
+
   const initialValues = details
     ? details.reduce((acc, x) => {
-        const { inputType, key } = x;
+        const { key } = x;
 
-        acc[key] = defaultMapping[inputType];
+        acc[key] = detailsMapping[key].value;
 
         return acc;
       }, {})
     : {};
 
-  useEffect(() => {
-    let res = originalData.filter((item) => selected.includes(item._id));
-    setSelectedTasks(res[0].taskDetails);
-  }, [selected]);
+  const sortedDetails = useMemo(() => {
+    const d = details.slice();
+    d.sort((a, b) => {
+      if (a.order == null) return 1;
+      if (b.order == null) return -1;
+
+      return a.order - b.order;
+    });
+
+    return d;
+  }, [details]);
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues,
-    onSubmit: async (values, actions) => {
-      setError("");
-      setSuccess("Feature not implented yet :)");
-      actions.resetForm();
+    onSubmit: async (values) => {
+      try {
+        setError("");
+        setSuccess("");
+
+        if (statusId !== "new" && statusId !== "assigned") {
+          setError(t("updateOnlyIfNew"));
+          return;
+        }
+
+        delete values.assignedTo;
+        delete values.createdAt;
+
+        const newDetails = Object.entries(values).map(
+          ([key, value]: [string, any]) => {
+            return {
+              key,
+              value,
+              fromDefaultProp: detailsMapping[key].fromDefaultProp,
+            };
+          }
+        );
+
+        const newTaskObj = Object.entries(taskObj).reduce(
+          (acc, [key, value]: [string, any]) => {
+            if (!(key in detailsMapping)) {
+              acc[key] = value;
+            } else if (detailsMapping[key].fromDefaultProp) {
+              acc[key] = values[key];
+            }
+
+            return acc;
+          },
+          {}
+        );
+
+        const res = {
+          ...newTaskObj,
+          taskDetails: newDetails,
+        };
+
+        console.log(res);
+
+        await taskService.updateTask(selected, res);
+
+        setSuccess(t("success"));
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
     },
   });
 
@@ -85,20 +143,51 @@ const CreateTaskForm = ({ selected }: Props) => {
   };
 
   const createRows = (formik) => {
-    const d = details.slice();
-    d.sort((a, b) => {
-      if (a.order == null) return 1;
-      if (b.order == null) return -1;
+    if (taskDeets.length == 0) return [];
 
-      return a.order - b.order;
-    });
-
-    return d.map((item) => {
+    return sortedDetails.map((item) => {
       const type = item.inputType;
-      const task =
-        selectedTasks.find((task) => {
-          return task.key === item.key;
-        }) || "";
+      const { key } = item;
+
+      const currentItemDetail = detailsMapping[item.key];
+
+      if (key === "createdAt" || key === "assignedTo") return null;
+      if (key === "statusId") {
+        return (
+          <TextField
+            select
+            name="statusId"
+            label={t("status")}
+            fullWidth
+            value={formik.values[item.key]}
+            onChange={handleChange}
+          >
+            {status.map((item) => (
+              <MenuItem key={item.Key} value={item.Key}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        );
+      }
+      if (key === "taskType") {
+        return (
+          <TextField
+            select
+            label={t("type")}
+            name="taskType"
+            fullWidth
+            value={formik.values[item.key]}
+            onChange={handleChange}
+          >
+            {types.map((type) => (
+              <MenuItem key={type.key} value={type.label}>
+                {type.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        );
+      }
 
       switch (type.toLowerCase()) {
         case "enum":
@@ -128,7 +217,7 @@ const CreateTaskForm = ({ selected }: Props) => {
           return (
             <TextField
               label={t(item.label)}
-              defaultValue={task.value}
+              defaultValue={currentItemDetail.value}
               fullWidth
               value={formik.values[item.key]}
               name={item.key}
@@ -139,7 +228,7 @@ const CreateTaskForm = ({ selected }: Props) => {
         case "datetime":
           return (
             <DatePicker
-              value={formik.values[item.key] || task.value}
+              value={formik.values[item.key] || currentItemDetail.value}
               label={t(item.label)}
               onChange={(e) => formik.setFieldValue(item.key, e)}
               renderInput={(params) => (
@@ -156,7 +245,7 @@ const CreateTaskForm = ({ selected }: Props) => {
               onChange={handleChange}
               label={t(item.label)}
               fullWidth
-              defaultValue={task.value}
+              defaultValue={currentItemDetail.value}
               type="number"
             />
           );
@@ -188,55 +277,53 @@ const CreateTaskForm = ({ selected }: Props) => {
             />
           );
         default:
-          return (
-            <Select displayEmpty>
-              <MenuItem>None</MenuItem>
-            </Select>
-          );
+          return null;
       }
     });
   };
 
   const rows = createRows(formik);
 
-  if (!details.length) {
-    return <>No details about the task found.</>;
-  }
-
   return (
     <>
       <Modals open={open} onClose={handleClose} title={t("updateTask")}>
-        <form onSubmit={formik.handleSubmit}>
-          {success ? <Alert severity="success">{success}</Alert> : null}
-          {error ? <Alert severity="error">{error}</Alert> : null}
-          <Grid
-            container
-            spacing={2}
-            direction="column"
-            alignItems="stretch"
-            py={2}
-          >
-            {rows.map((item, indx) => (
-              <Grid item key={indx}>
-                {item}
+        {statusId !== "new" && statusId !== "assigned" ? (
+          <Alert severity="warning">{t("updateOnlyIfNew")}</Alert>
+        ) : details.length < 1 ? (
+          <>No details found for task</>
+        ) : (
+          <form onSubmit={formik.handleSubmit}>
+            {success ? <Alert severity="success">{success}</Alert> : null}
+            {error ? <Alert severity="error">{error}</Alert> : null}
+            <Grid
+              container
+              spacing={2}
+              direction="column"
+              alignItems="stretch"
+              py={2}
+            >
+              {rows.map((item, indx) => (
+                <Grid item key={indx}>
+                  {item}
+                </Grid>
+              ))}
+              <Grid item>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  fullWidth
+                  disabled={formik.isSubmitting}
+                >
+                  {formik.isSubmitting ? (
+                    <CircularProgress size={19} />
+                  ) : (
+                    t("submit")
+                  )}
+                </Button>
               </Grid>
-            ))}
-            <Grid item>
-              <Button
-                variant="contained"
-                type="submit"
-                fullWidth
-                disabled={formik.isSubmitting}
-              >
-                {formik.isSubmitting ? (
-                  <CircularProgress size={19} />
-                ) : (
-                  t("submit")
-                )}
-              </Button>
             </Grid>
-          </Grid>
-        </form>
+          </form>
+        )}
       </Modals>
       <Button variant="contained" onClick={handleOpen}>
         {t("updateTask")}
@@ -245,4 +332,4 @@ const CreateTaskForm = ({ selected }: Props) => {
   );
 };
 
-export default CreateTaskForm;
+export default UpdateTaskForm;

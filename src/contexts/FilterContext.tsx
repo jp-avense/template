@@ -121,6 +121,8 @@ export const FilterProvider = ({ children }) => {
 
   const getStatusAndSet = async () => {
     const { data } = await taskService.getStatuses();
+    data.sort((a, b) => a.Key.localeCompare(b.Key));
+
     setStatus(data);
     return data;
   };

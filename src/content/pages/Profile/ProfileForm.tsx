@@ -10,13 +10,24 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { agentService } from "src/services/agent.service";
+import { getAxiosErrorMessage } from "src/lib";
+import { AuthContext } from "src/contexts/AuthContext";
+import { useContext } from "react";
+import { cloneDeep } from "lodash";
 
 const ProfileForm = ({ userinfo }) => {
   const { t } = useTranslation();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [roles, setRoles] = useState([]);
+  const context = useContext(AuthContext);
+
+  const {
+    handleUser: { setUser },
+  } = context;
 
   const validationSchema = yup.object({
     name: yup.string().required(),
@@ -29,9 +40,25 @@ const ProfileForm = ({ userinfo }) => {
     password: yup
       .string()
       .min(8, t("passwordLengthText"))
-      .required(t("passwordRequiredText"))
+      .optional()
       .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, t("passwordMatchText")),
   });
+
+  useEffect(() => {
+    const res = userinfo["custom:role"].split(",");
+    setRoles(res);
+  }, [userinfo]);
+
+  const updateUser = (val) => {
+    const { email, familyName, name, password, phoneNumber } = val;
+    const res = cloneDeep(userinfo);
+    res.email = email;
+    res.name = name;
+    res.family_name = familyName;
+    res.phone_number = phoneNumber;
+
+    setUser(res);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -42,7 +69,22 @@ const ProfileForm = ({ userinfo }) => {
       familyName: userinfo.family_name,
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {},
+    onSubmit: async (values) => {
+      try {
+        setSuccess("");
+        setError("");
+        await agentService.update(userinfo.sub, {
+          role: roles,
+          originalEmail: userinfo.email,
+          ...values,
+        });
+
+        updateUser(values);
+        setSuccess("Success");
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
+    },
   });
 
   return (
