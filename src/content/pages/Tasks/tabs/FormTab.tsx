@@ -100,6 +100,8 @@ const FormTab = (props: Props) => {
 
           return <img src={presignedUrl} className="form-image" />;
         }
+      case InputTypeEnum.BUTTON:
+        return item.displayValue || item.value
       default:
         return value;
     }
@@ -118,8 +120,8 @@ const FormTab = (props: Props) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Field</TableCell>
-              <TableCell>Value</TableCell>
+              <TableCell>{t('field')}</TableCell>
+              <TableCell>{t('value')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

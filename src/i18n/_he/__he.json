@@ -200,5 +200,6 @@
   "arrayValues": "ערכי מערך",
   "objectValues": "ערכי אובייקט",
   "search": "לחפש",
-  "updateOnlyIfNew": "You can only update a new or assigned task"
+  "updateOnlyIfNew": "אתה יכול לעדכן רק משימה חדשה או שהוקצתה",
+  "field": "שדה"
 }
