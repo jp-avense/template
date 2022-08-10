@@ -256,7 +256,7 @@ const TaskTable = () => {
       details.id = c._id;
       rows.push(details);
 
-      console.log(rows);
+      // console.log(rows);
     });
 
     setTableData(() => {
