@@ -183,7 +183,8 @@ function DashboardCrypto() {
     return item;
   });
 
-  p.sort((a, b) => b.total - a.total);
+  const topTen = p.slice(0, 10);
+  topTen.sort((a, b) => b.total - a.total);
 
   const barOptions: ApexOptions = {
     chart: {
@@ -206,28 +207,28 @@ function DashboardCrypto() {
   const barGraphData = [
     {
       name: "New",
-      data: p.map((item) => {
+      data: topTen.map((item) => {
         return item.new;
       }),
       color: "#57CA22",
     },
     {
       name: "Assigned",
-      data: p.map((item) => {
+      data: topTen.map((item) => {
         return item.assi;
       }),
       color: "#5C6AC0",
     },
     {
       name: "Done",
-      data: p.map((item) => {
+      data: topTen.map((item) => {
         return item.done;
       }),
       color: "#5569ff",
     },
     {
       name: "In Progress",
-      data: p.map((item) => {
+      data: topTen.map((item) => {
         return item.inProgress;
       }),
       color: "#FFA319",
