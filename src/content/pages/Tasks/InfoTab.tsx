@@ -30,7 +30,7 @@ const InfoTab = () => {
               <Tab label={t("form")} value="4" sx={{ flex: "1" }} />
             </TabList>
           </Box>
-          <TabPanel sx={{ padding: "0px", minHeight: "400px" }} value="1">
+          <TabPanel value="1">
             <GeneralTab />
           </TabPanel>
           <TabPanel value="2">

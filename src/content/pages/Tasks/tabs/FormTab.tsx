@@ -1,4 +1,12 @@
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
@@ -106,18 +114,33 @@ const FormTab = (props: Props) => {
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
   return (
     <div>
-      {selected?.form
-        ? selected.form.map((item: FormFieldExtended, index) => {
-            const { key, value, label } = item;
+      {selected?.form ? (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Field</TableCell>
+              <TableCell>Value</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selected.form.map((item: FormFieldExtended, index) => {
+              const { key, value, label, inputType } = item;
 
-            return value != null ? (
-              <Box key={key + index} mb={2}>
-                <Box color="#5569ff">{label || key}</Box>
-                <div>{components[index]}</div>
-              </Box>
-            ) : null;
-          })
-        : t("noDataAvailable")}
+              if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
+
+              return (
+                <TableRow key={key + index}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{components[index]}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        t("noDataAvailable")
+      )}
     </div>
   );
 };
