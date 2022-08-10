@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Divider,
@@ -51,7 +51,6 @@ const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
-  const authContext = useContext(AuthContext);
   const [headers, setHeaders] = useState([]);
   const roles = useRoles();
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
@@ -62,17 +61,11 @@ const TaskTable = () => {
   const isAdmin = roles.includes("admin");
 
   const {
-    handleId: { idToken },
-  } = authContext;
-
-  const {
     handleFilter: {
       total,
       originalData,
-      filter,
       page,
       setPage,
-      sort,
       setSort,
       limit,
       setLimit,
@@ -93,7 +86,7 @@ const TaskTable = () => {
 
   useEffect(() => {
     createRows(originalData);
-  }, [originalData]);
+  }, [originalData, status]);
 
   useEffect(() => {
     const ceiling = Math.floor(total / limit);
@@ -110,8 +103,8 @@ const TaskTable = () => {
   }, [tableData, selectedRows]);
 
   useEffect(() => {
-    setSelectedRows([])
-  }, [page])
+    setSelectedRows([]);
+  }, [page]);
 
   const unSelectRow = (currentRowId: string) => {
     const filtered = selectedRows.filter((item) => item !== currentRowId);
@@ -148,6 +141,14 @@ const TaskTable = () => {
     handleSortTable(val, res);
   };
 
+  const statusMap = useMemo(() => {
+    return status.reduce((acc, item) => {
+      return {
+        ...acc,
+        [item.Key]: item,
+      };
+    }, {});
+  }, [status]);
 
   const createRows = (data) => {
     let rows = [];
@@ -173,6 +174,13 @@ const TaskTable = () => {
             id: e.label,
             order: e.order,
           });
+        } else if (e.key === "statusId") {
+          const dynamicLabel = statusMap[e.value]?.label;
+
+          dynamicDetails.push({
+            ...e,
+            value: dynamicLabel || e.value,
+          });
         } else
           dynamicDetails.push({
             ...e,
@@ -180,27 +188,10 @@ const TaskTable = () => {
             id: e.label,
             order: e.order,
           });
-
-        if (e.id === "Status") {
-          const getDynamicStatusLabel = status.find((x) => {
-            if (x.Key === e.value) {
-              return x.label;
-            }
-          });
-
-          return getDynamicStatusLabel;
-        }
-      });
-
-      const getStatusLabel = status.find((x) => {
-        if (x.Key == c.statusId) {
-          return x.label;
-        }
       });
 
       dynamicDetails.sort((a, b) => a.order - b.order);
       details.dynamicDetails = dynamicDetails;
-      details.status = getStatusLabel;
 
       details.type = c.taskType;
       details.createdAt = c.createdAt?.replace(
@@ -216,8 +207,6 @@ const TaskTable = () => {
       details.executionStartDate = c.executionStartDate;
       details.id = c._id;
       rows.push(details);
-
-      console.log(rows);
     });
 
     setTableData(() => {
@@ -406,7 +395,6 @@ const TaskTable = () => {
       const csvData = objectToCsv(table, tasks);
       download(csvData);
     } catch (error) {
-      
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -421,6 +409,7 @@ const TaskTable = () => {
     const temp = headCells();
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
+
 
   return (
     <Card>
@@ -528,23 +517,12 @@ const TaskTable = () => {
 
                   {rows.dynamicDetails.map((dynamic) => {
                     if (dynamic.showInTable) {
-                      if (dynamic.id == "Status") {
-                        status.map((x) => {
-                          if (x.Key === dynamic.value) {
-                            return (dynamic.value = x.label);
-                          }
-                        });
-                      }
-
-                      let value =
-                        dynamic.id == "Status"
-                          ? t(dynamic.value)
-                          : dynamic.value;
+                      let value = dynamic.value;
                       let id = dynamic.id;
 
                       if (typeof value === "object") {
-                        id = value.id;
                         value = value.value;
+                        id = value.id;
                       }
 
                       return <TableCell key={id}>{value}</TableCell>;
