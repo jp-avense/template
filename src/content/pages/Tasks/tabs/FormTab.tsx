@@ -1,4 +1,12 @@
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
@@ -8,6 +16,9 @@ import {
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
 
+import Lightbox from "react-image-lightbox";
+
+import "react-image-lightbox/style.css";
 import "./style.css";
 
 type Props = {};
@@ -16,6 +27,9 @@ const FormTab = (props: Props) => {
   const context = useContext(FilterContext);
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState([]);
+  const [clickedImg, setClickedImg] = useState(0);
 
   const { t } = useTranslation();
 
@@ -28,6 +42,12 @@ const FormTab = (props: Props) => {
       (item) => item._id === selectedRows[selectedRows.length - 1]
     );
   }, [selectedRows, originalData]);
+
+  const handleImageClick = (urls: string[], index: number) => {
+    setImgSrc(urls);
+    setClickedImg(index);
+    setIsOpen(true);
+  };
 
   useEffect(() => {
     if (selected && selected?.form) {
@@ -68,30 +88,32 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        if (Array.isArray(item.value)) {
-          const promises = item.value.map(async (name) => {
-            return formService.getImage(taskId, name);
-          });
+        const vals = Array.isArray(item.value) ? item.value : [item.value];
 
-          const results = await Promise.all(promises);
+        const promises = vals.map(async (name) => {
+          return formService.getImage(taskId, name);
+        });
 
-          return results.map((res, index) => {
-            const {
-              data: { presignedUrl },
-            } = res;
-            return (
-              <img key={index} src={presignedUrl} className="form-image" />
-            );
-          });
-        } else {
+        const results = await Promise.all(promises);
+
+        return results.map((res, index) => {
           const {
             data: { presignedUrl },
-          } = await formService.getImage(taskId, item.value);
+          } = res;
 
-          if (!presignedUrl) return t("noDataAvailable");
+          return (
+            <img
+              key={index}
+              src={presignedUrl}
+              className="form-image"
+              onClick={() => handleImageClick(vals, index)}
+              style={{ cursor: "pointer" }}
+            />
+          );
+        });
 
-          return <img src={presignedUrl} className="form-image" />;
-        }
+      case InputTypeEnum.BUTTON:
+        return item.displayValue || item.value;
       default:
         return value;
     }
@@ -104,20 +126,51 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
+
   return (
     <div>
-      {selected?.form
-        ? selected.form.map((item: FormFieldExtended, index) => {
-            const { key, value, label } = item;
+      {selected?.form ? (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t("field")}</TableCell>
+              <TableCell>{t("value")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selected.form.map((item: FormFieldExtended, index) => {
+              const { key, value, label, inputType } = item;
 
-            return value != null ? (
-              <Box key={key + index} mb={2}>
-                <Box color="#5569ff">{label || key}</Box>
-                <div>{components[index]}</div>
-              </Box>
-            ) : null;
-          })
-        : t("noDataAvailable")}
+              if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
+
+              return (
+                <TableRow key={key + index}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{components[index]}</TableCell>
+                </TableRow>
+              );
+            })}
+            ;
+          </TableBody>
+        </Table>
+      ) : (
+        t("noDataAvailable")
+      )}
+      {isOpen && (
+        <Lightbox
+          mainSrc={imgSrc[clickedImg]}
+          onCloseRequest={() => setIsOpen(false)}
+          nextSrc={imgSrc[(clickedImg + 1) % imgSrc.length]}
+          prevSrc={imgSrc[(clickedImg + imgSrc.length - 1) % imgSrc.length]}
+          onMovePrevRequest={() =>
+            setClickedImg((clickedImg + imgSrc.length - 1) % imgSrc.length)
+          }
+          onMoveNextRequest={() =>
+            setClickedImg((clickedImg + 1) % imgSrc.length)
+          }
+        />
+      )}
     </div>
   );
 };

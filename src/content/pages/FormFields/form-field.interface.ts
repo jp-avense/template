@@ -33,6 +33,8 @@ export class FormFieldExtended extends FormField {
   };
 
   value?: any;
+
+  displayValue?: any
 }
 
 export class FieldOptions {
