@@ -34,7 +34,7 @@ export class FormFieldExtended extends FormField {
 
   value?: any;
 
-  displayValue?: any
+  displayValue?: string
 }
 
 export class FieldOptions {

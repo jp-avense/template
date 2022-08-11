@@ -1,4 +1,5 @@
 import { buttonUnstyledClasses } from "@mui/base";
+import { Box } from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
@@ -17,7 +18,10 @@ const RealTimeTab = () => {
     handleFilter: { selectedRows, originalData },
   } = context;
 
-  const { t, i18n: { language } } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   const data = useMemo(() => {
     return originalData.find(
@@ -36,7 +40,7 @@ const RealTimeTab = () => {
   };
 
   useEffect(() => {
-    if (typeof window["initMap"] === "undefined") {
+    if (typeof window["initMap"] === "undefined" && data) {
       window["initMap"] = () => {
         const geo = data?.form?.find(
           (item) => item.inputType === InputTypeEnum.GEO
@@ -73,6 +77,16 @@ const RealTimeTab = () => {
             position: pos,
             map: map,
           });
+
+          const infowindow = new google.maps.InfoWindow({
+            content: `<b>${t("agentLocation")}</b>`,
+          });
+
+          infowindow.open({
+            anchor: marker,
+            map,
+          });
+
           bounds.extend(pos);
           map.setCenter(pos);
         }
@@ -98,6 +112,15 @@ const RealTimeTab = () => {
                   map,
                 });
 
+                const infowindow = new google.maps.InfoWindow({
+                  content: `<b>${t("addressLocation")}</b>`,
+                });
+
+                infowindow.open({
+                  anchor: marker,
+                  map,
+                });
+
                 bounds.extend(pos);
                 map.setCenter(pos);
               }
@@ -109,7 +132,7 @@ const RealTimeTab = () => {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCUxERIz0nUyUh46I0L7zPPSg0yAhz3R1E&callback=initMap&v=3&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCUxERIz0nUyUh46I0L7zPPSg0yAhz3R1E&callback=initMap&v=3&libraries=places&language=${language}`;
     script.async = true;
     document.querySelector("head").appendChild(script);
 
@@ -119,8 +142,9 @@ const RealTimeTab = () => {
 
       unmountScripts();
     };
-  }, [data]);
+  }, [data, language]);
 
+  if (!data) return <>{t("noDataAvailable")}</>;
   return <div id="google-map"></div>;
 };
 
