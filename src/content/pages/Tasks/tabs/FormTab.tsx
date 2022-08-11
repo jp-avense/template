@@ -68,14 +68,30 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        const {
-          data: { presignedUrl },
-        } = await formService.getImage(taskId, item.value);
+        if (Array.isArray(item.value)) {
+          const promises = item.value.map(async (name) => {
+            return formService.getImage(taskId, name);
+          });
 
-        if(!presignedUrl) return t('noDataAvailable')
-        
-        return <img src={presignedUrl} className="form-image" />;
+          const results = await Promise.all(promises);
 
+          return results.map((res, index) => {
+            const {
+              data: { presignedUrl },
+            } = res;
+            return (
+              <img key={index} src={presignedUrl} className="form-image" />
+            );
+          });
+        } else {
+          const {
+            data: { presignedUrl },
+          } = await formService.getImage(taskId, item.value);
+
+          if (!presignedUrl) return t("noDataAvailable");
+
+          return <img src={presignedUrl} className="form-image" />;
+        }
       default:
         return value;
     }
