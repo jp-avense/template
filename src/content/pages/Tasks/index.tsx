@@ -51,7 +51,6 @@ const TaskPage = () => {
         );
 
         setOriginalData(taskRes.tasks);
-
         setDetails(details);
         
         statuses.sort((a, b) => a.label.localeCompare(b.label));

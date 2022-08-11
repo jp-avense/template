@@ -141,11 +141,13 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
                 name="form"
                 onChange={(e) => handleFormChange(e)}
               >
-                {forms.map((item) => (
-                  <MenuItem key={item._id} value={item._id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
+                {forms
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((item) => (
+                    <MenuItem key={item._id} value={item._id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
                 <MenuItem value="new">{t("createNewForm")}</MenuItem>
               </Select>
             </FormControl>
