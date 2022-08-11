@@ -198,7 +198,7 @@ function DashboardCrypto() {
       followCursor: true,
     },
     xaxis: {
-      categories: p.map((item) => {
+      categories: topTen.map((item) => {
         return item.agentHeads;
       }),
     },

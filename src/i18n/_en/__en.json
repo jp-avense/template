@@ -199,7 +199,7 @@
   "date": "Date",
   "string": "String",
   "number": "Number",
-  "createTaskDetail": "Create task detail"
+  "createTaskDetail": "Create task detail",
   "download": "Download",
   "myAccount": "My Account",
   "agent": "Agent",
@@ -210,6 +210,5 @@
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
   "search": "Search",
-  "updateOnlyIfNew": "You can only update a new or assigned task",
-  "objectValues": "Object Values"
+  "updateOnlyIfNew": "You can only update a new or assigned task"
 }

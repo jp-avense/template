@@ -1,4 +1,8 @@
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  getSnackbarContentUtilityClass,
+} from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
@@ -7,8 +11,9 @@ import {
   FormFieldExtended,
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
-
 import "./style.css";
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
 
 type Props = {};
 
@@ -16,6 +21,8 @@ const FormTab = (props: Props) => {
   const context = useContext(FilterContext);
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   const { t } = useTranslation();
 
@@ -72,8 +79,8 @@ const FormTab = (props: Props) => {
           data: { presignedUrl },
         } = await formService.getImage(taskId, item.value);
 
-        if(!presignedUrl) return t('noDataAvailable')
-        
+        if (!presignedUrl) return t("noDataAvailable");
+
         return <img src={presignedUrl} className="form-image" />;
 
       default:
@@ -88,16 +95,64 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
+
   return (
     <div>
       {selected?.form
         ? selected.form.map((item: FormFieldExtended, index) => {
             const { key, value, label } = item;
 
+            const getKey =
+              key === "addressPicture" ||
+              key === "appliancesList_tv_picture" ||
+              key === "foreclosureSignature";
+            const getImg = components.find((x) => x.$$typeof);
+            const getVal = getImg?.props.src;
+
+            const imgIndex = components.filter((x) => x.props);
+            const zImg = imgIndex.map((x) => x.props.src);
+
+            console.log(zImg);
+
             return value != null ? (
               <Box key={key + index} mb={2}>
                 <Box color="#5569ff">{label || key}</Box>
-                <div>{components[index]}</div>
+                {getKey ? (
+                  <>
+                    <Box
+                      component="img"
+                      onClick={() => setIsOpen(true)}
+                      sx={{
+                        cursor: "pointer",
+                        height: 120,
+                        width: 120,
+                        objectFit: "cover",
+                      }}
+                      src={zImg[photoIndex]}
+                    />
+
+                    {isOpen && (
+                      <Lightbox
+                        mainSrc={zImg[photoIndex]}
+                        nextSrc={zImg[photoIndex]}
+                        prevSrc={
+                          zImg[(photoIndex + zImg.length - 1) % zImg.length]
+                        }
+                        onCloseRequest={() => setIsOpen(false)}
+                        onMovePrevRequest={() =>
+                          setPhotoIndex(
+                            (photoIndex + zImg.length - 1) % zImg.length
+                          )
+                        }
+                        onMoveNextRequest={() =>
+                          setPhotoIndex((photoIndex + 1) % zImg.length)
+                        }
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div>{components[index]}</div>
+                )}
               </Box>
             ) : null;
           })
