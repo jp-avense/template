@@ -210,6 +210,12 @@
   "search": "לחפש",
   "updateOnlyIfNew": "אתה יכול לעדכן רק משימה חדשה או שהוקצתה",
   "field": "שדה",
-  "agentLocation": "Agent location",
-  "addressLocation": "Address Location"
+  "agentLocation": "מיקום הסוכן",
+  "addressLocation": "מיקום הכתובת",
+  "history": "תוֹלְדוֹת",
+  "changedBy": "השתנה על ידי",
+  "newValues": "ערכים חדשים",
+  "oldValues": "ערכים ישנים",
+  "property": "סְגוּלָה",
+  "changes": "שינויים"
 }

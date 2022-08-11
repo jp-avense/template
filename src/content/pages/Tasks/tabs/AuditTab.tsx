@@ -21,14 +21,15 @@ import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 import { historyService } from "src/services/history.service";
 
-
 const AuditTab = () => {
-  const { t, i18n: { language }} = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const [expandedVal, setExpandedVal] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
-
 
   const context = useContext(TabsContext);
 
@@ -71,6 +72,8 @@ const AuditTab = () => {
 
   const renderValue = (value) => {
     if (value == null) return <TableCell> </TableCell>;
+    console.log(typeof value);
+    console.log(value);
     switch (typeof value) {
       case "object":
         const isArray = Array.isArray(value);
@@ -90,7 +93,14 @@ const AuditTab = () => {
         else
           return (
             <TableCell>
-              <Typography>{value.toString()}</Typography>
+              {Object.entries(value).map(([key2, value2]: [string, any]) => (
+                <>
+                  <Typography variant="h5" color={"info"}>
+                    {[key2]}:
+                  </Typography>
+                  <Typography sx={{ mb: 2 }}>{value2}</Typography>
+                </>
+              ))}
             </TableCell>
           );
         break;
@@ -132,7 +142,7 @@ const AuditTab = () => {
   return (
     <>
       <Typography variant="h3" color={"primary"}>
-        Changes
+        {t('history')}
       </Typography>
 
       {data.map((c) => (
@@ -143,34 +153,36 @@ const AuditTab = () => {
             expanded={expandedVal === c._id ? expanded : false}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{new Date(c.createdAt).toLocaleString(language)}</Typography>
+              <Typography>
+                {new Date(c.createdAt).toLocaleString(language)}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <List sx={{ p: 0 }}>
                 <ListItem>
                   <Typography variant="h5" color={"primary"}>
-                    Type: &nbsp;
+                    {t('type')}: &nbsp;
                   </Typography>
                   <Typography>{c.operationType}</Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="h5" color={"primary"}>
-                    Changed By: &nbsp;
+                    {t('changedBy')}: &nbsp;
                   </Typography>
                   <Typography>{c.operatingUser.userName}</Typography>
                 </ListItem>
                 <ListItem>
                   <Typography sx={{ mb: 1 }} variant="h5" color={"primary"}>
-                    Property Changes
+                    {t('changes')}
                   </Typography>
                 </ListItem>
                 <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Property</TableCell>
-                        <TableCell>Old Value</TableCell>
-                        <TableCell>New Value</TableCell>
+                        <TableCell>{t('property')}</TableCell>
+                        <TableCell>{t('oldValues')}</TableCell>
+                        <TableCell>{t('newValues')}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
