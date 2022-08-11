@@ -177,7 +177,7 @@ function FormFieldSettings({
         conditions: current,
         _id: selected[0]?._id,
       };
-      
+
       if (fieldSettings.length > 0) {
         const index = fieldSettings.findIndex(
           (c) => c._id === selected[0]?._id
@@ -364,7 +364,7 @@ function FormFieldSettings({
                               form.inputType === "radios" ||
                               form.inputType === "checkboxes" ? (
                                 <>
-                                  <span>
+                                  <Typography variant="h5" color="primary">
                                     Any Value
                                     <Checkbox
                                       checked={
@@ -374,29 +374,7 @@ function FormFieldSettings({
                                         setConditionNotNull(e, index)
                                       }
                                     ></Checkbox>
-                                  </span>
-                                  {!form.value?.includes("!null") ? (
-                                    <TextField
-                                      fullWidth
-                                      label="value"
-                                      onChange={(e) =>
-                                        setConditionValue(e, index)
-                                      }
-                                      value={form.value || []}
-                                      select
-                                      SelectProps={{ multiple: true }}
-                                    >
-                                      {Object.entries(form.options).map(
-                                        ([key, value]: [string, any]) => (
-                                          <MenuItem key={key} value={key}>
-                                            {t(value)}
-                                          </MenuItem>
-                                        )
-                                      )}
-                                    </TextField>
-                                  ) : (
-                                    <></>
-                                  )}
+                                  </Typography>
                                 </>
                               ) : (
                                 <>
@@ -404,7 +382,7 @@ function FormFieldSettings({
                                     container
                                     justifyContent={"space-between"}
                                   >
-                                    <span>
+                                    <Typography variant="h5" color="primary">
                                       Any Value
                                       <Checkbox
                                         checked={
@@ -414,41 +392,7 @@ function FormFieldSettings({
                                           setConditionNotNull(e, index)
                                         }
                                       ></Checkbox>
-                                    </span>
-                                    {!form.value?.includes("!null") ? (
-                                      <>
-                                        <Typography variant="h5">
-                                          {t("Text Values")}
-                                        </Typography>
-                                        <Grid item sx={{ mt: 2 }}>
-                                          <IconButton
-                                            sx={{ mr: 1 }}
-                                            onClick={() => removeValue(index)}
-                                          >
-                                            <RemoveIcon />
-                                          </IconButton>
-                                          <IconButton
-                                            onClick={() => addValue(index)}
-                                          >
-                                            <AddIcon />
-                                          </IconButton>
-                                        </Grid>
-                                        {form.value?.map((val, valIndex) => (
-                                          <TextField
-                                            sx={{ mt: 1 }}
-                                            key={valIndex}
-                                            fullWidth
-                                            label="value"
-                                            onChange={(e) =>
-                                              setStringValue(e, index, valIndex)
-                                            }
-                                            value={val}
-                                          />
-                                        ))}
-                                      </>
-                                    ) : (
-                                      <></>
-                                    )}
+                                    </Typography>
                                   </Grid>
                                 </>
                               )}
@@ -458,6 +402,88 @@ function FormFieldSettings({
                           )}
                         </Grid>
                       </Grid>
+                      {form.inputType ? (
+                        <>
+                          {form.inputType === "dropdown" ||
+                          form.inputType === "radios" ||
+                          form.inputType === "checkboxes" ? (
+                            <>
+                              {!form.value?.includes("!null") ? (
+                                <TextField
+                                  sx={{ mt: 2 }}
+                                  fullWidth
+                                  label="value"
+                                  onChange={(e) => setConditionValue(e, index)}
+                                  value={form.value || []}
+                                  select
+                                  SelectProps={{ multiple: true }}
+                                >
+                                  {Object.entries(form.options).map(
+                                    ([key, value]: [string, any]) => (
+                                      <MenuItem key={key} value={key}>
+                                        {t(value)}
+                                      </MenuItem>
+                                    )
+                                  )}
+                                </TextField>
+                              ) : (
+                                <></>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Grid
+                                container
+                                direction={"column"}
+                                alignItems="center"
+                                justifyContent="center"
+                              >
+                                {!form.value?.includes("!null") ? (
+                                  <>
+                                    <Typography
+                                      variant="h5"
+                                      color={"secondary"}
+                                      sx={{ mt: 2 }}
+                                    >
+                                      {t("Text Values")}
+                                    </Typography>
+                                    <Grid sx={{ mt: 1 }}>
+                                      <IconButton
+                                        color="error"
+                                        onClick={() => removeValue(index)}
+                                      >
+                                        <RemoveIcon />
+                                      </IconButton>
+                                      <IconButton
+                                        color="primary"
+                                        onClick={() => addValue(index)}
+                                      >
+                                        <AddIcon />
+                                      </IconButton>
+                                    </Grid>
+                                    {form.value?.map((val, valIndex) => (
+                                      <TextField
+                                        sx={{ mt: 1 }}
+                                        key={valIndex}
+                                        fullWidth
+                                        label="value"
+                                        onChange={(e) =>
+                                          setStringValue(e, index, valIndex)
+                                        }
+                                        value={val}
+                                      />
+                                    ))}
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </Grid>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <></>
+                      )}
                       <CircleDivide />
                     </>
                   ))}{" "}

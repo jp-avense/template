@@ -1,4 +1,12 @@
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
@@ -7,8 +15,9 @@ import {
   FormFieldExtended,
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
-
 import "./style.css";
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
 
 type Props = {};
 
@@ -16,6 +25,8 @@ const FormTab = (props: Props) => {
   const context = useContext(FilterContext);
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   const { t } = useTranslation();
 
@@ -92,6 +103,8 @@ const FormTab = (props: Props) => {
 
           return <img src={presignedUrl} className="form-image" />;
         }
+      case InputTypeEnum.BUTTON:
+        return item.displayValue || item.value
       default:
         return value;
     }
@@ -104,20 +117,36 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
+
   return (
     <div>
-      {selected?.form
-        ? selected.form.map((item: FormFieldExtended, index) => {
-            const { key, value, label } = item;
+      {selected?.form ? (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('field')}</TableCell>
+              <TableCell>{t('value')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selected.form.map((item: FormFieldExtended, index) => {
+              const { key, value, label, inputType } = item;
 
-            return value != null ? (
-              <Box key={key + index} mb={2}>
-                <Box color="#5569ff">{label || key}</Box>
-                <div>{components[index]}</div>
-              </Box>
-            ) : null;
-          })
-        : t("noDataAvailable")}
+              if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
+
+              return (
+                <TableRow key={key + index}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{components[index]}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        t("noDataAvailable")
+      )}
     </div>
   );
 };

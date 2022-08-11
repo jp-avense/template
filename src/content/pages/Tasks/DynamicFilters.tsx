@@ -240,6 +240,7 @@ function DynamicFilter() {
 
   const createValueComponent = (item) => {
     const details = keyComponentMap[item.selectedType];
+
     let inputType = details ? details.inputType : "none";
 
     const defaultDropdowns = [
@@ -316,20 +317,22 @@ function DynamicFilter() {
             defaultValue=""
           >
             <MenuItem value="">{t("none")}</MenuItem>
-            {details.enum.map((a, idx) => {
-              if (typeof a === "string")
-                return (
-                  <MenuItem value={a} key={idx}>
-                    {a}
-                  </MenuItem>
-                );
-              else if (typeof a === "object")
-                return (
-                  <MenuItem value={a.key || a.Key} key={a.key || a.Key}>
-                    {t(a.label)}
-                  </MenuItem>
-                );
-            })}
+            {details.enum
+              .sort((a, b) => a.label.localeCompare(b.label))
+              .map((a, idx) => {
+                if (typeof a === "string")
+                  return (
+                    <MenuItem value={a} key={idx}>
+                      {a}
+                    </MenuItem>
+                  );
+                else if (typeof a === "object")
+                  return (
+                    <MenuItem value={a.key || a.Key} key={a.key || a.Key}>
+                      {t(a.label)}
+                    </MenuItem>
+                  );
+              })}
           </Select>
         );
       case "textarea":
@@ -389,7 +392,9 @@ function DynamicFilter() {
       setLoading(false);
     }
   };
-
+  taskDetails.sort((a, b) => {
+    return a.label.localeCompare(b.label);
+  });
   return (
     <Grid
       container
