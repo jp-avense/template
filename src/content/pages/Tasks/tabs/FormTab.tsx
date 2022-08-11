@@ -1,7 +1,11 @@
 import {
   Box,
   CircularProgress,
-  getSnackbarContentUtilityClass,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -75,14 +79,32 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        const {
-          data: { presignedUrl },
-        } = await formService.getImage(taskId, item.value);
+        if (Array.isArray(item.value)) {
+          const promises = item.value.map(async (name) => {
+            return formService.getImage(taskId, name);
+          });
 
-        if (!presignedUrl) return t("noDataAvailable");
+          const results = await Promise.all(promises);
 
-        return <img src={presignedUrl} className="form-image" />;
+          return results.map((res, index) => {
+            const {
+              data: { presignedUrl },
+            } = res;
+            return (
+              <img key={index} src={presignedUrl} className="form-image" />
+            );
+          });
+        } else {
+          const {
+            data: { presignedUrl },
+          } = await formService.getImage(taskId, item.value);
 
+          if (!presignedUrl) return t("noDataAvailable");
+
+          return <img src={presignedUrl} className="form-image" />;
+        }
+      case InputTypeEnum.BUTTON:
+        return item.displayValue || item.value
       default:
         return value;
     }
@@ -98,65 +120,33 @@ const FormTab = (props: Props) => {
 
   return (
     <div>
-      {selected?.form
-        ? selected.form.map((item: FormFieldExtended, index) => {
-            const { key, value, label } = item;
+      {selected?.form ? (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('field')}</TableCell>
+              <TableCell>{t('value')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selected.form.map((item: FormFieldExtended, index) => {
+              const { key, value, label, inputType } = item;
 
-            const getKey =
-              key === "addressPicture" ||
-              key === "appliancesList_tv_picture" ||
-              key === "foreclosureSignature";
-            const getImg = components.find((x) => x.$$typeof);
-            const getVal = getImg?.props.src;
+              if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
 
-            const imgIndex = components.filter((x) => x.props);
-            const zImg = imgIndex.map((x) => x.props.src);
-
-            console.log(zImg);
-
-            return value != null ? (
-              <Box key={key + index} mb={2}>
-                <Box color="#5569ff">{label || key}</Box>
-                {getKey ? (
-                  <>
-                    <Box
-                      component="img"
-                      onClick={() => setIsOpen(true)}
-                      sx={{
-                        cursor: "pointer",
-                        height: 120,
-                        width: 120,
-                        objectFit: "cover",
-                      }}
-                      src={zImg[photoIndex]}
-                    />
-
-                    {isOpen && (
-                      <Lightbox
-                        mainSrc={zImg[photoIndex]}
-                        nextSrc={zImg[photoIndex]}
-                        prevSrc={
-                          zImg[(photoIndex + zImg.length - 1) % zImg.length]
-                        }
-                        onCloseRequest={() => setIsOpen(false)}
-                        onMovePrevRequest={() =>
-                          setPhotoIndex(
-                            (photoIndex + zImg.length - 1) % zImg.length
-                          )
-                        }
-                        onMoveNextRequest={() =>
-                          setPhotoIndex((photoIndex + 1) % zImg.length)
-                        }
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div>{components[index]}</div>
-                )}
-              </Box>
-            ) : null;
-          })
-        : t("noDataAvailable")}
+              return (
+                <TableRow key={key + index}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{components[index]}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        t("noDataAvailable")
+      )}
     </div>
   );
 };
