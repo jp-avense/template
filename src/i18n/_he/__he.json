@@ -209,5 +209,7 @@
   "objectValues": "ערכי אובייקט",
   "search": "לחפש",
   "updateOnlyIfNew": "אתה יכול לעדכן רק משימה חדשה או שהוקצתה",
-  "field": "שדה"
+  "field": "שדה",
+  "agentLocation": "Agent location",
+  "addressLocation": "Address Location"
 }

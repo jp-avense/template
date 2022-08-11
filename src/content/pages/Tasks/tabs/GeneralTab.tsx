@@ -59,7 +59,7 @@ const GeneralTab = () => {
               if (!toShow) return null;
 
               return (
-                <TableRow key={index}>
+                <TableRow key={index} hover>
                   <TableCell>{item.label}</TableCell>
                   <TableCell>{item.value}</TableCell>
                 </TableRow>
