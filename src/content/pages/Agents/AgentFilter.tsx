@@ -1,19 +1,22 @@
 import { AgentContext } from "src/contexts/AgentContext";
 import { useContext } from "react";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 function AgentFilter() {
   const context = useContext(AgentContext);
   const { filter, setFilter } = context.handleAgents;
+  const { t } = useTranslation();
 
   const filters = [
-    { key: "none", value: "None" },
-    { key: "admin", value: "Admin" },
-    { key: "backoffice", value: "BackOffice" },
-    { key: "agent", value: "Agent" },
-    { key: "manager", value: "Manager" },
-    { key: "guest", value: "Guest" },
-    { key: "1", value: "Enabled" },
-    { key: "0", value: "Disabled" },
+    { key: "none", value: t("none") },
+    { key: "admin", value: t("admin") },
+    { key: "backoffice", value: t("backOffice") },
+    { key: "agent", value: t("agent") },
+    { key: "manager", value: t("manager") },
+    { key: "guest", value: t("guest") },
+    { key: "1", value: t("enabled") },
+    { key: "0", value: t("disabled") },
   ];
 
   const handleChange = (val) => {

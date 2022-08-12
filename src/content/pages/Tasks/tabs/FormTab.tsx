@@ -1,7 +1,11 @@
 import {
   Box,
   CircularProgress,
-  getSnackbarContentUtilityClass,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -76,14 +80,32 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        const {
-          data: { presignedUrl },
-        } = await formService.getImage(taskId, item.value);
+        if (Array.isArray(item.value)) {
+          const promises = item.value.map(async (name) => {
+            return formService.getImage(taskId, name);
+          });
 
-        if (!presignedUrl) return t("noDataAvailable");
+          const results = await Promise.all(promises);
 
-        return <img src={presignedUrl} className="form-image" />;
+          return results.map((res, index) => {
+            const {
+              data: { presignedUrl },
+            } = res;
+            return (
+              <img key={index} src={presignedUrl} className="form-image" />
+            );
+          });
+        } else {
+          const {
+            data: { presignedUrl },
+          } = await formService.getImage(taskId, item.value);
 
+          if (!presignedUrl) return t("noDataAvailable");
+
+          return <img src={presignedUrl} className="form-image" />;
+        }
+      case InputTypeEnum.BUTTON:
+        return item.displayValue || item.value;
       default:
         return value;
     }
@@ -105,46 +127,68 @@ const FormTab = (props: Props) => {
 
   return (
     <div>
-      {selected?.form
-        ? selected.form.map((item: FormFieldExtended, index) => {
-            const { key, value, label } = item;
+      {selected?.form ? (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t("field")}</TableCell>
+              <TableCell>{t("value")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selected.form.map((item: FormFieldExtended, index) => {
+              const { key, value, label, inputType } = item;
 
-            const getKey =
-              key === "addressPicture" ||
-              key === "appliancesList_tv_picture" ||
-              key === "foreclosureSignature" ||
-              key === "picture_1";
+              const getKey =
+                key === "addressPicture" ||
+                key === "appliancesList_tv_picture" ||
+                key === "foreclosureSignature" ||
+                key === "picture_1";
 
-            const current = components[index];
-            console.log(current);
+              const current = components[index];
+              console.log(current);
 
-            return value != null ? (
-              <Box key={key + index} mb={2}>
-                <Box color="#5569ff">{label || key}</Box>
-                {getKey ? (
-                  current?.props?.src && (
+              if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
+
+              return (
+                <TableRow key={key + index}>
+                  {getKey ? (
+                    current?.props?.src && (
+                      <>
+                        <TableCell>{label}</TableCell>
+                        <TableCell>
+                          {" "}
+                          <Box
+                            component="img"
+                            onClick={() => handleOpen(current.props.src)}
+                            sx={{
+                              cursor: "pointer",
+                              height: 60,
+                              width: 60,
+                              objectFit: "cover",
+                              margin: "2px",
+                            }}
+                            src={current.props.src}
+                          />
+                        </TableCell>
+                      </>
+                    )
+                  ) : (
                     <>
-                      <Box
-                        component="img"
-                        onClick={() => handleOpen(current.props.src)}
-                        sx={{
-                          cursor: "pointer",
-                          height: 60,
-                          width: 60,
-                          objectFit: "cover",
-                          margin: "2px",
-                        }}
-                        src={current.props.src}
-                      />
+                      <TableCell>{label}</TableCell>
+                      <TableCell>{components[index]}</TableCell>
                     </>
-                  )
-                ) : (
-                  <div>{components[index]}</div>
-                )}
-              </Box>
-            ) : null;
-          })
-        : t("noDataAvailable")}
+                  )}
+                </TableRow>
+              );
+            })}
+            ;
+          </TableBody>
+        </Table>
+      ) : (
+        t("noDataAvailable")
+      )}
       {isOpen && (
         <Lightbox mainSrc={imgSrc} onCloseRequest={() => setIsOpen(false)} />
       )}
