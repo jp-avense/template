@@ -138,7 +138,6 @@ const FormTab = (props: Props) => {
           <TableBody>
             {selected.form.map((item: FormFieldExtended, index) => {
               const { key, value, label, inputType } = item;
-
               const getKey =
                 key === "addressPicture" ||
                 key === "appliancesList_tv_picture" ||
