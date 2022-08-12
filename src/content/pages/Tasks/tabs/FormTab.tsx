@@ -96,21 +96,27 @@ const FormTab = (props: Props) => {
 
         const results = await Promise.all(promises);
 
-        return results.map((res, index) => {
-          const {
-            data: { presignedUrl },
-          } = res;
+        const srcs = results.map((res) => {
+          return res.data.presignedUrl;
+        });
 
+        const images = srcs.map((res, index) => {
           return (
             <img
               key={index}
-              src={presignedUrl}
+              src={res}
               className="form-image"
-              onClick={() => handleImageClick(vals, index)}
-              style={{ cursor: "pointer" }}
+              onClick={() => handleImageClick(srcs, index)}
+              style={{ cursor: "pointer", width: "50px", height: "50px" }}
             />
           );
         });
+
+        return (
+          <Box display="flex" flexDirection="row" gap={1}>
+            {images}
+          </Box>
+        );
 
       case InputTypeEnum.BUTTON:
         return item.displayValue || item.value;
@@ -126,6 +132,8 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
+
+  console.log(imgSrc);
 
   return (
     <div>
@@ -151,7 +159,6 @@ const FormTab = (props: Props) => {
                 </TableRow>
               );
             })}
-            ;
           </TableBody>
         </Table>
       ) : (
