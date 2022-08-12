@@ -26,6 +26,10 @@ type Props = {
 };
 
 const validationSchema = yup.object({
+  key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .required("required"),
   label: yup.string().required("required"),
   description: yup.string().optional(),
 });
@@ -44,13 +48,15 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
+      key: selectedType.key,
       label: selectedType.label,
       description: selectedType.description,
-      form: formOfType,
+      form: selectedType.form._id
     },
     validationSchema,
     onSubmit: async (values) => {
       try {
+        console.log(values);
         setError("");
         setSuccess("");
 
@@ -86,6 +92,10 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
     formik.handleChange(e);
   };
 
+  console.log('type', selectedType)
+  console.log('values', formik.values);
+  console.log('forms', forms);
+
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
@@ -99,9 +109,10 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
               name="key"
               label={t("key")}
               defaultValue={selectedType.key}
-              disabled
               fullWidth
-              helperText={t("cantChangeField")}
+              error={formik.touched.key && Boolean(formik.errors.key)}
+              helperText={formik.touched.key && formik.errors.key}
+              onChange={handleChange}
             />
           </Grid>
           <Grid item>
