@@ -23,6 +23,7 @@ const FormTab = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [imgSrc, setImgSrc] = useState("");
 
   const { t } = useTranslation();
 
@@ -96,6 +97,12 @@ const FormTab = (props: Props) => {
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
 
+  const handleOpen = (src) => {
+    setImgSrc(src);
+    console.log(src);
+    setIsOpen(true);
+  };
+
   return (
     <div>
       {selected?.form
@@ -105,51 +112,32 @@ const FormTab = (props: Props) => {
             const getKey =
               key === "addressPicture" ||
               key === "appliancesList_tv_picture" ||
-              key === "foreclosureSignature";
-            const getImg = components.find((x) => x.$$typeof);
-            const getVal = getImg?.props.src;
+              key === "foreclosureSignature" ||
+              key === "picture_1";
 
-            const imgIndex = components.filter((x) => x.props);
-            const zImg = imgIndex.map((x) => x.props.src);
-
-            console.log(zImg);
+            const current = components[index];
+            console.log(current);
 
             return value != null ? (
               <Box key={key + index} mb={2}>
                 <Box color="#5569ff">{label || key}</Box>
                 {getKey ? (
-                  <>
-                    <Box
-                      component="img"
-                      onClick={() => setIsOpen(true)}
-                      sx={{
-                        cursor: "pointer",
-                        height: 120,
-                        width: 120,
-                        objectFit: "cover",
-                      }}
-                      src={zImg[photoIndex]}
-                    />
-
-                    {isOpen && (
-                      <Lightbox
-                        mainSrc={zImg[photoIndex]}
-                        nextSrc={zImg[photoIndex]}
-                        prevSrc={
-                          zImg[(photoIndex + zImg.length - 1) % zImg.length]
-                        }
-                        onCloseRequest={() => setIsOpen(false)}
-                        onMovePrevRequest={() =>
-                          setPhotoIndex(
-                            (photoIndex + zImg.length - 1) % zImg.length
-                          )
-                        }
-                        onMoveNextRequest={() =>
-                          setPhotoIndex((photoIndex + 1) % zImg.length)
-                        }
+                  current?.props?.src && (
+                    <>
+                      <Box
+                        component="img"
+                        onClick={() => handleOpen(current.props.src)}
+                        sx={{
+                          cursor: "pointer",
+                          height: 60,
+                          width: 60,
+                          objectFit: "cover",
+                          margin: "2px",
+                        }}
+                        src={current.props.src}
                       />
-                    )}
-                  </>
+                    </>
+                  )
                 ) : (
                   <div>{components[index]}</div>
                 )}
@@ -157,6 +145,9 @@ const FormTab = (props: Props) => {
             ) : null;
           })
         : t("noDataAvailable")}
+      {isOpen && (
+        <Lightbox mainSrc={imgSrc} onCloseRequest={() => setIsOpen(false)} />
+      )}
     </div>
   );
 };
