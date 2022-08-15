@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import {
   Divider,
@@ -32,6 +32,8 @@ import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
 import Swal from "sweetalert2";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 interface State {
   order: "asc" | "desc";
 }
@@ -57,6 +59,8 @@ const TaskTable = () => {
   const [valueToOrderBy, setValueToOrderBy] = useState("");
   const [xlsData, setXlsData] = useState([]);
   const [downloading, setDownloading] = useState(false);
+  const [downloading2, setDownloading2] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const isAdmin = roles.includes("admin");
 
@@ -410,6 +414,44 @@ const TaskTable = () => {
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
 
+  const fileOnChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const csvToJson = (str, comma = ",") => {
+    const headers = str.slice(0, str.indexOf("\n")).split(comma);
+    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+
+    const arr = rows.map((row) => {
+      const values = row.split(comma);
+      const el = headers.reduce((acc, cur, index) => {
+        acc[cur] = values[index];
+        return acc;
+      }, {});
+      return el;
+    });
+
+    return arr;
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const csvFile = document.getElementById("upload-file") as HTMLInputElement;
+    const input = csvFile.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const csv = e.target.result;
+      const data = csvToJson(csv);
+      console.log(JSON.stringify(data));
+    };
+
+    reader.readAsText(input);
+
+    // console.log(reader);
+  };
+
+  console.log(selectedFile);
 
   return (
     <Card>
@@ -540,22 +582,62 @@ const TaskTable = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button
-          disabled={loading || downloading}
-          variant="contained"
-          onClick={xlsExport}
-        >
-          {loading || downloading ? (
-            <CircularProgress size={18} />
-          ) : (
-            <>
-              <Typography variant="h5" sx={{ mr: "5px" }}>
-                {t("download")}
-              </Typography>
-              <FileDownloadIcon fontSize="small" />
-            </>
-          )}
-        </Button>
+        <Box>
+          <Button
+            disabled={loading || downloading}
+            variant="contained"
+            onClick={xlsExport}
+            sx={{ marginRight: 2 }}
+          >
+            {loading || downloading ? (
+              <CircularProgress size={18} />
+            ) : (
+              <>
+                <Typography variant="h5" sx={{ mr: "5px" }}>
+                  {t("download")}
+                </Typography>
+                <FileDownloadIcon fontSize="small" />
+              </>
+            )}
+          </Button>
+
+          <>
+            <input
+              onChange={fileOnChange}
+              style={{ display: "none" }}
+              id="upload-file"
+              type="file"
+            />
+            <label htmlFor="upload-file">
+              <Button
+                disabled={loading || downloading2}
+                variant="contained"
+                component="span"
+              >
+                {loading || downloading2 ? (
+                  <CircularProgress size={18} />
+                ) : (
+                  <>
+                    <Typography variant="h5" sx={{ mr: "5px" }}>
+                      Upload
+                    </Typography>
+                    <FileUploadIcon fontSize="small" />
+                  </>
+                )}
+              </Button>
+            </label>
+          </>
+          <Button
+            onClick={onSubmit}
+            type="submit"
+            value="Submit"
+            variant="contained"
+          >
+            <Typography variant="h5" sx={{ mr: "5px" }}>
+              Submit
+            </Typography>
+          </Button>
+        </Box>
         <TablePagination
           component="div"
           count={total}
