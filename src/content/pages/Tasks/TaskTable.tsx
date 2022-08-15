@@ -420,11 +420,13 @@ const TaskTable = () => {
 
   const csvToJson = (str, comma = ",") => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
+    const headerFix = headers.map((i) => i.replace(/\r/g, ""));
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+    const rowFix = rows.map((i) => i.replace(/\r/g, ""));
 
-    const arr = rows.map((row) => {
+    const arr = rowFix.map((row) => {
       const values = row.split(comma);
-      const el = headers.reduce((acc, cur, index) => {
+      const el = headerFix.reduce((acc, cur, index) => {
         acc[cur] = values[index];
         return acc;
       }, {});
@@ -447,8 +449,6 @@ const TaskTable = () => {
     };
 
     reader.readAsText(input);
-
-    // console.log(reader);
   };
 
   console.log(selectedFile);
