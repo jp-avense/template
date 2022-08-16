@@ -40,6 +40,7 @@ import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
 import Swal from "sweetalert2";
+import moment from "moment";
 import ModalButton from "src/components/ModalButton";
 
 interface State {
@@ -189,7 +190,7 @@ const TaskTable = () => {
         if (e.inputType === "date" || e.inputType === "datetime") {
           dynamicDetails.push({
             ...e,
-            value: e.value ? new Date(e.value).toLocaleDateString() : "",
+            value: e.value ? moment(e.value).format("DD/MM/YYYY") : "",
             id: e.label,
             order: e.order,
           });
@@ -213,15 +214,13 @@ const TaskTable = () => {
       details.dynamicDetails = dynamicDetails;
 
       details.type = c.taskType;
-      details.createdAt = c.createdAt?.replace(
-        /^(\d{4})-(\d\d)-(\d\d).+$/,
-        "$2/$3/$1"
-      );
+      details.createdAt = c.createdAt
+        ? moment(c.createdAt).format("DD/MM/YYYY")
+        : "";
       details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
-      details.lastUpdate = c.lastUpdatedAt?.replace(
-        /^(\d{4})-(\d\d)-(\d\d).+$/,
-        "$2/$3/$1"
-      );
+      details.lastUpdate = c.lastUpdatedAt
+        ? moment(c.lastUpdatedAt).format("DD/MM/YYYY")
+        : "";
       details.updatedBy = c.lastUpdatedBy ? c.lastUpdatedBy.userName : "";
       details.executionStartDate = c.executionStartDate;
       details.id = c._id;

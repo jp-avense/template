@@ -29,21 +29,22 @@ type Props = {
   headers: IHeader[];
   loading: boolean;
   data: any[];
+  originalData?: any[];
   handleSelectOne: (id: string) => void;
   handleSelectAll: (event: any) => void;
   title: string;
   selected: string[];
   action?: ReactNode | null;
   sort?: boolean;
-  sortedRowInformation?: (data: any[], comparator: () => number) => any[];
+  sorted?: () => any[];
   createSortHandler?: (property: any) => (event: any) => void;
-  getComparator?: (orderDirection: string, valueToOrderBy: string) => any;
   orderDirection?: State;
   valueToOrderBy?: string;
 };
 
 const DynamicTable = ({
   data,
+  originalData,
   loading,
   headers,
   handleSelectAll,
@@ -52,14 +53,20 @@ const DynamicTable = ({
   selected,
   action,
   sort,
-  sortedRowInformation,
+  sorted,
   createSortHandler,
-  getComparator,
   orderDirection,
   valueToOrderBy,
 }: Props) => {
-  const indeterminate = selected.length > 0 && selected.length < data.length;
-  const checked = selected.length === data.length;
+  let indeterminate, checked;
+  if (originalData?.length > 0) {
+    indeterminate =
+      selected.length > 0 && selected.length < originalData.length;
+    checked = selected.length === originalData.length;
+  } else {
+    indeterminate = selected.length > 0 && selected.length < data.length;
+    checked = selected.length === data.length;
+  }
 
   const headKeys = headers.map((item) => item.key);
 
@@ -123,10 +130,7 @@ const DynamicTable = ({
             ) : (
               <>
                 {sort
-                  ? sortedRowInformation(
-                      data,
-                      getComparator(orderDirection.order, valueToOrderBy)
-                    ).map((item) => {
+                  ? sorted().map((item) => {
                       const isSelected = selected.includes(item._id);
                       const { key } = item;
                       return (
