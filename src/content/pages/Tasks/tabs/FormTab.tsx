@@ -16,6 +16,7 @@ import {
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
 
+import moment from "moment";
 import Lightbox from "react-image-lightbox";
 
 import "react-image-lightbox/style.css";
@@ -79,7 +80,7 @@ const FormTab = (props: Props) => {
         return `Lat ${latitude}  Long ${longitude}`;
       case InputTypeEnum.DATE_TIME_BUTTON:
       case InputTypeEnum.DATE_TIME_PICKER:
-        return new Date(value).toLocaleString();
+        return moment(value).format("HH:MM DD/MM/YYYY");
       case InputTypeEnum.RADIO:
       case InputTypeEnum.DROPDOWN:
         const [_, selectedValue] = Object.entries(options).find(
