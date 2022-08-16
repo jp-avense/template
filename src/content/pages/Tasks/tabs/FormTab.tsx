@@ -178,7 +178,6 @@ const FormTab = (props: Props) => {
                 </TableRow>
               );
             })}
-            ;
           </TableBody>
         </Table>
       ) : (
