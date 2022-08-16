@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Card } from "@mui/material";
+import { Box, Card, TablePagination } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import { getAxiosErrorMessage } from "src/lib";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
@@ -15,6 +15,9 @@ import DuplicateForm from "./DuplicateForm";
 import DuplicateFormField from "./DuplicateForm/DuplicateFormField";
 import { useTranslation } from "react-i18next";
 
+const applyPagination = (forms: any, page: number, limit: number) => {
+  return forms.slice(page * limit, page * limit + limit);
+};
 interface State {
   order: "asc" | "desc";
 }
@@ -26,6 +29,8 @@ const FormFields = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
+  const [page, setPage] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(10);
 
   const {
     t,
@@ -160,6 +165,14 @@ const FormFields = () => {
     return 0;
   };
 
+  const sorted = () => {
+    const sort = sortedRowInformation(
+      forms,
+      getComparator(orderDirection.order, valueToOrderBy)
+    );
+    return applyPagination(sort, page, limit);
+  };
+
   const getComparator = (order, orderBy) => {
     return order === "desc"
       ? (a, b) => descendingComparator(a, b, orderBy)
@@ -177,6 +190,17 @@ const FormFields = () => {
     return res;
   };
 
+  const handlePageChange = (event: any, newPage: number): void => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = (event: any): void => {
+    setLimit(parseInt(event.target.value));
+    setPage(0);
+  };
+
+  const paginatedForms = applyPagination(forms, page, limit);
+
   return (
     <>
       <Helmet>
@@ -190,7 +214,8 @@ const FormFields = () => {
       <Box display="flex" justifyContent="center" pb={5}>
         <Card sx={{ width: "80%" }}>
           <DynamicTable
-            data={forms}
+            data={paginatedForms}
+            originalData={forms}
             headers={headers}
             selected={selected}
             title={t("fieldForms")}
@@ -198,9 +223,8 @@ const FormFields = () => {
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
             sort={true}
-            sortedRowInformation={sortedRowInformation}
+            sorted={sorted}
             createSortHandler={createSortHandler}
-            getComparator={getComparator}
             orderDirection={orderDirection}
             valueToOrderBy={valueToOrderBy}
             action={
@@ -238,6 +262,18 @@ const FormFields = () => {
               </Box>
             }
           ></DynamicTable>
+          <Box p={2}>
+            <TablePagination
+              component="div"
+              count={forms.length}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleLimitChange}
+              page={page}
+              rowsPerPage={limit}
+              rowsPerPageOptions={[5, 10, 25, 30]}
+              labelRowsPerPage={t("rowsPerPage")}
+            />
+          </Box>
         </Card>
       </Box>
     </>

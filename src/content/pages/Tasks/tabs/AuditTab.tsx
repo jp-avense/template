@@ -20,6 +20,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 import { historyService } from "src/services/history.service";
+import moment from 'moment'
 
 const AuditTab = () => {
   const {
@@ -72,8 +73,7 @@ const AuditTab = () => {
 
   const renderValue = (value) => {
     if (value == null) return <TableCell> </TableCell>;
-    console.log(typeof value);
-    console.log(value);
+
     switch (typeof value) {
       case "object":
         const isArray = Array.isArray(value);
@@ -93,14 +93,21 @@ const AuditTab = () => {
         else
           return (
             <TableCell>
-              {Object.entries(value).map(([key2, value2]: [string, any]) => (
-                <>
-                  <Typography variant="h5" color={"info"}>
-                    {[key2]}:
-                  </Typography>
-                  <Typography sx={{ mb: 2 }}>{value2}</Typography>
-                </>
-              ))}
+              {Object.entries(value).map(([key2, value2]: [string, any]) => {
+                let res = value2;
+
+                if (typeof value2 === "object")
+                  res = JSON.stringify(value2, null, 2);
+
+                return (
+                  <>
+                    <Typography variant="h5" color={"info"}>
+                      {[key2]}:
+                    </Typography>
+                    <Typography sx={{ mb: 2 }}>{res}</Typography>
+                  </>
+                );
+              })}
             </TableCell>
           );
         break;
@@ -122,6 +129,11 @@ const AuditTab = () => {
         <TableCell> </TableCell>
       );
 
+      if (key === "form") {
+        newValue = <TableCell>{t("formSubmitted")}</TableCell>;
+        oldValue = <TableCell> </TableCell>;
+      }
+
       return (
         <TableRow key={key}>
           <TableCell>
@@ -142,7 +154,7 @@ const AuditTab = () => {
   return (
     <>
       <Typography variant="h3" color={"primary"}>
-        {t('history')}
+        {t("history")}
       </Typography>
 
       {data.map((c) => (
@@ -154,35 +166,35 @@ const AuditTab = () => {
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>
-                {new Date(c.createdAt).toLocaleString(language)}
+                {moment(c.createdAt).format("HH:MM DD/MM/YYYY")}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <List sx={{ p: 0 }}>
                 <ListItem>
                   <Typography variant="h5" color={"primary"}>
-                    {t('type')}: &nbsp;
+                    {t("type")}: &nbsp;
                   </Typography>
                   <Typography>{c.operationType}</Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="h5" color={"primary"}>
-                    {t('changedBy')}: &nbsp;
+                    {t("changedBy")}: &nbsp;
                   </Typography>
                   <Typography>{c.operatingUser.userName}</Typography>
                 </ListItem>
                 <ListItem>
                   <Typography sx={{ mb: 1 }} variant="h5" color={"primary"}>
-                    {t('changes')}
+                    {t("changes")}
                   </Typography>
                 </ListItem>
                 <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>{t('property')}</TableCell>
-                        <TableCell>{t('oldValues')}</TableCell>
-                        <TableCell>{t('newValues')}</TableCell>
+                        <TableCell>{t("property")}</TableCell>
+                        <TableCell>{t("oldValues")}</TableCell>
+                        <TableCell>{t("newValues")}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

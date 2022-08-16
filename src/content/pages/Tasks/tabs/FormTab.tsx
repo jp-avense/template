@@ -16,6 +16,7 @@ import {
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
 
+import moment from "moment";
 import Lightbox from "react-image-lightbox";
 
 import "react-image-lightbox/style.css";
@@ -31,7 +32,10 @@ const FormTab = (props: Props) => {
   const [imgSrc, setImgSrc] = useState([]);
   const [clickedImg, setClickedImg] = useState(0);
 
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   const {
     handleFilter: { selectedRows, originalData },
@@ -67,7 +71,7 @@ const FormTab = (props: Props) => {
   }, [selected]);
 
   const createComponent = async (item: FormFieldExtended, taskId = null) => {
-    const { value, inputType, options } = item;
+    const { value, inputType, options, key } = item;
 
     if (value == null) return "";
 
@@ -79,7 +83,7 @@ const FormTab = (props: Props) => {
         return `Lat ${latitude}  Long ${longitude}`;
       case InputTypeEnum.DATE_TIME_BUTTON:
       case InputTypeEnum.DATE_TIME_PICKER:
-        return new Date(value).toLocaleString();
+        return moment(value).format("HH:MM DD/MM/YYYY");
       case InputTypeEnum.RADIO:
       case InputTypeEnum.DROPDOWN:
         const [_, selectedValue] = Object.entries(options).find(
@@ -88,7 +92,9 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        const vals = Array.isArray(item.value) ? item.value : [item.value];
+        let vals = Array.isArray(item.value) ? item.value : [item.value];
+
+        if (inputType === InputTypeEnum.SIGNATURE) vals = [`image.png`];
 
         const promises = vals.map(async (name) => {
           return formService.getImage(taskId, name);
@@ -119,7 +125,15 @@ const FormTab = (props: Props) => {
         );
 
       case InputTypeEnum.BUTTON:
-        return item.displayValue || item.value;
+      case InputTypeEnum.PRINT_BUTTON:
+        return (
+          item.displayValue ?? (
+            <>
+              The field <b>{key}</b> has been clicked
+            </>
+          )
+        );
+
       default:
         return value;
     }
@@ -132,8 +146,6 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
-
-  console.log(imgSrc);
 
   return (
     <div>
@@ -150,6 +162,14 @@ const FormTab = (props: Props) => {
               const { key, value, label, inputType } = item;
 
               if (!label || inputType === InputTypeEnum.MARKUP || !value)
+                return null;
+
+              if (
+                [InputTypeEnum.PRINT_BUTTON, InputTypeEnum.BUTTON].includes(
+                  inputType
+                ) &&
+                typeof value !== "boolean"
+              )
                 return null;
 
               return (

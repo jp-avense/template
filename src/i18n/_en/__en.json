@@ -219,5 +219,8 @@
   "newValues": "New values",
   "oldValues": "Old values",
   "property": "Property",
-  "changes": "Changes"
+  "changes": "Changes",
+  "fileName": "File name",
+  "fileTypeInvalid": "File type is invalid",
+  "upload": "Upload"
 }

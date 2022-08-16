@@ -3,7 +3,7 @@ import React, { ReactNode, useState } from "react";
 import Modals from "src/content/pages/Components/Modals";
 
 type Props = {
-  text: string;
+  text: string | ReactNode;
   children?: ReactNode;
   buttonProps?: {
     [key: string]: any;

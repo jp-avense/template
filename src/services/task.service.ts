@@ -97,4 +97,12 @@ export const taskService = {
   async updateTask(id: string, taskObject) {
     return apiService.put(`${TASK_URL}/${id}`, taskObject);
   },
+
+  async import(taskType: string, data: any[]) {
+    console.log(data);
+    return apiService.post(`${TASK_URL}/import`, {
+      taskData: data,
+      taskType,
+    });
+  },
 };
