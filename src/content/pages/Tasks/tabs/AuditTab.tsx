@@ -20,6 +20,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 import { historyService } from "src/services/history.service";
+import moment from 'moment'
 
 const AuditTab = () => {
   const {
@@ -165,7 +166,7 @@ const AuditTab = () => {
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>
-                {new Date(c.createdAt).toLocaleString(language)}
+                {moment(c.createdAt).format("HH:MM DD/MM/YYYY")}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
