@@ -60,8 +60,8 @@ const RealTimeTab = () => {
         let google = window["google"];
 
         const map = new google.maps.Map(mapContainer, {
-          zoom: 17,
           center: ISRAEL_LOCATION,
+          zoom: 14,
         });
 
         const bounds = new google.maps.LatLngBounds();
@@ -69,7 +69,7 @@ const RealTimeTab = () => {
         if (geo) {
           const {
             coords: { latitude, longitude },
-          } = geo.value;
+          } = geo;
 
           const pos = { lat: latitude, lng: longitude };
 
@@ -80,15 +80,18 @@ const RealTimeTab = () => {
 
           const infowindow = new google.maps.InfoWindow({
             content: `<b>${t("agentLocation")}</b>`,
+
           });
 
           infowindow.open({
             anchor: marker,
             map,
+            shouldFocus: false
+
           });
 
           bounds.extend(pos);
-          map.setCenter(pos);
+          map.fitBounds(bounds);
         }
 
         if (address) {
@@ -119,20 +122,24 @@ const RealTimeTab = () => {
                 infowindow.open({
                   anchor: marker,
                   map,
+                  shouldFocus: false,
                 });
 
                 bounds.extend(pos);
-                map.setCenter(pos);
+                map.fitBounds(bounds);
               }
             });
         }
 
-        if (geo && address) map.fitBounds(bounds);
+        if (geo && address) {
+          map.fitBounds(bounds);
+        }
       };
     }
 
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCUxERIz0nUyUh46I0L7zPPSg0yAhz3R1E&callback=initMap&v=3&libraries=places&language=${language}`;
+
     script.async = true;
     document.querySelector("head").appendChild(script);
 
