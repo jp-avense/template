@@ -222,5 +222,6 @@
   "changes": "Changes",
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
-  "upload": "Upload"
+  "upload": "Upload",
+  "formSubmitted": "Form submitted"
 }

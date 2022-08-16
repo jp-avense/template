@@ -220,5 +220,6 @@
   "changes": "שינויים",
   "fileName": "שם קובץ",
   "fileTypeInvalid": "סוג הקובץ אינו חוקי",
-  "upload": "העלה"
+  "upload": "העלה",
+  "formSubmitted": "הטופס מוגש"
 }
