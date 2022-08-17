@@ -7,5 +7,5 @@ export class TaskType {
 
   label: string;
 
-  form: string
+  form: any
 }

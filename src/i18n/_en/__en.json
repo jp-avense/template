@@ -213,5 +213,14 @@
   "updateOnlyIfNew": "You can only update a new or assigned task",
   "field": "Field",
   "agentLocation": "Agent location",
-  "addressLocation": "Address Location"
+  "addressLocation": "Address Location",
+  "history": "History",
+  "changedBy": "Changed by",
+  "newValues": "New values",
+  "oldValues": "Old values",
+  "property": "Property",
+  "changes": "Changes",
+  "fileName": "File name",
+  "fileTypeInvalid": "File type is invalid",
+  "upload": "Upload"
 }

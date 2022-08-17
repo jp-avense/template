@@ -15,9 +15,12 @@ import {
   FormFieldExtended,
   InputTypeEnum,
 } from "../../FormFields/form-field.interface";
-import "./style.css";
+
+import moment from "moment";
 import Lightbox from "react-image-lightbox";
+
 import "react-image-lightbox/style.css";
+import "./style.css";
 
 type Props = {};
 
@@ -26,10 +29,13 @@ const FormTab = (props: Props) => {
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [imgSrc, setImgSrc] = useState("");
+  const [imgSrc, setImgSrc] = useState([]);
+  const [clickedImg, setClickedImg] = useState(0);
 
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   const {
     handleFilter: { selectedRows, originalData },
@@ -40,6 +46,12 @@ const FormTab = (props: Props) => {
       (item) => item._id === selectedRows[selectedRows.length - 1]
     );
   }, [selectedRows, originalData]);
+
+  const handleImageClick = (urls: string[], index: number) => {
+    setImgSrc(urls);
+    setClickedImg(index);
+    setIsOpen(true);
+  };
 
   useEffect(() => {
     if (selected && selected?.form) {
@@ -59,7 +71,7 @@ const FormTab = (props: Props) => {
   }, [selected]);
 
   const createComponent = async (item: FormFieldExtended, taskId = null) => {
-    const { value, inputType, options } = item;
+    const { value, inputType, options, key } = item;
 
     if (value == null) return "";
 
@@ -71,7 +83,7 @@ const FormTab = (props: Props) => {
         return `Lat ${latitude}  Long ${longitude}`;
       case InputTypeEnum.DATE_TIME_BUTTON:
       case InputTypeEnum.DATE_TIME_PICKER:
-        return new Date(value).toLocaleString();
+        return moment(value).format("HH:MM DD/MM/YYYY");
       case InputTypeEnum.RADIO:
       case InputTypeEnum.DROPDOWN:
         const [_, selectedValue] = Object.entries(options).find(
@@ -80,32 +92,48 @@ const FormTab = (props: Props) => {
         return selectedValue;
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
-        if (Array.isArray(item.value)) {
-          const promises = item.value.map(async (name) => {
-            return formService.getImage(taskId, name);
-          });
+        let vals = Array.isArray(item.value) ? item.value : [item.value];
 
-          const results = await Promise.all(promises);
+        if (inputType === InputTypeEnum.SIGNATURE) vals = [`image.png`];
 
-          return results.map((res, index) => {
-            const {
-              data: { presignedUrl },
-            } = res;
-            return (
-              <img key={index} src={presignedUrl} className="form-image" />
-            );
-          });
-        } else {
-          const {
-            data: { presignedUrl },
-          } = await formService.getImage(taskId, item.value);
+        const promises = vals.map(async (name) => {
+          return formService.getImage(taskId, name);
+        });
 
-          if (!presignedUrl) return t("noDataAvailable");
+        const results = await Promise.all(promises);
 
-          return <img src={presignedUrl} className="form-image" />;
-        }
+        const srcs = results.map((res) => {
+          return res.data.presignedUrl;
+        });
+
+        const images = srcs.map((res, index) => {
+          return (
+            <img
+              key={index}
+              src={res}
+              className="form-image"
+              onClick={() => handleImageClick(srcs, index)}
+              style={{ cursor: "pointer", width: "50px", height: "50px" }}
+            />
+          );
+        });
+
+        return (
+          <Box display="flex" flexDirection="row" gap={1}>
+            {images}
+          </Box>
+        );
+
       case InputTypeEnum.BUTTON:
-        return item.displayValue || item.value;
+      case InputTypeEnum.PRINT_BUTTON:
+        return (
+          item.displayValue ?? (
+            <>
+              The field <b>{key}</b> has been clicked
+            </>
+          )
+        );
+
       default:
         return value;
     }
@@ -118,12 +146,6 @@ const FormTab = (props: Props) => {
       </Box>
     );
   if (!selected || components.length === 0) return <>{t("noDataAvailable")}</>;
-
-  const handleOpen = (src) => {
-    setImgSrc(src);
-    console.log(src);
-    setIsOpen(true);
-  };
 
   return (
     <div>
@@ -138,58 +160,43 @@ const FormTab = (props: Props) => {
           <TableBody>
             {selected.form.map((item: FormFieldExtended, index) => {
               const { key, value, label, inputType } = item;
-              const getKey =
-                key === "addressPicture" ||
-                key === "appliancesList_tv_picture" ||
-                key === "foreclosureSignature" ||
-                key === "picture_1";
-
-              const current = components[index];
-              console.log(current);
 
               if (!label || inputType === InputTypeEnum.MARKUP || !value)
                 return null;
 
+              if (
+                [InputTypeEnum.PRINT_BUTTON, InputTypeEnum.BUTTON].includes(
+                  inputType
+                ) &&
+                typeof value !== "boolean"
+              )
+                return null;
+
               return (
                 <TableRow key={key + index}>
-                  {getKey ? (
-                    current?.props?.src && (
-                      <>
-                        <TableCell>{label}</TableCell>
-                        <TableCell>
-                          {" "}
-                          <Box
-                            component="img"
-                            onClick={() => handleOpen(current.props.src)}
-                            sx={{
-                              cursor: "pointer",
-                              height: 60,
-                              width: 60,
-                              objectFit: "cover",
-                              margin: "2px",
-                            }}
-                            src={current.props.src}
-                          />
-                        </TableCell>
-                      </>
-                    )
-                  ) : (
-                    <>
-                      <TableCell>{label}</TableCell>
-                      <TableCell>{components[index]}</TableCell>
-                    </>
-                  )}
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{components[index]}</TableCell>
                 </TableRow>
               );
             })}
-            ;
           </TableBody>
         </Table>
       ) : (
         t("noDataAvailable")
       )}
       {isOpen && (
-        <Lightbox mainSrc={imgSrc} onCloseRequest={() => setIsOpen(false)} />
+        <Lightbox
+          mainSrc={imgSrc[clickedImg]}
+          onCloseRequest={() => setIsOpen(false)}
+          nextSrc={imgSrc[(clickedImg + 1) % imgSrc.length]}
+          prevSrc={imgSrc[(clickedImg + imgSrc.length - 1) % imgSrc.length]}
+          onMovePrevRequest={() =>
+            setClickedImg((clickedImg + imgSrc.length - 1) % imgSrc.length)
+          }
+          onMoveNextRequest={() =>
+            setClickedImg((clickedImg + 1) % imgSrc.length)
+          }
+        />
       )}
     </div>
   );

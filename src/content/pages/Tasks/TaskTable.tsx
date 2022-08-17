@@ -1,4 +1,10 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  useEffect,
+  useMemo,
+  useState,
+  createElement,
+} from "react";
 
 import {
   Divider,
@@ -16,12 +22,14 @@ import {
   TableSortLabel,
   Button,
   Typography,
+  MenuItem,
+  TextField,
+  Alert,
 } from "@mui/material";
 import { useContext } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
 import { TabsContext } from "src/contexts/TabsContext";
-import { AuthContext } from "src/contexts/AuthContext";
 import TaskFilter from "./TaskFilters";
 import AssignTaskForm from "./AssignTaskForm";
 import UpdateTaskForm from "./UpdateTaskForm";
@@ -32,7 +40,8 @@ import { getAxiosErrorMessage } from "src/lib";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { taskService } from "src/services/task.service";
 import Swal from "sweetalert2";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
+import moment from "moment";
+import ModalButton from "src/components/ModalButton";
 
 interface State {
   order: "asc" | "desc";
@@ -60,7 +69,13 @@ const TaskTable = () => {
   const [xlsData, setXlsData] = useState([]);
   const [downloading, setDownloading] = useState(false);
   const [downloading2, setDownloading2] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [importType, setImportType] = useState("");
+  const [uploadStatus, setUploadStatus] = useState({
+    status: "",
+    message: "",
+  });
+
+  const [fileName, setFileName] = useState("");
 
   const isAdmin = roles.includes("admin");
 
@@ -79,6 +94,7 @@ const TaskTable = () => {
       setSelectedRows,
       getDataAndSet,
       status,
+      types,
     },
   } = filterContext;
 
@@ -174,7 +190,7 @@ const TaskTable = () => {
         if (e.inputType === "date" || e.inputType === "datetime") {
           dynamicDetails.push({
             ...e,
-            value: e.value ? new Date(e.value).toLocaleDateString() : "",
+            value: e.value ? moment(e.value).format("DD/MM/YYYY") : "",
             id: e.label,
             order: e.order,
           });
@@ -198,15 +214,13 @@ const TaskTable = () => {
       details.dynamicDetails = dynamicDetails;
 
       details.type = c.taskType;
-      details.createdAt = c.createdAt?.replace(
-        /^(\d{4})-(\d\d)-(\d\d).+$/,
-        "$2/$3/$1"
-      );
+      details.createdAt = c.createdAt
+        ? moment(c.createdAt).format("DD/MM/YYYY")
+        : "";
       details.assignedTo = c.assignedTo ? c.assignedTo.agentName : "";
-      details.lastUpdate = c.lastUpdatedAt?.replace(
-        /^(\d{4})-(\d\d)-(\d\d).+$/,
-        "$2/$3/$1"
-      );
+      details.lastUpdate = c.lastUpdatedAt
+        ? moment(c.lastUpdatedAt).format("DD/MM/YYYY")
+        : "";
       details.updatedBy = c.lastUpdatedBy ? c.lastUpdatedBy.userName : "";
       details.executionStartDate = c.executionStartDate;
       details.id = c._id;
@@ -414,10 +428,6 @@ const TaskTable = () => {
     if (temp.length != 0) setHeaders(temp);
   }, [originalData]);
 
-  const fileOnChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
   const csvToJson = (str, comma = ",") => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
@@ -436,22 +446,72 @@ const TaskTable = () => {
     return arr;
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = () => {
     const csvFile = document.getElementById("upload-file") as HTMLInputElement;
     const input = csvFile.files[0];
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const csv = e.target.result;
       const data = csvToJson(csv);
-      console.log(JSON.stringify(data));
+      try {
+        setUploadStatus({
+          status: "",
+          message: "",
+        });
+        setDownloading2(true);
+        await taskService.import(importType, data);
+
+        const name = fileName;
+        setUploadStatus({
+          status: "success",
+          message: t("success") + " - " + name,
+        });
+
+        setFileName("");
+      } catch (error) {
+        setUploadStatus({
+          status: "error",
+          message: getAxiosErrorMessage(error),
+        });
+      } finally {
+        setDownloading2(false);
+      }
     };
 
     reader.readAsText(input);
   };
 
-  console.log(originalData);
+  const handleFileChange = (e) => {
+    setUploadStatus({
+      status: "",
+      message: "",
+    });
+
+    const [file] = e.target.files;
+
+    if (file.type !== "text/csv") {
+      e.preventDefault();
+      setUploadStatus({
+        status: "error",
+        message: t("fileTypeInvalid"),
+      });
+
+      const oldInput = e.target;
+      const newInput = document.createElement("input");
+
+      newInput.type = "file";
+      newInput.style.cssText = oldInput.style.cssText;
+      newInput.id = oldInput.id;
+      newInput.onchange = handleFileChange;
+
+      oldInput.parentElement.replaceChild(newInput, oldInput);
+
+      setFileName("");
+    } else {
+      setFileName(file.name);
+    }
+  };
 
   return (
     <Card>
@@ -600,43 +660,83 @@ const TaskTable = () => {
               </>
             )}
           </Button>
-
-          <>
-            <input
-              onChange={fileOnChange}
-              style={{ display: "none" }}
-              id="upload-file"
-              type="file"
-            />
-            <label htmlFor="upload-file">
+          <ModalButton
+            text={
+              loading || downloading2 ? (
+                <CircularProgress size={18} />
+              ) : (
+                t("upload")
+              )
+            }
+            title={t("upload")}
+            buttonProps={{
+              variant: "contained",
+              size: "medium",
+              disabled: loading || downloading2,
+            }}
+          >
+            <Box display="flex" flexDirection="column" gap={2} pt={2}>
+              {uploadStatus.status !== "" ? (
+                <Alert severity={uploadStatus.status as any}>
+                  {uploadStatus.message}
+                </Alert>
+              ) : null}
+              {fileName !== "" ? (
+                <Alert severity="info">{`${t("fileName")}: ${fileName}`}</Alert>
+              ) : null}
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap={2}
+                alignItems="center"
+              >
+                <TextField
+                  select
+                  onChange={(e) => setImportType(e.target.value)}
+                  required
+                  label={t("taskType")}
+                  fullWidth
+                >
+                  {types.map((item) => (
+                    <MenuItem key={item.key} value={item.key}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <Box sx={{ width: "20%" }}>
+                  <div>
+                    <input
+                      style={{ display: "none" }}
+                      id="upload-file"
+                      type="file"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                  <label htmlFor="upload-file">
+                    <Button
+                      disabled={loading || downloading2}
+                      variant="outlined"
+                      component="span"
+                    >
+                      {t("upload")}
+                    </Button>
+                  </label>
+                </Box>
+              </Box>
               <Button
-                disabled={loading || downloading2}
+                fullWidth
                 variant="contained"
-                component="span"
+                onClick={onSubmit}
+                disabled={loading || downloading2}
               >
                 {loading || downloading2 ? (
-                  <CircularProgress size={18} />
+                  <CircularProgress size={20} />
                 ) : (
-                  <>
-                    <Typography variant="h5" sx={{ mr: "5px" }}>
-                      Upload
-                    </Typography>
-                    <FileUploadIcon fontSize="small" />
-                  </>
+                  t("submit")
                 )}
               </Button>
-            </label>
-          </>
-          <Button
-            onClick={onSubmit}
-            type="submit"
-            value="Submit"
-            variant="contained"
-          >
-            <Typography variant="h5" sx={{ mr: "5px" }}>
-              Submit
-            </Typography>
-          </Button>
+            </Box>
+          </ModalButton>
         </Box>
         <TablePagination
           component="div"
