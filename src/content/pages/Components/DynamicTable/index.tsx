@@ -11,9 +11,11 @@ import {
   TableBody,
   CircularProgress,
   TableSortLabel,
+  TablePagination,
+  Box,
 } from "@mui/material";
 import { t } from "i18next";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 interface IHeader {
   key: string;
@@ -58,10 +60,32 @@ const DynamicTable = ({
   orderDirection,
   valueToOrderBy,
 }: Props) => {
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
 
   const headKeys = headers.map((item) => item.key);
+
+  useEffect(() => {
+    setTotal(data.length);
+    const ceiling = Math.floor(total / limit);
+
+    if (page > ceiling) {
+      setPage(ceiling);
+    }
+  }, [data, total]);
+
+  const handlePageChange = async (e: any, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = async (e: any) => {
+    setLimit(parseInt(e.target.value));
+    setPage(0);
+  };
 
   return (
     <Card>
@@ -126,127 +150,143 @@ const DynamicTable = ({
                   ? sortedRowInformation(
                       data,
                       getComparator(orderDirection.order, valueToOrderBy)
-                    ).map((item) => {
-                      const isSelected = selected.includes(item._id);
-                      const { key } = item;
-                      return (
-                        <TableRow
-                          key={key}
-                          onClick={(e) => {
-                            handleSelectOne(item._id);
-                          }}
-                          hover
-                          sx={[
-                            {
-                              cursor: "pointer",
-                            },
-                            selected.includes(item._id)
-                              ? { backgroundColor: "lavender" }
-                              : {},
-                          ]}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isSelected}
-                              color="primary"
-                              onClick={(e) => handleSelectOne(item._id)}
-                            />
-                          </TableCell>
-                          {headKeys.map((head, idx) => {
-                            const cellkey = `${key}-col${idx}`;
+                    )
+                      .slice(page * limit, page * limit + limit)
+                      .map((item) => {
+                        const isSelected = selected.includes(item._id);
+                        const { key } = item;
+                        return (
+                          <TableRow
+                            key={key}
+                            onClick={(e) => {
+                              handleSelectOne(item._id);
+                            }}
+                            hover
+                            sx={[
+                              {
+                                cursor: "pointer",
+                              },
+                              selected.includes(item._id)
+                                ? { backgroundColor: "lavender" }
+                                : {},
+                            ]}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={isSelected}
+                                color="primary"
+                                onClick={(e) => handleSelectOne(item._id)}
+                              />
+                            </TableCell>
+                            {headKeys.map((head, idx) => {
+                              const cellkey = `${key}-col${idx}`;
 
-                            const headerData = headers.find(
-                              (item) => item.key === head
-                            );
+                              const headerData = headers.find(
+                                (item) => item.key === head
+                              );
 
-                            const { render } = headerData;
+                              const { render } = headerData;
 
-                            const value = item[head];
+                              const value = item[head];
 
-                            let displayValue = value;
+                              let displayValue = value;
 
-                            switch (typeof value) {
-                              case "boolean":
-                                displayValue = value?.toString() || "false";
-                                break;
-                            }
+                              switch (typeof value) {
+                                case "boolean":
+                                  displayValue = value?.toString() || "false";
+                                  break;
+                              }
 
-                            if (render) {
-                              displayValue = render(displayValue);
-                            }
+                              if (render) {
+                                displayValue = render(displayValue);
+                              }
 
-                            return (
-                              <TableCell key={cellkey}>
-                                {displayValue}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })
-                  : data.map((item) => {
-                      const isSelected = selected.includes(item._id);
-                      const { key } = item;
-                      return (
-                        <TableRow
-                          key={key}
-                          onClick={(e) => {
-                            handleSelectOne(item._id);
-                          }}
-                          hover
-                          sx={[
-                            {
-                              cursor: "pointer",
-                            },
-                            selected.includes(item._id)
-                              ? { backgroundColor: "lavender" }
-                              : {},
-                          ]}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isSelected}
-                              color="primary"
-                              onClick={(e) => handleSelectOne(item._id)}
-                            />
-                          </TableCell>
-                          {headKeys.map((head, idx) => {
-                            const cellkey = `${key}-col${idx}`;
+                              return (
+                                <TableCell key={cellkey}>
+                                  {displayValue}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })
+                  : data
+                      .slice(page * limit, page * limit + limit)
+                      .map((item) => {
+                        const isSelected = selected.includes(item._id);
+                        const { key } = item;
+                        return (
+                          <TableRow
+                            key={key}
+                            onClick={(e) => {
+                              handleSelectOne(item._id);
+                            }}
+                            hover
+                            sx={[
+                              {
+                                cursor: "pointer",
+                              },
+                              selected.includes(item._id)
+                                ? { backgroundColor: "lavender" }
+                                : {},
+                            ]}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={isSelected}
+                                color="primary"
+                                onClick={(e) => handleSelectOne(item._id)}
+                              />
+                            </TableCell>
+                            {headKeys.map((head, idx) => {
+                              const cellkey = `${key}-col${idx}`;
 
-                            const headerData = headers.find(
-                              (item) => item.key === head
-                            );
+                              const headerData = headers.find(
+                                (item) => item.key === head
+                              );
 
-                            const { render } = headerData;
+                              const { render } = headerData;
 
-                            const value = item[head];
+                              const value = item[head];
 
-                            let displayValue = value;
+                              let displayValue = value;
 
-                            switch (typeof value) {
-                              case "boolean":
-                                displayValue = value?.toString() || "false";
-                                break;
-                            }
+                              switch (typeof value) {
+                                case "boolean":
+                                  displayValue = value?.toString() || "false";
+                                  break;
+                              }
 
-                            if (render) {
-                              displayValue = render(displayValue);
-                            }
+                              if (render) {
+                                displayValue = render(displayValue);
+                              }
 
-                            return (
-                              <TableCell key={cellkey}>
-                                {displayValue}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
+                              return (
+                                <TableCell key={cellkey}>
+                                  {displayValue}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
               </>
             )}
           </TableBody>
         </Table>
       </TableContainer>
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={total}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleLimitChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+          labelRowsPerPage={t("rowsPerPage")}
+        />
+      </Box>
     </Card>
   );
 };

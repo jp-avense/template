@@ -451,7 +451,7 @@ const TaskTable = () => {
     reader.readAsText(input);
   };
 
-  console.log(selectedFile);
+  console.log(originalData);
 
   return (
     <Card>

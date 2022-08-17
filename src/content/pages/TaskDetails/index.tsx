@@ -20,7 +20,6 @@ const TaskDetailPage = () => {
   const [details, setDetails] = useState<IDetails[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
 
-  console.log(details);
   const {
     t,
     i18n: { language },
@@ -109,7 +108,7 @@ const TaskDetailPage = () => {
       // await taskService.bulkDeleteDetails(selected);
 
       const filtered = details.filter((item) => !selected.includes(item._id));
-      console.log(filtered);
+
       setSelected([]);
       setDetails(filtered);
     } catch (error) {
