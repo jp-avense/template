@@ -99,7 +99,6 @@ export const taskService = {
   },
 
   async import(taskType: string, data: any[]) {
-    console.log(data);
     return apiService.post(`${TASK_URL}/import`, {
       taskData: data,
       taskType,
