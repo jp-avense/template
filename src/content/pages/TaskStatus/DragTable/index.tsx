@@ -1,5 +1,6 @@
 import {
   Card,
+  Box,
   CardHeader,
   Divider,
   TableContainer,
@@ -9,11 +10,12 @@ import {
   TableCell,
   Checkbox,
   TableBody,
+  TablePagination,
   CircularProgress,
 } from "@mui/material";
 import { t } from "i18next";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import "./style.css";
 
 interface IHeader {
@@ -45,11 +47,32 @@ const DynamicTable = ({
   action,
   handleDragDrop,
 }: Props) => {
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [dragItem, setDragItem] = useState(null);
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
 
   const headKeys = headers.map((item) => item.key);
+
+  useEffect(() => {
+    setTotal(data.length);
+    const ceiling = Math.floor(total / limit);
+
+    if (page > ceiling) {
+      setPage(ceiling);
+    }
+  }, [data, total]);
+
+  const handlePageChange = async (e: any, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = async (e: any) => {
+    setLimit(parseInt(e.target.value));
+    setPage(0);
+  };
 
   const onDragEnter = (e, id: string) => {
     if (id === dragItem) return;
@@ -114,7 +137,7 @@ const DynamicTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item) => {
+              data.slice(page * limit, page * limit + limit).map((item) => {
                 const isSelected = selected.includes(item._id);
                 const { key } = item;
                 return (
@@ -172,6 +195,18 @@ const DynamicTable = ({
           </TableBody>
         </Table>
       </TableContainer>
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={total}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleLimitChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+          labelRowsPerPage={t("rowsPerPage")}
+        />
+      </Box>
     </Card>
   );
 };
