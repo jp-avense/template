@@ -20,7 +20,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 import { historyService } from "src/services/history.service";
-import moment from 'moment'
+import moment from "moment";
 
 const AuditTab = () => {
   const {
@@ -71,8 +71,10 @@ const AuditTab = () => {
     }
   };
 
-  const renderValue = (value) => {
+  const renderValue = (key, value) => {
     if (value == null) return <TableCell> </TableCell>;
+    if (key === "assignDate")
+      return <TableCell>{moment(value).format("HH:MM DD/MM/YYYY")}</TableCell>;
 
     switch (typeof value) {
       case "object":
@@ -122,9 +124,9 @@ const AuditTab = () => {
 
   const displayValue = (requestDto, originalValues) => {
     return Object.entries(requestDto).map(([key, value]) => {
-      let newValue = renderValue(value);
+      let newValue = renderValue(key, value);
       let oldValue = originalValues ? (
-        renderValue(originalValues[key])
+        renderValue(key, originalValues[key])
       ) : (
         <TableCell> </TableCell>
       );

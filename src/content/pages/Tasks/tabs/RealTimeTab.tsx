@@ -44,7 +44,7 @@ const RealTimeTab = () => {
       window["initMap"] = () => {
         const geo = data?.form?.find(
           (item) => item.inputType === InputTypeEnum.GEO
-        ).value;
+        )?.value;
 
         const address = data.taskDetails.find(
           (item) => item.key === "propertyAddress"

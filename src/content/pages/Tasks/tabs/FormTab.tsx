@@ -90,6 +90,8 @@ const FormTab = (props: Props) => {
           ([key, val]) => key === value
         );
         return selectedValue;
+      case InputTypeEnum.CHECKBOX:
+        return value.map((item) => <div key={item}>{item}</div>);
       case InputTypeEnum.CAMERA_BUTTON:
       case InputTypeEnum.SIGNATURE:
         let vals = Array.isArray(item.value) ? item.value : [item.value];
