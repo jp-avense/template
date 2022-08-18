@@ -30,6 +30,7 @@ type Props = {
 };
 
 const validationSchema = yup.object({
+  Key: yup.string().required("required"),
   label: yup.string().required("required"),
   description: yup.string().optional(),
   systemStatusKey: yup.string().required(),
@@ -43,6 +44,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
 
   const formik = useFormik({
     initialValues: {
+      Key: selectedStatus.Key,
       label: selectedStatus.label,
       description: selectedStatus.description,
       systemStatusKey: selectedStatus.systemStatusKey,
@@ -78,12 +80,13 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
         </Grid>
         <Grid item>
           <TextField
-            name="key"
+            name="Key"
             label={t("key")}
-            defaultValue={selectedStatus.Key}
-            disabled
+            value={formik.values.Key}
+            error={formik.touched.Key && Boolean(formik.errors.Key)}
+            helperText={formik.touched.Key && formik.errors.Key}
             fullWidth
-            helperText={t("cantChangeField")}
+            onChange={handleChange}
           />
         </Grid>
         <Grid item>

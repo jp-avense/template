@@ -55,7 +55,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
   const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
-  
+
   const [options, setOptions] = useState([{ key: "", value: "" }]);
 
   const types = [
@@ -74,7 +74,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
     "geo",
   ];
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   useEffect(() => {
     setType(selectedForm.inputType);
@@ -86,6 +86,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
   }, [selectedForm]);
 
   const validationSchema = yup.object({
+    key: yup.string().required("Required"),
     label: yup.string(),
     description: yup.string(),
     note: yup.string(),
@@ -96,6 +97,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
 
   const formik = useFormik({
     initialValues: {
+      key: selectedForm.key,
       label: selectedForm.label,
       description: selectedForm.description,
       note: selectedForm.note,
@@ -116,8 +118,6 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
           res.options = options;
 
         if (type === "textarea") res.rows = rows;
-
-        delete res.key;
 
         await formService.updateField(selectedForm._id, res);
         await onFinish();
@@ -204,9 +204,11 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
                     id="key"
                     name="key"
                     label={t("key")}
-                    value={selectedForm.key}
+                    value={formik.values.key}
+                    onChange={formik.handleChange}
+                    error={formik.touched.key && Boolean(formik.errors.key)}
+                    helperText={formik.touched.key && formik.errors.key}
                     fullWidth
-                    disabled
                   ></TextField>
                   <TextField
                     sx={{ mt: 2 }}
