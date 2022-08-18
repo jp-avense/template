@@ -43,6 +43,10 @@ export const taskService = {
     });
   },
 
+  async createTask(values: object & { taskType: string; taskId: number }) {
+    return apiService.post(TASK_URL, values);
+  },
+
   async getStatuses() {
     return apiService.get(TASK_STATUS_URL);
   },
