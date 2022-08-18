@@ -223,5 +223,7 @@
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
   "upload": "Upload",
-  "formSubmitted": "Form submitted"
+  "formSubmitted": "Form submitted",
+  "getNewTaskId": "Get new ID",
+  "taskId": "Task ID"
 }
