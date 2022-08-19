@@ -11,6 +11,7 @@ import InfoTab from "./InfoTab";
 import { taskService } from "src/services/task.service";
 import { AgentContext } from "src/contexts/AgentContext";
 import { useTranslation } from "react-i18next";
+import { settingsService } from "src/services/settings.service";
 
 const TaskPage = () => {
   const context = useContext(FilterContext);
@@ -27,6 +28,7 @@ const TaskPage = () => {
       setTypes,
       setTotal,
       setLoading,
+      setSettings,
     },
   } = context;
 
@@ -42,23 +44,26 @@ const TaskPage = () => {
       taskService.getStatuses(),
       taskService.getTypes(),
       getAgents() as any,
+      settingsService.getAll(),
     ]);
 
     promise
       .then((res) => {
-        const [taskRes, details, statuses, types] = res.map(
+        const [taskRes, details, statuses, types, agents, settings] = res.map(
           (item) => item.data
         );
 
         setOriginalData(taskRes.tasks);
         setDetails(details);
-        
+
         statuses.sort((a, b) => a.label.localeCompare(b.label));
         setStatus(statuses);
-        
+
         types.sort((a, b) => a.label.localeCompare(b.label));
         setTypes(types);
         setTotal(taskRes.totalDocuments);
+
+        setSettings(settings);
       })
       .catch(console.log)
       .finally(() => setLoading(false));

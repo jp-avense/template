@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import { ReactNodeLike } from "prop-types";
 import React, { ReactNode, useState } from "react";
 import Modals from "src/content/pages/Components/Modals";
 
@@ -11,6 +12,7 @@ type Props = {
   title: string;
   forceOpen?: boolean;
   setForceOpen?: (state) => any;
+  actions?: ReactNodeLike
 };
 
 const ModalButton = ({
@@ -19,7 +21,8 @@ const ModalButton = ({
   buttonProps,
   title,
   forceOpen,
-  setForceOpen
+  setForceOpen,
+  actions
 }: Props) => {
   const [open, setOpen] = useState(false);
 
@@ -35,7 +38,7 @@ const ModalButton = ({
 
   return (
     <>
-      <Modals onClose={handleClose} open={forceOpen ?? open} title={title}>
+      <Modals onClose={handleClose} open={forceOpen ?? open} title={title} actions={actions}>
         <>{children}</>
       </Modals>
       <Button {...buttonProps} onClick={handleOpen}>

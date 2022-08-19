@@ -39,6 +39,8 @@ type FilterContextT = {
     getDataAndSet: (filterObject?: object) => Promise<any>;
     getTypesAndSet: () => Promise<any>;
     getStatusAndSet: () => Promise<any>;
+    settings: any[];
+    setSettings: React.Dispatch<React.SetStateAction<any[]>>;
   };
 };
 
@@ -56,6 +58,7 @@ export const FilterProvider = ({ children }) => {
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [settings, setSettings] = useState([]);
 
   const [types, setTypes] = useState([]);
   const [status, setStatus] = useState([]);
@@ -158,6 +161,8 @@ export const FilterProvider = ({ children }) => {
     getDataAndSet,
     getStatusAndSet,
     getTypesAndSet,
+    settings,
+    setSettings
   };
 
   return (

@@ -82,7 +82,6 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
           <TextField
             name="Key"
             label={t("key")}
-            defaultValue={selectedStatus.Key}
             value={formik.values.Key}
             error={formik.touched.Key && Boolean(formik.errors.Key)}
             helperText={formik.touched.Key && formik.errors.Key}
