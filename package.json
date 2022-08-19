@@ -24,6 +24,7 @@
     "i18next-browser-languagedetector": "^6.1.4",
     "jss-rtl": "^0.3.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "multiselect-react-dropdown": "^2.0.25",
     "nprogress": "0.2.0",
     "numeral": "2.0.6",

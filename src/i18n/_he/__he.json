@@ -48,6 +48,7 @@
   "updatedBy": "עודכן על ידי",
   "executedBy": "מבוצע על ידי",
   "executionDate": "תאריך ביצוע",
+  "executionStartDate": "תאריך תחילת ביצוע",
   "Authority ID": "מזהה רשות",
   "Interface Data Creation": "יצירת נתונים ממשק",
   "Foreclosure ID": "מזהה עיקול",
@@ -217,5 +218,6 @@
   "newValues": "ערכים חדשים",
   "oldValues": "ערכים ישנים",
   "property": "סְגוּלָה",
-  "changes": "שינויים"
+  "changes": "שינויים",
+  "reports": "דיווחים"
 }

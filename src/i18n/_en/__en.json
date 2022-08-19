@@ -48,6 +48,7 @@
   "updatedBy": "Updated By",
   "executedBy": "Executed By",
   "executionDate": "Execution Date",
+  "executionStartDate": "Execution Start Date",
   "Authority ID": "Authority ID",
   "Interface Data Creation": "Interface Data Creation",
   "Foreclosure ID": "Foreclosure ID",
@@ -219,5 +220,6 @@
   "newValues": "New values",
   "oldValues": "Old values",
   "property": "Property",
-  "changes": "Changes"
+  "changes": "Changes",
+  "reports": "Reports"
 }
