@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 
-import { DialogContent, IconButton, Box } from "@mui/material";
+import { DialogContent, IconButton, Box, DialogActions } from "@mui/material";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import CloseIcon from "@mui/icons-material/Close";
 
 function SimpleDialog(props) {
-  const { onClose, children, title, open } = props;
+  const { onClose, children, title, open, actions } = props;
 
   const handleClose = (e) => {
     e.stopPropagation();
@@ -38,7 +38,10 @@ function SimpleDialog(props) {
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent>{children}</DialogContent>
+      <DialogContent sx={{ position: "relative" }}>{children}</DialogContent>
+      {
+        actions ? <DialogActions>{actions}</DialogActions> : null
+      }
     </Dialog>
   );
 }
@@ -48,6 +51,7 @@ SimpleDialog.propTypes = {
   title: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  actions: PropTypes.node
 };
 
 export default SimpleDialog;

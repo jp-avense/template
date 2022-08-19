@@ -45,6 +45,10 @@ export const taskService = {
     });
   },
 
+  async createTask(values: object & { taskType: string; taskId: number }) {
+    return apiService.post(TASK_URL, values);
+  },
+
   async getStatuses() {
     return apiService.get(TASK_STATUS_URL);
   },
@@ -98,5 +102,12 @@ export const taskService = {
 
   async updateTask(id: string, taskObject) {
     return apiService.put(`${TASK_URL}/${id}`, taskObject);
+  },
+
+  async import(taskType: string, data: any[]) {
+    return apiService.post(`${TASK_URL}/import`, {
+      taskData: data,
+      taskType,
+    });
   },
 };

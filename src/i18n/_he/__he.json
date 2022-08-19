@@ -219,5 +219,11 @@
   "oldValues": "ערכים ישנים",
   "property": "סְגוּלָה",
   "changes": "שינויים",
+  "fileName": "שם קובץ",
+  "fileTypeInvalid": "סוג הקובץ אינו חוקי",
+  "upload": "העלה",
+  "formSubmitted": "הטופס מוגש",
+  "getNewTaskId": "קבל תעודת זהות חדשה",
+  "taskId": "Task ID",
   "reports": "דיווחים"
 }
