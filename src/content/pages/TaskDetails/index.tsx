@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Box, Card } from "@mui/material";
+import { Box, Card, TablePagination } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import { useTranslation } from "react-i18next";
@@ -14,11 +14,17 @@ import ConfirmModal from "src/components/ConfirmModal";
 import UpdateTaskDetail from "./UpdateTaskDetail";
 import UpdateTaskDetailForm from "./UpdateTaskDetail/UpdateTaskDetailForm";
 
+interface State {
+  order: "asc" | "desc";
+}
+
 const TaskDetailPage = () => {
   const [loading, setLoading] = useState(false);
   const [headers, setHeaders] = useState([]);
   const [details, setDetails] = useState<IDetails[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
+  const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
+  const [valueToOrderBy, setValueToOrderBy] = useState("");
 
   const {
     t,
@@ -130,6 +136,49 @@ const TaskDetailPage = () => {
     console.log(e);
   };
 
+  const handleRequestSort = (event, property) => {
+    const isAscending =
+      valueToOrderBy === property && orderDirection.order === "asc";
+    setValueToOrderBy(property);
+    setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+  };
+
+  const createSortHandler = (property) => (event) => {
+    handleRequestSort(event, property);
+  };
+
+  const descendingComparator = (a, b, orderBy) => {
+    if (orderBy) {
+      return b[orderBy].localeCompare(a[orderBy]);
+    }
+    return 0;
+  };
+
+  const sorted = () => {
+    const sort = sortedRowInformation(
+      details,
+      getComparator(orderDirection.order, valueToOrderBy)
+    );
+    return sort;
+  };
+
+  const getComparator = (order, orderBy) => {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  };
+
+  const sortedRowInformation = (rowArray, comparator) => {
+    const stabilizedRowArray = rowArray.map((el, index) => [el, index]);
+    stabilizedRowArray.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    const res = stabilizedRowArray.map((el) => el[0]);
+    return res;
+  };
+
   return (
     <div>
       <Helmet>
@@ -150,6 +199,11 @@ const TaskDetailPage = () => {
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
+            sort={true}
+            sorted={sorted}
+            createSortHandler={createSortHandler}
+            orderDirection={orderDirection}
+            valueToOrderBy={valueToOrderBy}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (

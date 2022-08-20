@@ -194,7 +194,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                   label={t("key")}
                   fullWidth
                   value={key}
-                  disabled={true}
+                  onChange={(e) => setKey(e.target.value)}
                 ></TextField>
               </>
             ) : (
