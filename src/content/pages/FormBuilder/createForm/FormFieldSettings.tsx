@@ -107,6 +107,7 @@ function FormFieldSettings({
     { value: "rescheduleTask", label: t("rescheduleTask") },
     { value: "transmitDone", label: t("transmitDone") },
     { value: "transmitRescheduled", label: t("transmitRescheduled") },
+    { value: "startTask", label: t("startTask") },
   ];
 
   const setSelectedCondition = (e, index) => {

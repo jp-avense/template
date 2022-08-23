@@ -182,6 +182,7 @@
   "rescheduleTask": "Reschedule task",
   "transmitDone": "Transmit Done",
   "transmitRescheduled": "Transmit Rescheduled",
+  "startTask": "Start Task",
   "profile": "Profile",
   "profileDescription": "Personal settings of the user",
   "changeDetails": "Change Details",
