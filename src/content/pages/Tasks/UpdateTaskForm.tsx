@@ -39,7 +39,14 @@ const UpdateTaskForm = ({ selected }: Props) => {
   };
 
   const {
-    handleFilter: { details, originalData, status, types },
+    handleFilter: {
+      details,
+      originalData,
+      status,
+      types,
+      getDataByFilters,
+      setOriginalData,
+    },
   } = context;
 
   const taskObj = useMemo(() => {
@@ -130,6 +137,8 @@ const UpdateTaskForm = ({ selected }: Props) => {
         await taskService.updateTask(selected, res);
 
         setSuccess(t("success"));
+        const { data: resp } = await getDataByFilters();
+        setOriginalData(resp.tasks);
       } catch (error) {
         setError(getAxiosErrorMessage(error));
       }
