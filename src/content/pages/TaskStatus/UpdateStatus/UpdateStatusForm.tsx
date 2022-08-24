@@ -23,6 +23,7 @@ interface ITaskStatus {
   label: string;
   description?: string;
   systemStatusKey: string;
+  isSystemStatus: boolean;
 }
 
 type Props = {
@@ -57,7 +58,9 @@ const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
       try {
         setError("");
         setSuccess("");
-
+        if (selectedStatus.isSystemStatus) {
+          delete values.Key;
+        }
         await taskService.updateStatus(selectedStatus._id, values);
         setSuccess("Updated status");
 
@@ -96,22 +99,42 @@ const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
         </Grid>
-        <Grid item>
-          <TextField
-            name="Key"
-            label={t("key")}
-            fullWidth
-            value={formik.values.Key}
-            onChange={(e) => handleKeyChange(e)}
-          />
-          {!uniq ? (
-            <>
-              <Typography color={"red"}>Key already exists</Typography>
-            </>
-          ) : (
-            <></>
-          )}
-        </Grid>
+        {selectedStatus.isSystemStatus ? (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="key"
+                label={t("key")}
+                defaultValue={selectedStatus.Key}
+                disabled
+                fullWidth
+                helperText={t("cantChangeField")}
+              />
+            </Grid>
+          </>
+        ) : (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="Key"
+                label={t("key")}
+                fullWidth
+                value={formik.values.Key}
+                onChange={(e) => handleKeyChange(e)}
+              />
+              {!uniq ? (
+                <>
+                  <Typography color={"red"}>Key already exists</Typography>
+                </>
+              ) : (
+                <></>
+              )}
+            </Grid>
+          </>
+        )}
+
         <Grid item>
           <TextField
             name="label"
