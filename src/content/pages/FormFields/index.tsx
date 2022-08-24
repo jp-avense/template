@@ -201,6 +201,8 @@ const FormFields = () => {
 
   const paginatedForms = applyPagination(forms, page, limit);
 
+  // console.log(forms);
+
   return (
     <>
       <Helmet>
