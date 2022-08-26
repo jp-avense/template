@@ -43,11 +43,9 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
   const [unique, setUnique] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [options, setOptions] = useState([{ key: "", value: "" }]);
-
   const { t } = useTranslation();
 
-  const types = ["String", "Object", "Array", "Number"];
+  const types = ["String", "Object", "Array", "Number", "Boolean"];
 
   const setSelectedType = (e) => {
     setType(e.target.value);
@@ -229,6 +227,26 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                   type="number"
                   onChange={(e) => setValue(e.target.value)}
                 ></TextField>
+              </>
+            ) : (
+              <></>
+            )}
+             {type === "boolean" ? (
+              <>
+                <TextField
+                  select
+                  sx={{ mt: 2 }}
+                  id="value"
+                  name="value"
+                  label={t("value")}
+                  fullWidth
+                  value={value}
+                  required
+                  onChange={(e) => setValue(e.target.value)}
+                >
+                  <MenuItem value="true">{t("true")}</MenuItem>
+                  <MenuItem value="false">{t("false")}</MenuItem>
+                </TextField>
               </>
             ) : (
               <></>

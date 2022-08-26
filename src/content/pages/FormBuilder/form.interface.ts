@@ -1,4 +1,7 @@
-import { FormField, FormFieldExtended } from "../FormFields/form-field.interface";
+import {
+  FormField,
+  FormFieldExtended,
+} from "../FormFields/form-field.interface";
 
 export class Form {
   _id: string;
@@ -10,7 +13,6 @@ export class Form {
   description: string;
 
   formFields: FormFieldExtended[];
+
+  formType: "create" | "execute";
 }
-
-
-

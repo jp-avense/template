@@ -1,9 +1,11 @@
 import {
   Alert,
+  Box,
   Button,
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -18,6 +20,9 @@ import { Form } from "../../FormBuilder/form.interface";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 const validationSchema = yup.object({
   description: yup.string().optional(),
   label: yup.string().required("required"),
@@ -27,9 +32,21 @@ type Props = {
   forms: Form[];
   onFinish: () => any;
 };
+
+interface IFormOption {
+  type: string;
+  value: string;
+}
+
 const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [formOptions, setFormOptions] = useState([
+    {
+      type: "execute",
+      value: "",
+    },
+  ]);
 
   const navigate = useNavigate();
 
@@ -41,16 +58,32 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
     initialValues: {
       label: "",
       description: "",
-      form: "",
     },
     onSubmit: async (values, actions) => {
       try {
         setSuccess("");
         setError("");
 
-        await taskService.createTaskTypes(values);
+        const forms = formOptions.reduce<any>((acc, x) => {
+          return {
+            ...acc,
+            [x.type]: x.value,
+          };
+        }, {});
+
+        if (!forms.execute) {
+          setError("Provide an execution form");
+          return;
+        }
+
+        await taskService.createTaskTypes({
+          ...values,
+          form: forms,
+        });
+
         actions.resetForm();
         setSuccess("Added new task type");
+
         await onFinish();
         return true;
       } catch (error) {
@@ -87,6 +120,32 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
     } else formik.handleChange(e);
   };
 
+  const addFormOption = () => {
+    const res = [
+      ...formOptions,
+      {
+        type: "",
+        value: "",
+      },
+    ];
+
+    setFormOptions(res);
+  };
+
+  const changeFormOption = (newValue: IFormOption, index: number) => {
+    const sliced = formOptions.slice();
+    sliced.splice(index, 1, newValue);
+    setFormOptions(sliced);
+  };
+
+  const deleteFormOption = (e: number) => {
+    const sliced = formOptions.slice();
+    sliced.splice(e, 1);
+    setFormOptions(sliced);
+  };
+
+  const usedTypes = formOptions.map((item) => item.type);
+
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
@@ -122,29 +181,78 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
             />
           </Grid>
           <Grid item>
-            <TextField
-              select
-              value={formik.values.form || ""}
-              label={t("form")}
-              InputLabelProps={{ shrink: !formik.values.form }}
-              name="form"
-              onChange={(e) => handleFormChange(e)}
-              SelectProps={{
-                displayEmpty: true,
-              }}
-              fullWidth
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
             >
-              {forms
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((item) => (
-                  <MenuItem key={item._id} value={item._id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              <MenuItem value="">{t("none")}</MenuItem>
-              <MenuItem value="new">{t("createNewForm")}</MenuItem>
-            </TextField>
+              <div>Add form</div>
+              <IconButton onClick={addFormOption}>
+                <AddIcon color="primary" />
+              </IconButton>
+            </Box>
           </Grid>
+
+          {formOptions.map((item, index) => {
+            return (
+              <Grid item key={index}>
+                <Box display="flex" flexDirection="row" gap={2}>
+                  <TextField
+                    select
+                    fullWidth
+                    value={item.type}
+                    label={t("formType")}
+                    required
+                    onChange={(e) =>
+                      changeFormOption({ ...item, type: e.target.value }, index)
+                    }
+                  >
+                    <MenuItem
+                      value="create"
+                      disabled={usedTypes.includes("create")}
+                    >
+                      Create
+                    </MenuItem>
+                    <MenuItem
+                      value="execute"
+                      disabled={usedTypes.includes("execute")}
+                    >
+                      Execute
+                    </MenuItem>
+                  </TextField>
+                  <TextField
+                    select
+                    fullWidth
+                    label={t("value")}
+                    required
+                    value={item.value}
+                    onChange={(e) =>
+                      changeFormOption(
+                        { ...item, value: e.target.value },
+                        index
+                      )
+                    }
+                  >
+                    {forms
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((item) => (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                  </TextField>
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteFormOption(index)}
+                    disabled={item.type === "execute"}
+                  >
+                    <DeleteIcon></DeleteIcon>
+                  </IconButton>
+                </Box>
+              </Grid>
+            );
+          })}
           <Grid item>
             <Button
               variant="contained"

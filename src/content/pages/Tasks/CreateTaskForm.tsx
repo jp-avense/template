@@ -13,9 +13,19 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FilterContext } from "src/contexts/FilterContext";
 import { useTranslation } from "react-i18next";
+import { toMap } from "src/lib";
+import CustomCreateForm from "./CustomCreateForm";
+import DefaultCreateForm from "./DefaultCreateForm";
 
 type Props = {
   formik: any;
@@ -35,19 +45,47 @@ type Props = {
 const CreateTaskForm = ({ formik, status, setStatus, getNewTaskId }: Props) => {
   const { t } = useTranslation();
   const [idLoading, setIdLoading] = useState(false);
+  const [chosenType, setChosenType] = useState("");
   const context = useContext(FilterContext);
-
-  const handleChange = (e) => {
-    setStatus({
-      state: "",
-      message: "",
-    });
-    formik.handleChange(e);
-  };
+  
 
   const {
-    handleFilter: { originalData, details, types },
+    handleFilter: { types, forms },
   } = context;
+
+  const formMap = useMemo(() => toMap("_id", forms), [forms]);
+
+  const typesMap = useMemo(() => {
+    const mapping = toMap("key", types);
+
+    for (const value of Object.values<any>(mapping)) {
+      let newFormObj = {
+        execute: "",
+      };
+
+      if (typeof value.form === "object") {
+        newFormObj = Object.entries<string>(value.form).reduce<any>(
+          (acc, item) => {
+            const [key, formId] = item;
+
+            return {
+              ...acc,
+              [key]: formMap[formId],
+            };
+          },
+          {}
+        );
+      } else if (typeof value.form === "string") {
+        newFormObj = {
+          execute: formMap[value.form],
+        };
+      }
+
+      value.form = newFormObj;
+    }
+
+    return mapping;
+  }, [types, formMap]);
 
   const getId = async () => {
     setIdLoading(true);
@@ -55,185 +93,57 @@ const CreateTaskForm = ({ formik, status, setStatus, getNewTaskId }: Props) => {
     setIdLoading(false);
   };
 
-  const createRows = (formik) => {
-    const defaultProperties = Object.keys(originalData[0]);
-
-    const d = details
-      .slice()
-      .filter((item) => !defaultProperties.includes(item.key));
-
-    d.sort((a, b) => {
-      if (a.order == null) return 1;
-      if (b.order == null) return -1;
-
-      return a.order - b.order;
-    });
-
-    return d.map((item) => {
-      const type = item.inputType;
-
-      switch (type.toLowerCase()) {
-        case "enum":
-          return (
-            <FormControl fullWidth>
-              <InputLabel id={item.key}>{item.label}</InputLabel>
-              <Select
-                fullWidth
-                labelId={item.key}
-                label={item.label}
-                id={item.key}
-                name={item.key}
-                value={formik.values[item.key]}
-                onChange={handleChange}
-              >
-                <MenuItem value="">None</MenuItem>
-                {item.enum.map((a, idx) => (
-                  <MenuItem key={idx} value={a}>
-                    {a}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          );
-        case "string":
-        case "text":
-          return (
-            <TextField
-              label={t(item.label)}
-              defaultValue=""
-              fullWidth
-              value={formik.values[item.key]}
-              name={item.key}
-              onChange={handleChange}
-            />
-          );
-        case "date":
-        case "datetime":
-        case "time":
-          return (
-            <DatePicker
-              value={formik.values[item.key] || null}
-              label={t(item.label)}
-              onChange={(e) => formik.setFieldValue(item.key, e)}
-              renderInput={(params) => (
-                <TextField {...params} name={item.key} fullWidth />
-              )}
-            />
-          );
-        case "number":
-          return (
-            <TextField
-              name={item.key}
-              placeholder={t(item.label)}
-              value={formik.values[item.key]}
-              onChange={handleChange}
-              label={t(item.label)}
-              fullWidth
-              defaultValue=""
-              type="number"
-            />
-          );
-
-        case "boolean":
-          return (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  name={item.key}
-                  value={formik.values[item.key]}
-                  onChange={handleChange}
-                />
-              }
-              label={t(item.label)}
-            />
-          );
-
-        case "textarea":
-          return (
-            <TextField
-              label={t(item.label)}
-              multiline
-              maxRows={6}
-              fullWidth
-              value={formik.values[item.key]}
-              onChange={(e) => formik.setFieldValue(item.key, e.target.value)}
-            />
-          );
-        default:
-          return (
-            <Select displayEmpty>
-              <MenuItem>None</MenuItem>
-            </Select>
-          );
-      }
-    });
-  };
-
-  const rows = createRows(formik);
-
-  if (!details.length) {
-    return <>No details about the task found.</>;
-  }
+  const chosenForm = typesMap[chosenType]?.form.create;
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      {status.state ? (
-        <Alert severity={status.state as any}>{status.message}</Alert>
-      ) : null}
-      <Grid
-        container
-        spacing={2}
-        direction="column"
-        alignItems="stretch"
-        py={2}
-      >
-        <Grid item>
-          <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-            <TextField
-              label={t("taskId")}
-              placeholder={t("taskId")}
-              name="taskId"
-              value={formik.values.taskId}
-              onChange={formik.handleChange}
-              type="number"
-              sx={{ flexGrow: 1 }}
-            />
-            <Button
-              variant="outlined"
-              onClick={getId}
-              disabled={idLoading}
-              sx={{ flexGrow: 1 }}
-            >
-              {idLoading ? <CircularProgress size={20} /> : t("getNewTaskId")}
-            </Button>
-          </Box>
-        </Grid>
-        <Grid item>
+    <>
+      <Box display="flex" flexDirection="column" pt={2} gap={2}>
+        <Box display="flex" flexDirection="row" gap={2} alignItems="center">
           <TextField
-            select
-            label={t("type")}
-            placeholder={t("type")}
-            name="taskType"
-            value={formik.values.taskType}
+            label={t("taskId")}
+            placeholder={t("taskId")}
+            name="taskId"
+            value={formik.values.taskId}
             onChange={formik.handleChange}
-            fullWidth
-            required
+            type="number"
+            sx={{ flexGrow: 1 }}
+          />
+          <Button
+            variant="outlined"
+            onClick={getId}
+            disabled={idLoading}
+            sx={{ flexGrow: 1 }}
           >
-            {types.map((item) => (
+            {idLoading ? <CircularProgress size={20} /> : t("getNewTaskId")}
+          </Button>
+        </Box>
+        <TextField
+          select
+          fullWidth
+          label="Type"
+          required
+          onChange={(e) => setChosenType(e.target.value)}
+          value={chosenType}
+        >
+          {types.map((item) => {
+            return (
               <MenuItem key={item.key} value={item.key}>
                 {item.label}
               </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        {rows.map((item, indx) => (
-          <Grid item key={indx}>
-            {item}
-          </Grid>
-        ))}
-      </Grid>
-    </form>
+            );
+          })}
+        </TextField>
+        {chosenType ? (
+          chosenForm ? (
+            <CustomCreateForm
+              data={chosenForm}
+            />
+          ) : (
+            <DefaultCreateForm formik={formik} setStatus={setStatus} />
+          )
+        ) : null}
+      </Box>
+    </>
   );
 };
 

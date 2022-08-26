@@ -125,8 +125,6 @@ const UpdateTaskForm = ({ selected }: Props) => {
           taskDetails: newDetails,
         };
 
-        console.log(res);
-
         await taskService.updateTask(selected, res);
 
         setSuccess(t("success"));

@@ -33,6 +33,7 @@ type Values = {
   name: string;
   description: string;
   type: string;
+  formType: "create" | "execute";
 };
 
 interface IDragData {
@@ -54,6 +55,7 @@ function CreateForm() {
   const [gSettings, setGSettings] = useState<Values>({
     name: "",
     description: "",
+    formType: "execute" as const,
     type: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -129,12 +131,13 @@ function CreateForm() {
 
     if (!formTableData) return;
 
-    const { formFields, name, description, type } = formTableData;
+    const { formFields, name, description, formType } = formTableData;
 
     setGSettings({
       name,
       description,
-      type: ''
+      type: "",
+      formType,
     });
 
     const map = availableFields.reduce((acc, x) => {
@@ -250,11 +253,7 @@ function CreateForm() {
     }
 
     const dup = cloneDeep(dragData);
-
-    console.log(dup)
-    console.log(location.state)
-    console.log(fieldSettings);
-
+    
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 

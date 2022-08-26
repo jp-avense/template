@@ -32,8 +32,6 @@ const TaskTypePage = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
 
   const {
     t,
@@ -78,17 +76,6 @@ const TaskTypePage = () => {
         key: "description",
         label: t("description"),
       },
-      {
-        key: "form",
-        label: t("form"),
-        render: (data: Form) => {
-          return data?.name ? (
-            <PreviewModal data={data} title={data.name} />
-          ) : (
-            <Label color="error">{t("none")}</Label>
-          );
-        },
-      },
     ];
 
     try {
@@ -100,10 +87,18 @@ const TaskTypePage = () => {
       const { data } = await taskService.getTaskTypes();
 
       for (const d of data) {
-        const f = response.find((item) => item._id === d.form);
+        if (typeof d.form !== "object") {
+          d.form = { execute: d.form };
+        }
 
-        d.form = f;
+        for (const [key, value] of Object.entries(d.form)) {
+          const f = response.find((item) => item._id === value);
+
+          d.form[key] = f;
+        }
       }
+
+      console.log(data)
 
       setTypes(data);
       setHeaders(headers);

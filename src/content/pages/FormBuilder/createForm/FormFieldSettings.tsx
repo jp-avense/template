@@ -51,6 +51,7 @@ type Values = {
   name: string;
   description: string;
   type: string;
+  formType: 'create' | 'execute' 
 };
 
 function TabPanel(props) {

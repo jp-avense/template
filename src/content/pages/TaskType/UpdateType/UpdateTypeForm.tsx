@@ -1,15 +1,17 @@
 import {
   Alert,
+  Box,
   Button,
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
@@ -19,11 +21,19 @@ import { Form } from "../../FormBuilder/form.interface";
 import { TaskType } from "../type.interface";
 import { useTranslation } from "react-i18next";
 
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 type Props = {
   forms: Form[];
   selectedType: TaskType;
   onFinish: () => Promise<any>;
 };
+
+interface IFormOption {
+  type: string;
+  value: string;
+}
 
 const validationSchema = yup.object({
   key: yup
@@ -37,13 +47,30 @@ const validationSchema = yup.object({
 const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [formOptions, setFormOptions] = useState<IFormOption[]>([]);
 
   const navigate = useNavigate();
 
   const { t } = useTranslation();
 
-  const formOfType =
-    forms.find((item) => item.type === selectedType.key)?._id || "";
+  useEffect(() => {
+    if (selectedType.form && typeof selectedType.form === "object") {
+      const res: IFormOption[] = Object.entries(selectedType.form).map(
+        ([key, value]: [string, any]) => ({
+          type: key,
+          value: value?._id ?? "",
+        })
+      );
+
+      const hasExecute = "execute" in res;
+
+      if (!hasExecute) {
+        res["execute"] = "";
+      }
+
+      setFormOptions(res);
+    }
+  }, [selectedType]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -51,16 +78,30 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
       key: selectedType.key,
       label: selectedType.label,
       description: selectedType.description,
-      form: selectedType.form._id
     },
     validationSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
         setError("");
         setSuccess("");
 
-        await taskService.updateTaskType(selectedType._id, values);
+        const forms = formOptions.reduce<any>((acc, x) => {
+          return {
+            ...acc,
+            [x.type]: x.value,
+          };
+        }, {});
+
+        if (!forms.execute) {
+          setError("Provide an execution form");
+          return;
+        }
+
+        await taskService.updateTaskType(selectedType._id, {
+          ...values,
+          form: forms,
+        });
+
         setSuccess("Updated Task.");
 
         await onFinish();
@@ -92,9 +133,31 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
     formik.handleChange(e);
   };
 
-  console.log('type', selectedType)
-  console.log('values', formik.values);
-  console.log('forms', forms);
+  const addFormOption = () => {
+    const res = [
+      ...formOptions,
+      {
+        type: "",
+        value: "",
+      },
+    ];
+
+    setFormOptions(res);
+  };
+
+  const changeFormOption = (newValue: IFormOption, index: number) => {
+    const sliced = formOptions.slice();
+    sliced.splice(index, 1, newValue);
+    setFormOptions(sliced);
+  };
+
+  const deleteFormOption = (e: number) => {
+    const sliced = formOptions.slice();
+    sliced.splice(e, 1);
+    setFormOptions(sliced);
+  };
+
+  const usedTypes = formOptions.map((item) => item.type);
 
   return (
     <>
@@ -113,6 +176,7 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
               error={formik.touched.key && Boolean(formik.errors.key)}
               helperText={formik.touched.key && formik.errors.key}
               onChange={handleChange}
+              required
             />
           </Grid>
           <Grid item>
@@ -142,27 +206,77 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
             />
           </Grid>
           <Grid item>
-            <FormControl fullWidth>
-              <InputLabel id="form">{t("form")}</InputLabel>
-              <Select
-                labelId="form"
-                id="form"
-                value={formik.values.form}
-                label={t("form")}
-                name="form"
-                onChange={(e) => handleFormChange(e)}
-              >
-                {forms
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((item) => (
-                    <MenuItem key={item._id} value={item._id}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                <MenuItem value="new">{t("createNewForm")}</MenuItem>
-              </Select>
-            </FormControl>
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <div>Add form</div>
+              <IconButton onClick={addFormOption}>
+                <AddIcon color="primary" />
+              </IconButton>
+            </Box>
           </Grid>
+          {formOptions.map((item, index) => {
+            return (
+              <Grid item key={index}>
+                <Box display="flex" flexDirection="row" gap={2}>
+                  <TextField
+                    select
+                    fullWidth
+                    value={item.type}
+                    label={t("formType")}
+                    required
+                    onChange={(e) =>
+                      changeFormOption({ ...item, type: e.target.value }, index)
+                    }
+                  >
+                    <MenuItem
+                      value="create"
+                      disabled={usedTypes.includes("create")}
+                    >
+                      Create
+                    </MenuItem>
+                    <MenuItem
+                      value="execute"
+                      disabled={usedTypes.includes("execute")}
+                    >
+                      Execute
+                    </MenuItem>
+                  </TextField>
+                  <TextField
+                    select
+                    fullWidth
+                    label={t("value")}
+                    required
+                    value={item.value}
+                    onChange={(e) =>
+                      changeFormOption(
+                        { ...item, value: e.target.value },
+                        index
+                      )
+                    }
+                  >
+                    {forms
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((item) => (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                  </TextField>
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteFormOption(index)}
+                    disabled={item.type === "execute"}
+                  >
+                    <DeleteIcon></DeleteIcon>
+                  </IconButton>
+                </Box>
+              </Grid>
+            );
+          })}
           <Grid item>
             <Button
               type="submit"
