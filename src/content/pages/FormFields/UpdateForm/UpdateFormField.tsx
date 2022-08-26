@@ -139,18 +139,10 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
           }
         }
 
-        // if (type === "radios" || type === "checkboxes" || type === "dropdown") {
-        //   const reduced = options.reduce((acc, x) => {
-        //     return {
-        //       ...acc,
-        //       [x.key]: x.value,
-        //     };
-        //   }, {});
-
-        //   res.options = reduced;
-        // }
-
         if (type === "textarea") res.rows = rows;
+
+        if (type === "markup" && res.defaultValue) {
+          const hasScript = /<script.+>/g.test(res.defaultValue);
 
           if (hasScript) errors.unshift("Default value invalid");
           else res.defaultValue = _.escape(res.defaultValue);
@@ -170,21 +162,10 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   });
 
   const optionsValue = (val, index) => {
-    console.log("Val", val);
-    console.log("Index", index);
-
-    // let current = Object.values(options).slice();
     let current = Object.entries(options).reduce((acc, [key, val]) => {
       acc[key] = val;
       return acc;
     }, {});
-
-    // current.splice(index, 1, val);
-
-    // current.splice(index, 1, {
-    //   key: val.replace(/\s/g, "").toLowerCase(),
-    //   value: val,
-    // });
 
     console.log("Current", current);
 

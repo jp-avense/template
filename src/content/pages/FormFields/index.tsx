@@ -189,17 +189,6 @@ const FormFields = () => {
     return res;
   };
 
-  const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (event: any): void => {
-    setLimit(parseInt(event.target.value));
-    setPage(0);
-  };
-
-  const paginatedForms = applyPagination(forms, page, limit);
-
   return (
     <>
       <Helmet>
