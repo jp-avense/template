@@ -224,5 +224,9 @@
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
   "upload": "Upload",
-  "displayValue": "Display Value"
+  "displayValue": "Display Value",
+  "formSubmitted": "Form submitted",
+  "getNewTaskId": "Get new ID",
+  "taskId": "Task ID"
+
 }

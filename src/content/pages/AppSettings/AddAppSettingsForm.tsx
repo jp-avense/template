@@ -46,7 +46,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
 
   const { t } = useTranslation();
 
-  const types = ["String", "Object", "Array", "Number"];
+  const types = ["String", "Object", "Array", "Number", "Boolean"];
 
   const setSelectedType = (e) => {
     setType(e.target.value);
@@ -108,15 +108,18 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let val;
-    if (type === "Object" && value.length === 1) {
-      val = JSON.stringify(value[0]);
-    } else {
-      val = JSON.stringify(value);
+
+    let val = value
+
+    if (type === "Object" || type === 'Array') {
+      val = JSON.stringify(value)
+    } else if (type === 'Number') {
+      val = +value
     }
+
     const res = {
       key: key,
-      value: val,
+      value: val
     };
     try {
       setError("");
@@ -142,7 +145,6 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
         spacing={1}
         paddingBottom={1}
         paddingLeft={1}
-        sx={{ minHeight: 500 }}
       >
         <Grid item>
           <form onSubmit={handleSubmit} style={{ paddingTop: "1rem" }}>
@@ -224,6 +226,26 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                   type="number"
                   onChange={(e) => setValue(e.target.value)}
                 ></TextField>
+              </>
+            ) : (
+              <></>
+            )}
+            {type === "Boolean" ? (
+              <>
+                <TextField
+                  select
+                  sx={{ mt: 2 }}
+                  id="value"
+                  name="value"
+                  label={t("value")}
+                  fullWidth
+                  value={value}
+                  required
+                  onChange={(e) => setValue(e.target.value)}
+                >
+                  <MenuItem value="true">{t("true")}</MenuItem>
+                  <MenuItem value="false">{t("false")}</MenuItem>
+                </TextField>
               </>
             ) : (
               <></>
