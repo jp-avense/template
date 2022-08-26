@@ -31,8 +31,10 @@ export interface UpdateDto {
 }
 
 export const agentService = {
-  async getAgents() {
-    return apiService.get(ALL_URL);
+  async getAgents(cancelToken?) {
+    return cancelToken
+      ? apiService.get(ALL_URL, { cancelToken: cancelToken.token })
+      : apiService.get(ALL_URL);
   },
 
   async changeStatus(agents: string[], status: "enable" | "disable") {

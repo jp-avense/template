@@ -20,6 +20,7 @@ import { formService } from "src/services/form.service";
 
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
+import _ from "lodash";
 
 interface KeyValuePair {
   key: string;
@@ -42,7 +43,7 @@ interface IFormType {
 
 type Props = {
   selectedForm: IFormType;
-  onFinish: () => Promise<any>;
+  onDone: () => Promise<any>;
 };
 
 const validationSchema = yup.object({
@@ -50,7 +51,7 @@ const validationSchema = yup.object({
   description: yup.string().optional(),
 });
 
-const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
+const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [type, setType] = useState("");
@@ -81,7 +82,12 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
     if (selectedForm.rows) setRows(selectedForm.rows);
 
     if (selectedForm.options) {
-      setOptions(selectedForm.options);
+      const res = Object.entries(selectedForm.options).map(
+        ([key, value]: [string, any]) => {
+          return { key: key, value: value };
+        }
+      );
+      setOptions(res);
     }
   }, [selectedForm]);
 
@@ -114,16 +120,40 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
         const res = { ...values } as any;
         res.inputType = type;
 
-        if (type === "radios" || type === "checkboxes" || type === "dropdown")
-          res.options = options;
+        let errors = [];
+
+        if (type === "radios" || type === "checkboxes" || type === "dropdown") {
+          const reduced = options.reduce((acc, x) => {
+            return {
+              ...acc,
+              [x.key]: x.value,
+            };
+          }, {});
+
+          res.options = reduced;
+
+          if (
+            res.defaultValue &&
+            !Object.keys(res.options).includes(res.defaultValue)
+          ) {
+            errors.push("Default value must exist in the options");
+          }
+        }
 
         if (type === "textarea") res.rows = rows;
 
-        await formService.updateField(selectedForm._id, res);
-        await onFinish();
+          if (hasScript) errors.unshift("Default value invalid");
+          else res.defaultValue = _.escape(res.defaultValue);
+        }
 
-        setSuccess("Success");
+        if (!errors.length) {
+          await formService.updateField(selectedForm._id, res);
+          await onDone();
+
+          setSuccess("Success");
+        } else setError(errors[0]);
       } catch (error) {
+        console.log(error);
         setError(getAxiosErrorMessage(error));
       }
     },

@@ -22,6 +22,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import BuildIcon from "@mui/icons-material/Build";
+import ReportIcon from "@mui/icons-material/Report";
 import { useTranslation } from "react-i18next";
 import { useCookies } from "react-cookie";
 import useRoles from "src/hooks/useRole";
@@ -213,6 +214,21 @@ function SidebarMenu() {
                   startIcon={<DashboardIcon />}
                 >
                   {t("dashboard")}
+                </Button>
+              </ListItem>
+            </List>
+          </SubMenuWrapper>
+          <SubMenuWrapper>
+            <List component="div">
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/reports"
+                  startIcon={<ReportIcon />}
+                >
+                  {t("reports")}
                 </Button>
               </ListItem>
             </List>

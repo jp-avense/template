@@ -41,6 +41,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
   const [currentData, setCurrentData] = useState([]);
   const [unique, setUnique] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
 
@@ -67,6 +68,19 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
     setArr([]);
     setObj([]);
   }, [type]);
+
+  useEffect(() => {
+    if (type === "Object") {
+      const haveDuplicate = new Set(obj.map((v) => v.key));
+      if (haveDuplicate.size < obj.length) {
+        setIsValid(false);
+      } else {
+        setIsValid(true);
+      }
+    } else {
+      setIsValid(true);
+    }
+  }, [obj]);
 
   const addOption = () => {
     let current = arr.slice();
@@ -102,24 +116,49 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
   const setObject = (val, index, type) => {
     const res = obj.slice();
     res[index][type] = val;
+
+    const object = res.reduce((acc, item) => {
+      acc = {
+        ...acc,
+        [item.key]: item.value,
+      };
+      return acc;
+    }, {});
     setObj(res);
-    setValue(res);
+    setValue(object);
+  };
+
+  const isObjectKeyUniq = (val, index) => {
+    const res = obj.slice();
+    res.splice(index, 1);
+    if (val) {
+      const uniq = res.every((item) => item.key !== val);
+      if (uniq) {
+        return <></>;
+      } else if (!uniq) {
+        return (
+          <>
+            <Typography color={"red"}>Object key already exists</Typography>
+          </>
+        );
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let val = value
+    let val = value;
 
-    if (type === "Object" || type === 'Array') {
-      val = JSON.stringify(value)
-    } else if (type === 'Number') {
-      val = +value
+    if (type === "Object" || type === "Array") {
+      val = JSON.stringify(value);
+    } else if (type === "Number") {
+      val = +value;
     }
 
     const res = {
       key: key,
-      value: val
+      value: val,
     };
     try {
       setError("");
@@ -309,6 +348,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                       required
                       onChange={(e) => setObject(e.target.value, index, "key")}
                     ></TextField>
+
                     <TextField
                       key={index + c}
                       sx={{ mt: 2 }}
@@ -321,6 +361,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                         setObject(e.target.value, index, "value")
                       }
                     ></TextField>
+                    {isObjectKeyUniq(c.key, index)}
                   </Grid>
                 ))}
               </>
@@ -334,7 +375,9 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
                   variant="contained"
                   fullWidth
                   type="submit"
-                  disabled={value.length < 1 || !unique || isSubmitting}
+                  disabled={
+                    value.length < 1 || !unique || isSubmitting || !isValid
+                  }
                 >
                   {isSubmitting ? <CircularProgress size={18} /> : t("submit")}
                 </Button>

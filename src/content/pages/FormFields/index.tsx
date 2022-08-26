@@ -221,7 +221,7 @@ const FormFields = () => {
                     <UpdateForms>
                       <UpdateFormField
                         selectedForm={updateForm}
-                        onFinish={onFinish}
+                        onDone={onDone}
                       />
                     </UpdateForms>
 

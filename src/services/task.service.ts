@@ -11,7 +11,7 @@ interface IFilterParam {
 }
 
 export const taskService = {
-  async getAll(filters: IFilterParam = {}) {
+  async getAll(filters: IFilterParam = {}, cancelToken?) {
     const finalFilters = Object.entries(filters).reduce((acc, [key, value]) => {
       if (value != null) {
         acc[key] = value;
@@ -23,7 +23,9 @@ export const taskService = {
     const params = new URLSearchParams(finalFilters).toString();
     const url = `${TASK_URL}?${params}`;
 
-    return apiService.get(url);
+    return cancelToken
+      ? apiService.get(url, { cancelToken: cancelToken.token })
+      : apiService.get(url);
   },
 
   async getAllTask() {

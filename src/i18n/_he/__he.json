@@ -48,6 +48,7 @@
   "updatedBy": "עודכן על ידי",
   "executedBy": "מבוצע על ידי",
   "executionDate": "תאריך ביצוע",
+  "executionStartDate": "תאריך תחילת ביצוע",
   "Authority ID": "מזהה רשות",
   "Interface Data Creation": "יצירת נתונים ממשק",
   "Foreclosure ID": "מזהה עיקול",
@@ -179,6 +180,7 @@
   "rescheduleTask": "תזמן מחדש את המשימה",
   "transmitDone": "השידור נעשה",
   "transmitRescheduled": "השידור נקבע מחדש",
+  "startTask": "התחל משימה",
   "profile": "פּרוֹפִיל",
   "profileDescription": "הגדרות אישיות של המשתמש",
   "changeDetails": "שנה פרטים",
@@ -223,5 +225,6 @@
   "upload": "העלה",
   "formSubmitted": "הטופס מוגש",
   "getNewTaskId": "קבל תעודת זהות חדשה",
-  "taskId": "Task ID"
+  "taskId": "Task ID",
+  "reports": "דיווחים"
 }

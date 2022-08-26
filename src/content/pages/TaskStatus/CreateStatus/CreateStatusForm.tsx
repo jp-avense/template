@@ -9,6 +9,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
@@ -18,21 +19,24 @@ import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
+  Key: yup.string().required("required"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
   systemStatusKey: yup.string().required(),
 });
 
-const CreateStatusForm = ({ onDone }) => {
+const CreateStatusForm = ({ onDone, data }) => {
   const { t } = useTranslation();
 
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [uniq, setUniq] = useState(true);
 
   const formik = useFormik({
     enableReinitialize: true,
     validationSchema,
     initialValues: {
+      Key: "",
       label: "",
       description: "",
       systemStatusKey: "none",
@@ -58,12 +62,43 @@ const CreateStatusForm = ({ onDone }) => {
     formik.handleChange(e);
   };
 
+  const isKeyUniq = (key) => {
+    const uniq = data.every((item) => item.Key !== key);
+    setUniq(uniq);
+  };
+
+  const handleKeyChange = (e) => {
+    isKeyUniq(e.target.value);
+    setSuccess("");
+    setError("");
+
+    formik.handleChange(e);
+  };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={2} direction="column">
         <Grid item>
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
+        </Grid>
+        <Grid item>
+          <TextField
+            label={t("key")}
+            name="Key"
+            onChange={(e) => handleKeyChange(e)}
+            error={formik.touched.Key && Boolean(formik.errors.Key)}
+            value={formik.values.Key}
+            helperText={formik.touched.label && formik.errors.Key}
+            fullWidth
+          />
+          {!uniq ? (
+            <>
+              <Typography color={"red"}>Key already exists</Typography>
+            </>
+          ) : (
+            <></>
+          )}
         </Grid>
         <Grid item>
           <TextField
@@ -123,7 +158,7 @@ const CreateStatusForm = ({ onDone }) => {
         <Grid item>
           <Button
             variant="contained"
-            disabled={formik.isSubmitting}
+            disabled={formik.isSubmitting || !uniq}
             sx={{ display: "block" }}
             type="submit"
             fullWidth

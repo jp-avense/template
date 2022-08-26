@@ -277,7 +277,7 @@ const TaskStatusPage = () => {
       </Helmet>
       <PageTitleWrapper>
         <CreateStatus>
-          <CreateStatusForm onDone={onDone} />
+          <CreateStatusForm onDone={onDone} data={status} />
         </CreateStatus>
       </PageTitleWrapper>
       <Box display="flex" justifyContent="center">
@@ -304,6 +304,7 @@ const TaskStatusPage = () => {
                       <UpdateStatusForm
                         selectedStatus={updateStatusObject}
                         onDone={onDone}
+                        data={status}
                       />
                     </UpdateStatus>
                   </>

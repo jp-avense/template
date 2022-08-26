@@ -48,6 +48,7 @@
   "updatedBy": "Updated By",
   "executedBy": "Executed By",
   "executionDate": "Execution Date",
+  "executionStartDate": "Execution Start Date",
   "Authority ID": "Authority ID",
   "Interface Data Creation": "Interface Data Creation",
   "Foreclosure ID": "Foreclosure ID",
@@ -181,6 +182,7 @@
   "rescheduleTask": "Reschedule task",
   "transmitDone": "Transmit Done",
   "transmitRescheduled": "Transmit Rescheduled",
+  "startTask": "Start Task",
   "profile": "Profile",
   "profileDescription": "Personal settings of the user",
   "changeDetails": "Change Details",
@@ -225,5 +227,6 @@
   "upload": "Upload",
   "formSubmitted": "Form submitted",
   "getNewTaskId": "Get new ID",
-  "taskId": "Task ID"
+  "taskId": "Task ID",
+  "reports": "Reports"
 }
