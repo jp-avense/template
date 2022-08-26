@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const validationSchema = yup.object({
+  key: yup.string().required("required"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
 });
@@ -39,11 +40,13 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
     enableReinitialize: true,
     validationSchema,
     initialValues: {
+      key: "",
       label: "",
       description: "",
       form: "",
     },
     onSubmit: async (values, actions) => {
+      console.log(values);
       try {
         setSuccess("");
         setError("");
@@ -94,6 +97,17 @@ const CreateTaskTypeForm = ({ onFinish, forms }: Props) => {
           <Grid item>
             {error ? <Alert severity="error">{error}</Alert> : null}
             {success ? <Alert severity="success">{success}</Alert> : null}
+          </Grid>
+          <Grid item>
+            <TextField
+              label={t("key")}
+              name="key"
+              onChange={(e) => handleChange(e)}
+              error={formik.touched.key && Boolean(formik.errors.key)}
+              value={formik.values.key}
+              helperText={formik.touched.key && formik.errors.key}
+              fullWidth
+            />
           </Grid>
           <Grid item>
             <TextField

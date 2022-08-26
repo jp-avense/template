@@ -138,6 +138,7 @@
   "duplicate": "Duplicate",
   "delete": "Delete",
   "deleteSomeTypes": "You are about to delete some types. Continue?",
+  "deleteSomeAgents": "You are about to delete some agents. Continue?",
   "update": "Update",
   "createType": "Create task type",
   "createNewForm": "Create a new form",
@@ -223,7 +224,9 @@
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
   "upload": "Upload",
+  "displayValue": "Display Value",
   "formSubmitted": "Form submitted",
   "getNewTaskId": "Get new ID",
   "taskId": "Task ID"
+
 }

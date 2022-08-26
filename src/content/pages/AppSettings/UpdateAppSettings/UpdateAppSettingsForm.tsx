@@ -125,6 +125,9 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
     setValue(res);
   };
 
+  console.log(arr);
+  console.log(obj);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const val = JSON.stringify(value);
