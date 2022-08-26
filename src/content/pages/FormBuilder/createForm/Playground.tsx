@@ -112,8 +112,13 @@ const Playground = ({
     if (dataTarget !== dragPlay && dragPlay)
       handleDragDropPlayground(e, dragPlay, dataTarget);
 
+    // console.log("Data Target: ", dataTarget);
+    // console.log("Drag Play: ", dragPlay);
+
     setDragPlay("");
   };
+
+  // console.log("Data", data);
 
   const handleChange = (e) => {};
 

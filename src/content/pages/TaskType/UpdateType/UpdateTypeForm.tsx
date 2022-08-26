@@ -51,12 +51,11 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
       key: selectedType.key,
       label: selectedType.label,
       description: selectedType.description,
-      form: selectedType.form._id
+      form: selectedType.form?._id,
     },
     validationSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
         setError("");
         setSuccess("");
 
@@ -92,9 +91,9 @@ const UpdateTypeForm = ({ selectedType, onFinish, forms }: Props) => {
     formik.handleChange(e);
   };
 
-  console.log('type', selectedType)
-  console.log('values', formik.values);
-  console.log('forms', forms);
+  // console.log("type", selectedType);
+  // console.log("values", formik.values);
+  // console.log("form", forms);
 
   return (
     <>

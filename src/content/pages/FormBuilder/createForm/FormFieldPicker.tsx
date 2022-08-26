@@ -43,8 +43,6 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  console.log("formz", forms);
-
   useEffect(() => {
     sortForms();
   }, [forms]);

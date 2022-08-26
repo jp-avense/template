@@ -172,6 +172,8 @@ const TaskTypePage = () => {
     return res;
   }, [selected]);
 
+  // console.log("Types", types);
+
   return (
     <>
       <Helmet>

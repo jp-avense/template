@@ -56,7 +56,6 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
   const [options, setOptions] = useState([{ key: "", value: "" }]);
-  const [optionsx, setOptionsx] = useState([]);
 
   const types = [
     "text",
@@ -81,8 +80,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
     if (selectedForm.rows) setRows(selectedForm.rows);
 
     if (selectedForm.options) {
-      // setOptions(selectedForm.options);
-      setOptionsx(selectedForm.options);
+      setOptions(selectedForm.options);
     }
   }, [selectedForm]);
 
@@ -114,7 +112,18 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
         res.inputType = type;
 
         if (type === "radios" || type === "checkboxes" || type === "dropdown")
-          res.options = optionsx;
+          res.options = options;
+
+        // if (type === "radios" || type === "checkboxes" || type === "dropdown") {
+        //   const reduced = options.reduce((acc, x) => {
+        //     return {
+        //       ...acc,
+        //       [x.key]: x.value,
+        //     };
+        //   }, {});
+
+        //   res.options = reduced;
+        // }
 
         if (type === "textarea") res.rows = rows;
 
@@ -125,70 +134,61 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
 
         setSuccess("Success");
       } catch (error) {
+        console.log(error);
         setError(getAxiosErrorMessage(error));
       }
     },
   });
 
-  const optionsValue = (e, index) => {
-    let current = Object.values(optionsx)
-      .slice()
-      .map((item) => {
-        return { ...item };
-      });
+  const optionsValue = (val, index) => {
+    console.log("Val", val);
+    console.log("Index", index);
 
-    const key = e.target.value.replace(" ", "").toLowerCase();
+    // let current = Object.values(options).slice();
+    let current = Object.entries(options).reduce((acc, [key, val]) => {
+      acc[key] = val;
+      return acc;
+    }, {});
 
-    const deg = {
-      [key]: e.target.value,
-    };
-
-    current.splice(index, 1, deg);
-
-    setOptionsx(current);
-    // let current = Object.values(options)
-    //   .slice()
-    //   .map((item) => {
-    //     return { ...item };
-    //   });
+    // current.splice(index, 1, val);
 
     // current.splice(index, 1, {
-    //   key: e.target.value.replace(" ", "").toLowerCase(),
-    //   value: e.target.value,
+    //   key: val.replace(/\s/g, "").toLowerCase(),
+    //   value: val,
     // });
 
+    console.log("Current", current);
+
+    // setBack(current);
     // setOptions(current);
   };
-
-  // console.log(options);
-  // console.log(optionsx);
 
   const setSelectedForm = (e) => {
     setType(e.target.value);
     setRows(5);
-    setOptionsx([]);
-    // setOptions([{ key: "", value: "" }]);
+    setOptions([{ key: "", value: "" }]);
   };
 
   const addOption = () => {
-    let current = optionsx.slice();
+    let current = Object.values(options).slice();
     current.push({ key: "", value: "" });
-    setOptionsx(current);
-    // let current = options.slice();
-    // current.push({ key: "", value: "" });
-    // setOptions(current);
+    setOptions(current);
   };
 
   const removeOption = () => {
-    let current = Object.values(optionsx).slice();
+    let current = Object.values(options).slice();
     current.splice(current.length - 1, 1);
-    setOptionsx(current);
-    // let current = options.slice();
-    // current.splice(current.length - 1, 1);
-    // setOptions(current);
+    setOptions(current);
   };
 
-  console.log(optionsx);
+  const dataOptions = Object.entries(options).map((x) => {
+    const key = {
+      key: x[0],
+      value: x[1],
+    };
+
+    return key;
+  });
 
   return (
     <>
@@ -341,7 +341,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
                       <div>
                         <Button
                           sx={{ mr: 1 }}
-                          disabled={optionsx.length < 2}
+                          disabled={options.length < 2}
                           onClick={removeOption}
                           variant="contained"
                         >
@@ -352,7 +352,7 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
                         </Button>
                       </div>
                       <div>
-                        {Object.values(optionsx).map((c, index) => (
+                        {Object.values(options).map((c, index) => (
                           <>
                             <TextField
                               sx={{ mt: 1 }}
@@ -361,7 +361,9 @@ const UpdateFormField = ({ selectedForm, onFinish }: Props) => {
                               name="option"
                               defaultValue={c}
                               value={c.value}
-                              onChange={(e) => optionsValue(e, index)}
+                              onChange={(e) =>
+                                optionsValue(e.target.value, index)
+                              }
                               fullWidth
                               required
                             ></TextField>

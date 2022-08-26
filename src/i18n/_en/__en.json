@@ -138,6 +138,7 @@
   "duplicate": "Duplicate",
   "delete": "Delete",
   "deleteSomeTypes": "You are about to delete some types. Continue?",
+  "deleteSomeAgents": "You are about to delete some agents. Continue?",
   "update": "Update",
   "createType": "Create task type",
   "createNewForm": "Create a new form",
@@ -222,5 +223,6 @@
   "changes": "Changes",
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
-  "upload": "Upload"
+  "upload": "Upload",
+  "displayValue": "Display Value"
 }
