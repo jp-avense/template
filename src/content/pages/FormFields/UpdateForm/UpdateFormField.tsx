@@ -56,6 +56,7 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
+
   const [options, setOptions] = useState([{ key: "", value: "" }]);
 
   const types = [
@@ -91,7 +92,6 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   }, [selectedForm]);
 
   const validationSchema = yup.object({
-    key: yup.string().required("Required"),
     label: yup.string(),
     description: yup.string(),
     note: yup.string(),
@@ -102,7 +102,6 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
 
   const formik = useFormik({
     initialValues: {
-      key: selectedForm.key,
       label: selectedForm.label,
       description: selectedForm.description,
       note: selectedForm.note,
@@ -140,7 +139,6 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
         }
 
         if (type === "textarea") res.rows = rows;
-
         if (type === "markup" && res.defaultValue) {
           const hasScript = /<script.+>/g.test(res.defaultValue);
 
@@ -161,16 +159,16 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
     },
   });
 
-  const optionsValue = (val, index) => {
-    let current = Object.entries(options).reduce((acc, [key, val]) => {
-      acc[key] = val;
-      return acc;
-    }, {});
+  const optionsValue = (e, index) => {
+    let current = options.slice().map((item) => {
+      return { ...item };
+    });
 
-    console.log("Current", current);
-
-    // setBack(current);
-    // setOptions(current);
+    current.splice(index, 1, {
+      key: e.target.value.replace(" ", ""),
+      value: e.target.value,
+    });
+    setOptions(current);
   };
 
   const setSelectedForm = (e) => {
@@ -180,25 +178,16 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   };
 
   const addOption = () => {
-    let current = Object.values(options).slice();
+    let current = options.slice();
     current.push({ key: "", value: "" });
     setOptions(current);
   };
 
   const removeOption = () => {
-    let current = Object.values(options).slice();
+    let current = options.slice();
     current.splice(current.length - 1, 1);
     setOptions(current);
   };
-
-  const dataOptions = Object.entries(options).map((x) => {
-    const key = {
-      key: x[0],
-      value: x[1],
-    };
-
-    return key;
-  });
 
   return (
     <>
@@ -245,11 +234,9 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
                     id="key"
                     name="key"
                     label={t("key")}
-                    value={formik.values.key}
-                    onChange={formik.handleChange}
-                    error={formik.touched.key && Boolean(formik.errors.key)}
-                    helperText={formik.touched.key && formik.errors.key}
+                    value={selectedForm.key}
                     fullWidth
+                    disabled
                   ></TextField>
                   <TextField
                     sx={{ mt: 2 }}
@@ -364,18 +351,15 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
                         </Button>
                       </div>
                       <div>
-                        {Object.values(options).map((c, index) => (
+                        {options.map((c, index) => (
                           <>
                             <TextField
                               sx={{ mt: 1 }}
                               key={index}
                               id="option"
                               name="option"
-                              defaultValue={c}
                               value={c.value}
-                              onChange={(e) =>
-                                optionsValue(e.target.value, index)
-                              }
+                              onChange={(e) => optionsValue(e, index)}
                               fullWidth
                               required
                             ></TextField>
