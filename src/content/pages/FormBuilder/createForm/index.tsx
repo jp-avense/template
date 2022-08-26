@@ -190,7 +190,7 @@ function CreateForm() {
     if (dragData.find((item) => item.key === drag.id)) return;
     if (dragTarget !== drag.id && drag.sidebar) {
       setSelected([drag.id]);
-      handleDragDrop(e);
+      handleDragDrop(e, drag.id, dragTarget);
     }
     setDrag("");
   };
@@ -205,7 +205,7 @@ function CreateForm() {
     setFieldSettings(current);
   };
 
-  const handleDragDrop = (e) => {
+  const handleDragDrop = (e, source: string, target: string) => {
     const res = {
       key: drag.id,
       conditions: {},
@@ -214,6 +214,14 @@ function CreateForm() {
 
     const data = [...dragData, res];
 
+    const dataKey = data.map((item) => item);
+    console.log("Form Field Data: ", dataKey);
+
+    const sourceidx = dataKey.findIndex((item) => item.key === source);
+    const targetidx = dataKey.findIndex((item) => item.key === target);
+
+    console.log("Source", sourceidx);
+    console.log("Target", targetidx);
     setDragData(data);
   };
 

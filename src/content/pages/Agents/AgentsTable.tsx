@@ -33,6 +33,9 @@ import { agentService } from "src/services/agent.service";
 import { useTranslation } from "react-i18next";
 import ModalButton from "src/components/ModalButton";
 import UpdateAgentForm from "./UpdateAgentForm";
+import Swal from "sweetalert2";
+import { getAxiosErrorMessage } from "src/lib";
+import ConfirmModal from "src/components/ConfirmModal";
 
 const headCells = [
   { id: "name", label: "name" },
@@ -132,6 +135,22 @@ const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
     setTabsData([]);
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+
+    try {
+      console.log("Agents has been deleted.");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        timer: 4000,
+        text: getAxiosErrorMessage(error),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader
@@ -166,6 +185,26 @@ const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
               >
                 {t("disabled")}
               </Button>
+              {selectedAgents.length ? (
+                <ConfirmModal
+                  buttonText={t("delete")}
+                  title={t("delete")}
+                  handleConfirm={() => handleDelete()}
+                  confirmMessage={t("deleteSomeAgents")}
+                  confirmText={t("submit")}
+                  buttonProps={{
+                    variant: "contained",
+                    color: "warning",
+                  }}
+                />
+              ) : // <Button
+              //   variant="contained"
+              //   color="warning"
+              //   onClick={() => handleDelete()}
+              // >
+              //   {t("delete")}
+              // </Button>
+              null}
             </Box>
           ) : null
         }

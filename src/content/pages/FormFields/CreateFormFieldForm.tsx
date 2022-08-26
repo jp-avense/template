@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
-import _ from 'lodash'
+import _ from "lodash";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -61,6 +61,7 @@ function FormFieldForm({ onDone }) {
     description: yup.string(),
     note: yup.string(),
     validation: yup.string(),
+    value: yup.string(),
     defaultValue: yup.string(),
     placeholder: yup.string(),
   });
@@ -72,6 +73,7 @@ function FormFieldForm({ onDone }) {
       description: "",
       note: "",
       validation: "",
+      value: false,
       defaultValue: "",
       placeholder: "",
     },
@@ -140,6 +142,7 @@ function FormFieldForm({ onDone }) {
       key: e.target.value.replace(/\s/g, "").toLowerCase(),
       value: e.target.value,
     });
+
     setOptions(current);
   };
 
@@ -259,6 +262,18 @@ function FormFieldForm({ onDone }) {
                     helperText={
                       formik.touched.placeholder && formik.errors.placeholder
                     }
+                    fullWidth
+                  ></TextField>
+                  <TextField
+                    sx={{ mt: 2 }}
+                    id="value"
+                    name="value"
+                    label="Value"
+                    value="false"
+                    disabled={true}
+                    onChange={(e) => handleChange(e)}
+                    error={formik.touched.value && Boolean(formik.errors.value)}
+                    helperText={formik.touched.value && formik.errors.value}
                     fullWidth
                   ></TextField>
                   {type === "checkboxes" ||

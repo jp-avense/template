@@ -223,6 +223,7 @@
   "fileName": "שם קובץ",
   "fileTypeInvalid": "סוג הקובץ אינו חוקי",
   "upload": "העלה",
+  "displayValue": "ערך תצוגה",
   "formSubmitted": "הטופס מוגש",
   "getNewTaskId": "קבל תעודת זהות חדשה",
   "taskId": "Task ID",
