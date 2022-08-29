@@ -18,6 +18,7 @@ import { formService } from "src/services/form.service";
 import Scrollbar from "src/components/Scrollbar";
 import { useTranslation } from "react-i18next";
 import "./style.css";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 
 type Props = {
   onDragEnter: any;
@@ -110,6 +111,50 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                       <Typography>{t(x.inputType)}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+                      {/* <Droppable droppableId="formFields" isDropDisabled={true}>
+                        {(droppableProvided, droppableSnapshot) => (
+                          <Box
+                            ref={droppableProvided.innerRef}
+                            {...droppableProvided.droppableProps}
+                          >
+                            {x.forms.map((item, index) => {
+                              const { key } = item;
+                              return (
+                                <Draggable
+                                  key={item._id}
+                                  draggableId={item._id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <>
+                                      <Box
+                                        key={key}
+                                        py={2}
+                                        px={3.5}
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "#f0f2f5",
+                                            transitionDuration: "150ms",
+                                          },
+                                        }}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Typography variant="body2">
+                                          {item.label} ({key})
+                                        </Typography>
+                                      </Box>
+                                      <Divider />
+                                    </>
+                                  )}
+                                </Draggable>
+                              );
+                            })}
+                            {droppableProvided.placeholder}
+                          </Box>
+                        )}
+                      </Droppable> */}
                       {x.forms.map((item) => {
                         const { key } = item;
                         return (
