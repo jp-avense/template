@@ -111,11 +111,12 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                       <Typography>{t(x.inputType)}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      {/* <Droppable droppableId="formFields" isDropDisabled={true}>
+                      <Droppable droppableId="formFields" isDropDisabled={true}>
                         {(droppableProvided, droppableSnapshot) => (
                           <Box
                             ref={droppableProvided.innerRef}
                             {...droppableProvided.droppableProps}
+                            zIndex={6}
                           >
                             {x.forms.map((item, index) => {
                               const { key } = item;
@@ -136,6 +137,12 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                                             backgroundColor: "#f0f2f5",
                                             transitionDuration: "150ms",
                                           },
+                                          boxShadow: snapshot.isDragging
+                                            ? "0 5px 5px rgba(0, 0, 0, 0.2)"
+                                            : "unset",
+                                          backgroundColor: snapshot.isDragging
+                                            ? "#e8eaf6"
+                                            : "unset",
                                         }}
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
@@ -154,8 +161,8 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                             {droppableProvided.placeholder}
                           </Box>
                         )}
-                      </Droppable> */}
-                      {x.forms.map((item) => {
+                      </Droppable>
+                      {/* {x.forms.map((item) => {
                         const { key } = item;
                         return (
                           <>
@@ -180,7 +187,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                             <Divider />
                           </>
                         );
-                      })}
+                      })} */}
                     </AccordionDetails>
                   </Accordion>
                 ))}
