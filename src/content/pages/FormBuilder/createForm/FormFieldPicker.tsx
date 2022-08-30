@@ -74,7 +74,6 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
           width: 300,
           height: "100vh",
           backgroundColor: "white",
-          position: "fixed",
         }}
       >
         <Scrollbar>
@@ -116,7 +115,6 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                           <Box
                             ref={droppableProvided.innerRef}
                             {...droppableProvided.droppableProps}
-                            zIndex={6}
                           >
                             {x.forms.map((item, index) => {
                               const { key } = item;
