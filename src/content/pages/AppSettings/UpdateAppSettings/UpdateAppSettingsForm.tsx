@@ -167,20 +167,19 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
     }
   };
 
-  console.log(arr);
-  console.log(obj);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const val = JSON.stringify(value);
     const res = {
       key: key,
       value: val,
+      oldKey: selected.key
     };
     try {
       setError("");
       setSuccess("");
       setIsSubmitting(true);
+
       await settingsService.updateSettings(res);
 
       setSuccess("Success");

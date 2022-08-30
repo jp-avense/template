@@ -96,8 +96,8 @@ const UpdateTaskForm = ({ selected }: Props) => {
         setError("");
         setSuccess("");
 
-        if (statusId !== "new" && statusId !== "assigned") {
-          setError(t("updateOnlyIfNew"));
+        if (statusId == "done") {
+          setError(t("cannotUpdateDoneTask"));
           return;
         }
 
@@ -294,8 +294,8 @@ const UpdateTaskForm = ({ selected }: Props) => {
   return (
     <>
       <Modals open={open} onClose={handleClose} title={t("updateTask")}>
-        {statusId !== "new" && statusId !== "assigned" ? (
-          <Alert severity="warning">{t("updateOnlyIfNew")}</Alert>
+        {statusId === "done" ? (
+          <Alert severity="warning">{t("cannotUpdateDoneTask")}</Alert>
         ) : details.length < 1 ? (
           <>No details found for task</>
         ) : (

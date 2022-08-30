@@ -213,7 +213,7 @@
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
   "search": "Search",
-  "updateOnlyIfNew": "You can only update a new or assigned task",
+  "cannotUpdateDoneTask": "You can only update a new or assigned task",
   "field": "Field",
   "agentLocation": "Agent location",
   "addressLocation": "Address Location",

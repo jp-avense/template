@@ -33,7 +33,10 @@ type Props = {
 };
 
 const validationSchema = yup.object({
-  Key: yup.string().required("required"),
+  Key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .required("required"),
   label: yup.string().required("required"),
   description: yup.string().optional(),
   systemStatusKey: yup.string().required(),
@@ -104,7 +107,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
             {" "}
             <Grid item>
               <TextField
-                name="key"
+                name="Key"
                 label={t("key")}
                 defaultValue={selectedStatus.Key}
                 disabled

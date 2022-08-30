@@ -14,9 +14,8 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
-import { Form } from "../../FormBuilder/form.interface";
-import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { taskService } from "src/services/task.service";
 
 const validationSchema = yup.object({
   key: yup.string().required("required"),
@@ -41,19 +40,25 @@ const CreateTaskDetailForm = ({ onDone }) => {
       inputType: "",
       showInTable: false,
       description: "",
+      order: null,
     },
     onSubmit: async (values, actions) => {
-      console.log(values);
-      //   try {
-      //     setError("");
-      //     setSuccess("");
-      //     // await taskDetails.createTaskDetails(values);
-      //     actions.resetForm();
-      //     setSuccess("Added new detail");
-      //     await onDone();
-      //   } catch (error) {
-      //     setError(getAxiosErrorMessage(error));
-      //   }
+      try {
+        setError("");
+        setSuccess("");
+
+        await taskService.createDetails(values);
+
+        actions.resetForm();
+        setSuccess(t("success"));
+        await onDone();
+
+
+        // TODO on done missing
+        
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
     },
   });
 
@@ -97,7 +102,7 @@ const CreateTaskDetailForm = ({ onDone }) => {
             <FormControl fullWidth>
               <InputLabel id="inputType">{t("inputType")}</InputLabel>
               <Select
-                labelId="inputType"
+                labelId="inputType" 
                 id="inputType"
                 name="inputType"
                 label="inputType"
@@ -110,7 +115,7 @@ const CreateTaskDetailForm = ({ onDone }) => {
                 <MenuItem value="any">{t("any")}</MenuItem>
                 <MenuItem value="boolean">{t("boolean")}</MenuItem>
                 <MenuItem value="date">{t("date")}</MenuItem>
-                <MenuItem value="dropdown">{t("dropdown")}</MenuItem>
+                {/* <MenuItem value="dropdown">{t("dropdown")}</MenuItem> */}
                 <MenuItem value="number">{t("number")}</MenuItem>
                 <MenuItem value="string">{t("string")}</MenuItem>
               </Select>
@@ -142,6 +147,22 @@ const CreateTaskDetailForm = ({ onDone }) => {
               </FormHelperText>
             </FormControl>
           </Grid>
+          {formik.values.showInTable ? (
+            <Grid item>
+              <TextField
+                type="number"
+                placeholder={t("order")}
+                label={t("order")}
+                name="order"
+                value={formik.values.order}
+                onChange={(e) => handleChange(e)}
+                error={formik.touched.order && Boolean(formik.errors.order)}
+                helperText={formik.touched.order && formik.errors.order}
+                fullWidth
+              ></TextField>
+            </Grid>
+          ) : null}
+
           <Grid item>
             <TextField
               label={t("description")}

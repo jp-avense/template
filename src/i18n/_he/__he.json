@@ -210,7 +210,7 @@
   "arrayValues": "ערכי מערך",
   "objectValues": "ערכי אובייקט",
   "search": "לחפש",
-  "updateOnlyIfNew": "אתה יכול לעדכן רק משימה חדשה או שהוקצתה",
+  "cannotUpdateDoneTask": "לא ניתן לעדכן סטטוס בתהליך או בהשלמה",
   "field": "שדה",
   "agentLocation": "מיקום הסוכן",
   "addressLocation": "מיקום הכתובת",

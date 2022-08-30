@@ -19,7 +19,10 @@ import * as yup from "yup";
 import { getAxiosErrorMessage } from "src/lib";
 
 const validationSchema = yup.object({
-  Key: yup.string().required("required"),
+  Key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .required("required"),
   description: yup.string().optional(),
   label: yup.string().required("required"),
   systemStatusKey: yup.string().required(),
