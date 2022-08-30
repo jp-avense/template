@@ -1,4 +1,13 @@
-import { Alert, Box, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Alert,
+  Box,
+  MenuItem,
+  Select,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { TaskType } from "../../TaskType/type.interface";
 import LoadingButton from "src/content/pages/Components/LoadingButton";
@@ -16,7 +25,7 @@ type Props = {
       description: string;
       form: string;
     };
-    formTableData: Form
+    formTableData: Form;
   };
   taskTypes: TaskType[];
   settings: Values;
@@ -29,6 +38,7 @@ type Values = {
   name: string;
   description: string;
   type: string;
+  formType: "create" | "execute";
 };
 
 const FormGeneralSettings = ({
@@ -106,6 +116,19 @@ const FormGeneralSettings = ({
         />
       </Box>
       <Box display="flex" gap={1} flexDirection="column">
+        <span>{t("formType")}</span>
+        <Select
+          fullWidth
+          onChange={handleChange}
+          name="type"
+          value={values.formType}
+          displayEmpty
+        >
+          <MenuItem value="create">Create form</MenuItem>
+          <MenuItem value="execute">Execution form</MenuItem>
+        </Select>
+      </Box>
+      <Box display="flex" gap={1} flexDirection="column" sx={{ flexGrow: 1 }}>
         <span>{t("taskType")}</span>
         <Select
           fullWidth

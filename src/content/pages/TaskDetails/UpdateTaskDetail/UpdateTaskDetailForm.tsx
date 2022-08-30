@@ -80,10 +80,11 @@ const UpdateTaskDetail = ({ selectedDetail, onDone }: Props) => {
             <TextField
               name="key"
               label={t("key")}
-              defaultValue={selectedDetail.key}
-              disabled
+              value={formik.values.key}
+              error={formik.touched.key && Boolean(formik.errors.key)}
+              helperText={formik.touched.key && formik.errors.key}
               fullWidth
-              helperText={t("cantChangeField")}
+              onChange={formik.handleChange}
             />
           </Grid>
           <Grid item>

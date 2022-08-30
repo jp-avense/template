@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 const applyPagination = (forms: any, page: number, limit: number) => {
   return forms.slice(page * limit, page * limit + limit);
 };
+
 interface State {
   order: "asc" | "desc";
 }
@@ -29,8 +30,6 @@ const FormFields = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
   const [valueToOrderBy, setValueToOrderBy] = useState("");
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
 
   const {
     t,
@@ -170,7 +169,7 @@ const FormFields = () => {
       forms,
       getComparator(orderDirection.order, valueToOrderBy)
     );
-    return applyPagination(sort, page, limit);
+    return sort;
   };
 
   const getComparator = (order, orderBy) => {
@@ -190,17 +189,6 @@ const FormFields = () => {
     return res;
   };
 
-  const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (event: any): void => {
-    setLimit(parseInt(event.target.value));
-    setPage(0);
-  };
-
-  const paginatedForms = applyPagination(forms, page, limit);
-
   return (
     <>
       <Helmet>
@@ -214,8 +202,7 @@ const FormFields = () => {
       <Box display="flex" justifyContent="center" pb={5}>
         <Card sx={{ width: "80%" }}>
           <DynamicTable
-            data={paginatedForms}
-            originalData={forms}
+            data={forms}
             headers={headers}
             selected={selected}
             title={t("fieldForms")}
@@ -234,7 +221,7 @@ const FormFields = () => {
                     <UpdateForms>
                       <UpdateFormField
                         selectedForm={updateForm}
-                        onFinish={onFinish}
+                        onDone={onDone}
                       />
                     </UpdateForms>
 
@@ -262,18 +249,6 @@ const FormFields = () => {
               </Box>
             }
           ></DynamicTable>
-          <Box p={2}>
-            <TablePagination
-              component="div"
-              count={forms.length}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleLimitChange}
-              page={page}
-              rowsPerPage={limit}
-              rowsPerPageOptions={[5, 10, 25, 30]}
-              labelRowsPerPage={t("rowsPerPage")}
-            />
-          </Box>
         </Card>
       </Box>
     </>

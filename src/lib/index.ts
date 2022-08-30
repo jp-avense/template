@@ -46,3 +46,14 @@ export const isDefaultColumn = (string: string) => {
 
   return defaults.includes(string as TaskDefaultColumns);
 };
+
+export const toMap = (key: string, data: any[]) => {
+  return data.reduce((acc, x) => {
+    const mapKey = x[key];
+
+    return {
+      ...acc,
+      [mapKey]: x,
+    };
+  }, {});
+};

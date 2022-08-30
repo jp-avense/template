@@ -4,6 +4,7 @@ import { parseValue } from "src/lib";
 import { taskService } from "src/services/task.service";
 import { AxiosResponse } from "axios";
 import { TaskDefaultColumns } from "src/consts";
+import { Form } from "src/content/pages/FormBuilder/form.interface";
 
 type FilterContextT = {
   handleFilter: {
@@ -41,6 +42,8 @@ type FilterContextT = {
     getStatusAndSet: () => Promise<any>;
     settings: any[];
     setSettings: React.Dispatch<React.SetStateAction<any[]>>;
+    forms: Form[];
+    setForms: React.Dispatch<React.SetStateAction<Form[]>>;
   };
 };
 
@@ -65,6 +68,8 @@ export const FilterProvider = ({ children }) => {
 
   const [filter, setFilter] = useState("clear_filters");
   const [dynamicFilters, setDynamicFilters] = useState([]);
+
+  const [forms, setForms] = useState<Form[]>([]);
 
   const getDataByFilters = async (parsedObject?: object) => {
     setSelectedRows([]);
@@ -162,7 +167,9 @@ export const FilterProvider = ({ children }) => {
     getStatusAndSet,
     getTypesAndSet,
     settings,
-    setSettings
+    setSettings,
+    forms,
+    setForms,
   };
 
   return (

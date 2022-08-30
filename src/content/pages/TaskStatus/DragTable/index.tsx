@@ -1,5 +1,6 @@
 import {
   Card,
+  Box,
   CardHeader,
   Divider,
   TableContainer,
@@ -9,17 +10,23 @@ import {
   TableCell,
   Checkbox,
   TableBody,
+  TablePagination,
   CircularProgress,
+  TableSortLabel,
 } from "@mui/material";
 import { t } from "i18next";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import "./style.css";
 
 interface IHeader {
   key: string;
   label: string;
   render?: (value: any) => any;
+}
+
+interface State {
+  order: "asc" | "desc";
 }
 
 type Props = {
@@ -32,6 +39,11 @@ type Props = {
   selected: string[];
   action?: ReactNode | null;
   handleDragDrop: any;
+  sort?: boolean;
+  sorted?: () => any[];
+  createSortHandler?: (property: any) => (event: any) => void;
+  orderDirection?: State;
+  valueToOrderBy?: string;
 };
 
 const DynamicTable = ({
@@ -44,12 +56,38 @@ const DynamicTable = ({
   selected,
   action,
   handleDragDrop,
+  sort,
+  sorted,
+  createSortHandler,
+  orderDirection,
+  valueToOrderBy,
 }: Props) => {
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [dragItem, setDragItem] = useState(null);
   const indeterminate = selected.length > 0 && selected.length < data.length;
   const checked = selected.length === data.length;
 
   const headKeys = headers.map((item) => item.key);
+
+  useEffect(() => {
+    setTotal(data.length);
+    const ceiling = Math.floor(total / limit);
+
+    if (page > ceiling) {
+      setPage(ceiling);
+    }
+  }, [data, total]);
+
+  const handlePageChange = async (e: any, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = async (e: any) => {
+    setLimit(parseInt(e.target.value));
+    setPage(0);
+  };
 
   const onDragEnter = (e, id: string) => {
     if (id === dragItem) return;
@@ -96,9 +134,35 @@ const DynamicTable = ({
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {headers.map((item) => {
-                return <TableCell key={item.key}>{item.label}</TableCell>;
-              })}
+              {sort ? (
+                <>
+                  {headers.map((item) => {
+                    return (
+                      <TableCell key={item.key}>
+                        <TableSortLabel
+                          key={item.key}
+                          active={valueToOrderBy === item.key}
+                          direction={
+                            valueToOrderBy === item.key
+                              ? orderDirection.order
+                              : "asc"
+                          }
+                          onClick={createSortHandler(item.key)}
+                        >
+                          {item.label}
+                        </TableSortLabel>
+                      </TableCell>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  {headers.map((item) => {
+                    return <TableCell key={item.key}>{item.label}</TableCell>;
+                  })}
+                </>
+              )}
+
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -114,64 +178,141 @@ const DynamicTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item) => {
-                const isSelected = selected.includes(item._id);
-                const { key } = item;
-                return (
-                  <TableRow
-                    draggable="true"
-                    onDragStart={(e) => onDragStart(e, item._id)}
-                    onDragEnd={(e) => onDragEnd(e)}
-                    onDragEnter={(e) => onDragEnter(e, item._id)}
-                    onDragOver={onDragOver}
-                    onDragLeave={(e) => onDragLeave(e)}
-                    onDrop={(e) => onDrop(e, item._id)}
-                    key={key}
-                    onClick={(e) => {
-                      handleSelectOne(item._id);
-                    }}
-                    hover
-                    sx={[
-                      {
-                        cursor: "pointer",
-                      },
-                      selected.includes(item._id)
-                        ? { backgroundColor: "lavender" }
-                        : {},
-                    ]}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        color="primary"
-                        onClick={(e) => handleSelectOne(item._id)}
-                      />
-                    </TableCell>
-                    {headKeys.map((head, idx) => {
-                      const cellkey = `${key}-col${idx}`;
-                      const { render } = headers[idx];
+              <>
+                {sort
+                  ? sorted()
+                      .slice(page * limit, page * limit + limit)
+                      .map((item) => {
+                        const isSelected = selected.includes(item._id);
+                        const { key } = item;
+                        return (
+                          <TableRow
+                            draggable="true"
+                            onDragStart={(e) => onDragStart(e, item._id)}
+                            onDragEnd={(e) => onDragEnd(e)}
+                            onDragEnter={(e) => onDragEnter(e, item._id)}
+                            onDragOver={onDragOver}
+                            onDragLeave={(e) => onDragLeave(e)}
+                            onDrop={(e) => onDrop(e, item._id)}
+                            key={key}
+                            onClick={(e) => {
+                              handleSelectOne(item._id);
+                            }}
+                            hover
+                            sx={[
+                              {
+                                cursor: "pointer",
+                              },
+                              selected.includes(item._id)
+                                ? { backgroundColor: "lavender" }
+                                : {},
+                            ]}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={isSelected}
+                                color="primary"
+                                onClick={(e) => handleSelectOne(item._id)}
+                              />
+                            </TableCell>
+                            {headKeys.map((head, idx) => {
+                              const cellkey = `${key}-col${idx}`;
+                              const { render } = headers[idx];
 
-                      const value = item[head];
-                      let displayValue = value;
+                              const value = item[head];
+                              let displayValue = value;
 
-                      if (render) {
-                        displayValue = render(value);
-                      }
+                              if (render) {
+                                displayValue = render(value);
+                              }
 
-                      return (
-                        <TableCell key={cellkey}>{displayValue}</TableCell>
-                      );
-                    })}
-                    <TableCell>
-                      <DragIndicatorIcon />
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+                              return (
+                                <TableCell key={cellkey}>
+                                  {displayValue}
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell>
+                              <DragIndicatorIcon />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                  : data
+                      .slice(page * limit, page * limit + limit)
+                      .map((item) => {
+                        const isSelected = selected.includes(item._id);
+                        const { key } = item;
+                        return (
+                          <TableRow
+                            draggable="true"
+                            onDragStart={(e) => onDragStart(e, item._id)}
+                            onDragEnd={(e) => onDragEnd(e)}
+                            onDragEnter={(e) => onDragEnter(e, item._id)}
+                            onDragOver={onDragOver}
+                            onDragLeave={(e) => onDragLeave(e)}
+                            onDrop={(e) => onDrop(e, item._id)}
+                            key={key}
+                            onClick={(e) => {
+                              handleSelectOne(item._id);
+                            }}
+                            hover
+                            sx={[
+                              {
+                                cursor: "pointer",
+                              },
+                              selected.includes(item._id)
+                                ? { backgroundColor: "lavender" }
+                                : {},
+                            ]}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={isSelected}
+                                color="primary"
+                                onClick={(e) => handleSelectOne(item._id)}
+                              />
+                            </TableCell>
+                            {headKeys.map((head, idx) => {
+                              const cellkey = `${key}-col${idx}`;
+                              const { render } = headers[idx];
+
+                              const value = item[head];
+                              let displayValue = value;
+
+                              if (render) {
+                                displayValue = render(value);
+                              }
+
+                              return (
+                                <TableCell key={cellkey}>
+                                  {displayValue}
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell>
+                              <DragIndicatorIcon />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+              </>
             )}
           </TableBody>
         </Table>
       </TableContainer>
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={total}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleLimitChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+          labelRowsPerPage={t("rowsPerPage")}
+        />
+      </Box>
     </Card>
   );
 };

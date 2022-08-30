@@ -1,3 +1,4 @@
+import { ICreateDetails } from "src/content/pages/TaskDetails/details.interface";
 import { TaskStatusState } from "src/content/pages/TaskStatus/status.interface";
 import { apiService } from "./api.service";
 
@@ -11,7 +12,7 @@ interface IFilterParam {
 }
 
 export const taskService = {
-  async getAll(filters: IFilterParam = {}) {
+  async getAll(filters: IFilterParam = {}, cancelToken?) {
     const finalFilters = Object.entries(filters).reduce((acc, [key, value]) => {
       if (value != null) {
         acc[key] = value;
@@ -23,7 +24,9 @@ export const taskService = {
     const params = new URLSearchParams(finalFilters).toString();
     const url = `${TASK_URL}?${params}`;
 
-    return apiService.get(url);
+    return cancelToken
+      ? apiService.get(url, { cancelToken: cancelToken.token })
+      : apiService.get(url);
   },
 
   async getAllTask() {
@@ -107,5 +110,13 @@ export const taskService = {
       taskData: data,
       taskType,
     });
+  },
+
+  async createDetails(values: ICreateDetails) {
+    return apiService.post(DETAILS_URL, values);
+  },
+
+  async bulkDeleteDetails(ids: string[]) {
+    return apiService.delete(`${DETAILS_URL}/bulk`, { data: { ids } });
   },
 };

@@ -13,9 +13,12 @@ import ValueModal from "./ValueModal";
 import UpdateAppSettings from "./UpdateAppSettings";
 import UpdateAppSettingsForm from "./UpdateAppSettings/UpdateAppSettingsForm";
 import { settingsService } from "src/services/settings.service";
-
 import { useTranslation } from "react-i18next";
 import AddAppSettingsForm from "./AddAppSettingsForm";
+
+interface State {
+  order: "asc" | "desc";
+}
 
 const AppSettings = () => {
   const [data, setData] = useState<any[]>([]);
@@ -23,6 +26,9 @@ const AppSettings = () => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [open, setOpenPopup] = useState(false);
+  const [orderDirection, setOrderDirection] = useState<State>({ order: "asc" });
+  const [valueToOrderBy, setValueToOrderBy] = useState("");
+
   const handleClose = () => {
     setOpenPopup(false);
   };
@@ -183,6 +189,49 @@ const AppSettings = () => {
     }
   };
 
+  const handleRequestSort = (event, property) => {
+    const isAscending =
+      valueToOrderBy === property && orderDirection.order === "asc";
+    setValueToOrderBy(property);
+    setOrderDirection(isAscending ? { order: "desc" } : { order: "asc" });
+  };
+
+  const createSortHandler = (property) => (event) => {
+    handleRequestSort(event, property);
+  };
+
+  const descendingComparator = (a, b, orderBy) => {
+    if (orderBy === "key") {
+      return b[orderBy].localeCompare(a[orderBy]);
+    }
+    return 0;
+  };
+
+  const sorted = () => {
+    const sort = sortedRowInformation(
+      data,
+      getComparator(orderDirection.order, valueToOrderBy)
+    );
+    return sort;
+  };
+
+  const getComparator = (order, orderBy) => {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  };
+
+  const sortedRowInformation = (rowArray, comparator) => {
+    const stabilizedRowArray = rowArray.map((el, index) => [el, index]);
+    stabilizedRowArray.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    const res = stabilizedRowArray.map((el) => el[0]);
+    return res;
+  };
+
   return (
     <>
       <Helmet>
@@ -203,6 +252,11 @@ const AppSettings = () => {
             loading={loading}
             handleSelectOne={handleSelectOne}
             handleSelectAll={handleSelectAll}
+            sort={true}
+            sorted={sorted}
+            createSortHandler={createSortHandler}
+            orderDirection={orderDirection}
+            valueToOrderBy={valueToOrderBy}
             action={
               <Box display="flex" flexDirection="row" gap={1}>
                 {selected.length === 1 ? (

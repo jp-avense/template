@@ -8,6 +8,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Typography,
 } from "@mui/material";
 import { useFormik, yupToFormErrors } from "formik";
 import { useState } from "react";
@@ -22,27 +23,35 @@ interface ITaskStatus {
   label: string;
   description?: string;
   systemStatusKey: string;
+  isSystemStatus: boolean;
 }
 
 type Props = {
   selectedStatus: ITaskStatus;
   onDone: () => Promise<any>;
+  data: any;
 };
 
 const validationSchema = yup.object({
+  Key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .required("required"),
   label: yup.string().required("required"),
   description: yup.string().optional(),
   systemStatusKey: yup.string().required(),
 });
 
-const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
+const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [uniq, setUniq] = useState(true);
 
   const { t } = useTranslation();
 
   const formik = useFormik({
     initialValues: {
+      Key: selectedStatus.Key,
       label: selectedStatus.label,
       description: selectedStatus.description,
       systemStatusKey: selectedStatus.systemStatusKey,
@@ -52,7 +61,9 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
       try {
         setError("");
         setSuccess("");
-
+        if (selectedStatus.isSystemStatus) {
+          delete values.Key;
+        }
         await taskService.updateStatus(selectedStatus._id, values);
         setSuccess("Updated status");
 
@@ -69,6 +80,21 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
     formik.handleChange(e);
   };
 
+  const isKeyUniq = (key) => {
+    if (key !== selectedStatus.Key) {
+      const uniq = data.every((item) => item.Key !== key);
+      setUniq(uniq);
+    }
+  };
+
+  const handleKeyChange = (e) => {
+    isKeyUniq(e.target.value);
+    setSuccess("");
+    setError("");
+
+    formik.handleChange(e);
+  };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={3} direction="column">
@@ -76,16 +102,42 @@ const UpdateStatusForm = ({ selectedStatus, onDone }: Props) => {
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
         </Grid>
-        <Grid item>
-          <TextField
-            name="key"
-            label={t("key")}
-            defaultValue={selectedStatus.Key}
-            disabled
-            fullWidth
-            helperText={t("cantChangeField")}
-          />
-        </Grid>
+        {selectedStatus.isSystemStatus ? (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="Key"
+                label={t("key")}
+                defaultValue={selectedStatus.Key}
+                disabled
+                fullWidth
+                helperText={t("cantChangeField")}
+              />
+            </Grid>
+          </>
+        ) : (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="Key"
+                label={t("key")}
+                fullWidth
+                value={formik.values.Key}
+                onChange={(e) => handleKeyChange(e)}
+              />
+              {!uniq ? (
+                <>
+                  <Typography color={"red"}>Key already exists</Typography>
+                </>
+              ) : (
+                <></>
+              )}
+            </Grid>
+          </>
+        )}
+
         <Grid item>
           <TextField
             name="label"

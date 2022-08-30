@@ -42,12 +42,11 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
   const [currentData, setCurrentData] = useState([]);
   const [unique, setUnique] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [options, setOptions] = useState([{ key: "", value: "" }]);
+  const [isValid, setIsValid] = useState(true);
 
   const { t } = useTranslation();
 
-  const types = ["String", "Object", "Array", "Number"];
+  const types = ["String", "Object", "Array", "Number", "Boolean"];
 
   const setSelectedType = (e) => {
     setType(e.target.value);
@@ -68,9 +67,27 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
   }, [key]);
 
   useEffect(() => {
+    if (type === "Object") {
+      const haveDuplicate = new Set(obj.map((v) => v.key));
+      if (haveDuplicate.size < obj.length) {
+        setIsValid(false);
+      } else {
+        setIsValid(true);
+      }
+    } else {
+      setIsValid(true);
+    }
+  }, [obj]);
+
+  useEffect(() => {
     if (type === selected.type) {
       if (type === "Object") {
-        setObj(selected.value);
+        const res = Object.entries(selected.value).map(
+          ([key, value]: [string, any]) => {
+            return { key: key, value: value };
+          }
+        );
+        setObj(res);
         setValue(selected.value);
       } else if (type === "Array") {
         setArr(selected.value);
@@ -121,8 +138,33 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
   const setObject = (val, index, type) => {
     const res = obj.slice();
     res[index][type] = val;
+
+    const object = res.reduce((acc, item) => {
+      acc = {
+        ...acc,
+        [item.key]: item.value,
+      };
+      return acc;
+    }, {});
     setObj(res);
-    setValue(res);
+    setValue(object);
+  };
+
+  const isObjectKeyUniq = (val, index) => {
+    const res = obj.slice();
+    res.splice(index, 1);
+    if (val) {
+      const uniq = res.every((item) => item.key !== val);
+      if (uniq) {
+        return <></>;
+      } else if (!uniq) {
+        return (
+          <>
+            <Typography color={"red"}>Object key already exists</Typography>
+          </>
+        );
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -131,11 +173,13 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
     const res = {
       key: key,
       value: val,
+      oldKey: selected.key
     };
     try {
       setError("");
       setSuccess("");
       setIsSubmitting(true);
+
       await settingsService.updateSettings(res);
 
       setSuccess("Success");
@@ -194,7 +238,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                   label={t("key")}
                   fullWidth
                   value={key}
-                  disabled={true}
+                  onChange={(e) => setKey(e.target.value)}
                 ></TextField>
               </>
             ) : (
@@ -229,6 +273,26 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                   type="number"
                   onChange={(e) => setValue(e.target.value)}
                 ></TextField>
+              </>
+            ) : (
+              <></>
+            )}
+             {type === "boolean" ? (
+              <>
+                <TextField
+                  select
+                  sx={{ mt: 2 }}
+                  id="value"
+                  name="value"
+                  label={t("value")}
+                  fullWidth
+                  value={value}
+                  required
+                  onChange={(e) => setValue(e.target.value)}
+                >
+                  <MenuItem value="true">{t("true")}</MenuItem>
+                  <MenuItem value="false">{t("false")}</MenuItem>
+                </TextField>
               </>
             ) : (
               <></>
@@ -304,6 +368,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                         setObject(e.target.value, index, "value")
                       }
                     ></TextField>
+                    {isObjectKeyUniq(c.key, index)}
                   </Grid>
                 ))}
               </>
@@ -317,7 +382,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
                   variant="contained"
                   fullWidth
                   type="submit"
-                  disabled={value?.length < 1 || isSubmitting}
+                  disabled={value?.length < 1 || isSubmitting || !isValid}
                 >
                   {isSubmitting ? <CircularProgress size={18} /> : t("submit")}
                 </Button>

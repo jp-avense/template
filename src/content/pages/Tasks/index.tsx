@@ -12,6 +12,7 @@ import { taskService } from "src/services/task.service";
 import { AgentContext } from "src/contexts/AgentContext";
 import { useTranslation } from "react-i18next";
 import { settingsService } from "src/services/settings.service";
+import { formService } from "src/services/form.service";
 
 const TaskPage = () => {
   const context = useContext(FilterContext);
@@ -29,6 +30,7 @@ const TaskPage = () => {
       setTotal,
       setLoading,
       setSettings,
+      setForms
     },
   } = context;
 
@@ -45,11 +47,12 @@ const TaskPage = () => {
       taskService.getTypes(),
       getAgents() as any,
       settingsService.getAll(),
+      formService.getForms(),
     ]);
 
     promise
       .then((res) => {
-        const [taskRes, details, statuses, types, agents, settings] = res.map(
+        const [taskRes, details, statuses, types, agents, settings, forms] = res.map(
           (item) => item.data
         );
 
@@ -60,10 +63,11 @@ const TaskPage = () => {
         setStatus(statuses);
 
         types.sort((a, b) => a.label.localeCompare(b.label));
-        setTypes(types);
+        setTypes(types);  
         setTotal(taskRes.totalDocuments);
 
         setSettings(settings);
+        setForms(forms)
       })
       .catch(console.log)
       .finally(() => setLoading(false));

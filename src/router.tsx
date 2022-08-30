@@ -24,6 +24,7 @@ const Status404 = Loader(
 const LoginPage = Loader(lazy(() => import("src/content/pages/Login")));
 const TaskPage = Loader(lazy(() => import("src/content/pages/Tasks")));
 const ProfilePage = Loader(lazy(() => import("src/content/pages/Profile")));
+const ReportsPage = Loader(lazy(() => import("src/content/pages/Reports")));
 
 const DashboardPage = Loader(
   lazy(() => import("src/content/dashboards/Crypto"))
@@ -67,6 +68,16 @@ const routes: RouteObject[] = [
       {
         path: "dashboard",
         element: <DashboardPage />,
+      },
+    ],
+  },
+  {
+    path: "",
+    element: <SidebarLayout />,
+    children: [
+      {
+        path: "reports",
+        element: <ReportsPage />,
       },
     ],
   },

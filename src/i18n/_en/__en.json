@@ -48,6 +48,7 @@
   "updatedBy": "Updated By",
   "executedBy": "Executed By",
   "executionDate": "Execution Date",
+  "executionStartDate": "Execution Start Date",
   "Authority ID": "Authority ID",
   "Interface Data Creation": "Interface Data Creation",
   "Foreclosure ID": "Foreclosure ID",
@@ -138,6 +139,7 @@
   "duplicate": "Duplicate",
   "delete": "Delete",
   "deleteSomeTypes": "You are about to delete some types. Continue?",
+  "deleteSomeAgents": "You are about to delete some agents. Continue?",
   "update": "Update",
   "createType": "Create task type",
   "createNewForm": "Create a new form",
@@ -181,6 +183,7 @@
   "rescheduleTask": "Reschedule task",
   "transmitDone": "Transmit Done",
   "transmitRescheduled": "Transmit Rescheduled",
+  "startTask": "Start Task",
   "profile": "Profile",
   "profileDescription": "Personal settings of the user",
   "changeDetails": "Change Details",
@@ -210,7 +213,7 @@
   "arrayValues": "Array Values",
   "objectValues": "Object Values",
   "search": "Search",
-  "updateOnlyIfNew": "You can only update a new or assigned task",
+  "cannotUpdateDoneTask": "You can only update a new or assigned task",
   "field": "Field",
   "agentLocation": "Agent location",
   "addressLocation": "Address Location",
@@ -223,7 +226,9 @@
   "fileName": "File name",
   "fileTypeInvalid": "File type is invalid",
   "upload": "Upload",
+  "displayValue": "Display Value",
   "formSubmitted": "Form submitted",
   "getNewTaskId": "Get new ID",
-  "taskId": "Task ID"
+  "taskId": "Task ID",
+  "reports": "Reports"
 }

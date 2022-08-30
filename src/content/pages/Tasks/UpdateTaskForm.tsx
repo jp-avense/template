@@ -39,7 +39,14 @@ const UpdateTaskForm = ({ selected }: Props) => {
   };
 
   const {
-    handleFilter: { details, originalData, status, types },
+    handleFilter: {
+      details,
+      originalData,
+      status,
+      types,
+      getDataByFilters,
+      setOriginalData,
+    },
   } = context;
 
   const taskObj = useMemo(() => {
@@ -89,8 +96,8 @@ const UpdateTaskForm = ({ selected }: Props) => {
         setError("");
         setSuccess("");
 
-        if (statusId !== "new" && statusId !== "assigned") {
-          setError(t("updateOnlyIfNew"));
+        if (statusId == "done") {
+          setError(t("cannotUpdateDoneTask"));
           return;
         }
 
@@ -125,11 +132,11 @@ const UpdateTaskForm = ({ selected }: Props) => {
           taskDetails: newDetails,
         };
 
-        console.log(res);
-
         await taskService.updateTask(selected, res);
 
         setSuccess(t("success"));
+        const { data: resp } = await getDataByFilters();
+        setOriginalData(resp.tasks);
       } catch (error) {
         setError(getAxiosErrorMessage(error));
       }
@@ -287,8 +294,8 @@ const UpdateTaskForm = ({ selected }: Props) => {
   return (
     <>
       <Modals open={open} onClose={handleClose} title={t("updateTask")}>
-        {statusId !== "new" && statusId !== "assigned" ? (
-          <Alert severity="warning">{t("updateOnlyIfNew")}</Alert>
+        {statusId === "done" ? (
+          <Alert severity="warning">{t("cannotUpdateDoneTask")}</Alert>
         ) : details.length < 1 ? (
           <>No details found for task</>
         ) : (

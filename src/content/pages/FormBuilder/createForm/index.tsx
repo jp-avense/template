@@ -33,6 +33,7 @@ type Values = {
   name: string;
   description: string;
   type: string;
+  formType: "create" | "execute";
 };
 
 interface IDragData {
@@ -54,6 +55,7 @@ function CreateForm() {
   const [gSettings, setGSettings] = useState<Values>({
     name: "",
     description: "",
+    formType: "execute" as const,
     type: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -129,12 +131,13 @@ function CreateForm() {
 
     if (!formTableData) return;
 
-    const { formFields, name, description, type } = formTableData;
+    const { formFields, name, description, formType } = formTableData;
 
     setGSettings({
       name,
       description,
-      type: ''
+      type: "",
+      formType,
     });
 
     const map = availableFields.reduce((acc, x) => {
@@ -187,7 +190,7 @@ function CreateForm() {
     if (dragData.find((item) => item.key === drag.id)) return;
     if (dragTarget !== drag.id && drag.sidebar) {
       setSelected([drag.id]);
-      handleDragDrop(e);
+      handleDragDrop(e, drag.id, dragTarget);
     }
     setDrag("");
   };
@@ -202,7 +205,7 @@ function CreateForm() {
     setFieldSettings(current);
   };
 
-  const handleDragDrop = (e) => {
+  const handleDragDrop = (e, source: string, target: string) => {
     const res = {
       key: drag.id,
       conditions: {},
@@ -211,6 +214,14 @@ function CreateForm() {
 
     const data = [...dragData, res];
 
+    const dataKey = data.map((item) => item);
+    console.log("Form Field Data: ", dataKey);
+
+    const sourceidx = dataKey.findIndex((item) => item.key === source);
+    const targetidx = dataKey.findIndex((item) => item.key === target);
+
+    console.log("Source", sourceidx);
+    console.log("Target", targetidx);
     setDragData(data);
   };
 
@@ -250,11 +261,7 @@ function CreateForm() {
     }
 
     const dup = cloneDeep(dragData);
-
-    console.log(dup)
-    console.log(location.state)
-    console.log(fieldSettings);
-
+    
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 

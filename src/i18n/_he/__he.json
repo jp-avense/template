@@ -48,6 +48,7 @@
   "updatedBy": "עודכן על ידי",
   "executedBy": "מבוצע על ידי",
   "executionDate": "תאריך ביצוע",
+  "executionStartDate": "תאריך תחילת ביצוע",
   "Authority ID": "מזהה רשות",
   "Interface Data Creation": "יצירת נתונים ממשק",
   "Foreclosure ID": "מזהה עיקול",
@@ -179,6 +180,7 @@
   "rescheduleTask": "תזמן מחדש את המשימה",
   "transmitDone": "השידור נעשה",
   "transmitRescheduled": "השידור נקבע מחדש",
+  "startTask": "התחל משימה",
   "profile": "פּרוֹפִיל",
   "profileDescription": "הגדרות אישיות של המשתמש",
   "changeDetails": "שנה פרטים",
@@ -208,7 +210,7 @@
   "arrayValues": "ערכי מערך",
   "objectValues": "ערכי אובייקט",
   "search": "לחפש",
-  "updateOnlyIfNew": "אתה יכול לעדכן רק משימה חדשה או שהוקצתה",
+  "cannotUpdateDoneTask": "לא ניתן לעדכן סטטוס בתהליך או בהשלמה",
   "field": "שדה",
   "agentLocation": "מיקום הסוכן",
   "addressLocation": "מיקום הכתובת",
@@ -221,7 +223,9 @@
   "fileName": "שם קובץ",
   "fileTypeInvalid": "סוג הקובץ אינו חוקי",
   "upload": "העלה",
+  "displayValue": "ערך תצוגה",
   "formSubmitted": "הטופס מוגש",
   "getNewTaskId": "קבל תעודת זהות חדשה",
-  "taskId": "Task ID"
+  "taskId": "Task ID",
+  "reports": "דיווחים"
 }
