@@ -150,6 +150,7 @@ function FormFieldSettings({
   }, [selectedForm]);
 
   useEffect(() => {
+    console.log(action)
     const res = action.map((c) => {
       return { value: c, label: t(c) };
     });
@@ -175,7 +176,7 @@ function FormFieldSettings({
       const settings = fieldSettings.slice();
       let res;
       res = {
-        rules: { required: required, action: action },
+        rules: { required: required, actions: action },
         conditions: current,
         _id: selected[0]?._id,
       };
@@ -214,7 +215,7 @@ function FormFieldSettings({
         .filter(Boolean);
 
       setSelectedForm(condition);
-      setAction(fieldSettings[index].rules.action);
+      setAction(fieldSettings[index].rules.actions);
       setRequired(fieldSettings[index].rules.required);
     } else {
       setSelectedForm([]);
