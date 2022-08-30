@@ -28,6 +28,7 @@ import enFlag from "../../../../assets/images/icons/enFlag.svg";
 import { FormField } from "../../FormFields/form-field.interface";
 import { Form } from "../form.interface";
 import { CollectionsBookmarkOutlined } from "@mui/icons-material";
+import { DragDropContext } from "react-beautiful-dnd";
 
 type Values = {
   name: string;
@@ -200,7 +201,7 @@ function CreateForm() {
     const index = fieldSettings.findIndex((item) => item._id === id);
     const current = fieldSettings.slice();
     current.splice(index, 1);
-    console.log(filtered);
+
     setDragData(filtered);
     setFieldSettings(current);
   };
@@ -214,15 +215,97 @@ function CreateForm() {
 
     const data = [...dragData, res];
 
-    const dataKey = data.map((item) => item);
-    console.log("Form Field Data: ", dataKey);
-
-    const sourceidx = dataKey.findIndex((item) => item.key === source);
-    const targetidx = dataKey.findIndex((item) => item.key === target);
-
-    console.log("Source", sourceidx);
-    console.log("Target", targetidx);
     setDragData(data);
+  };
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const copy = (source, destination, droppableSource, droppableDestination) => {
+    const sourceClone = Array.from(source);
+    const destClone = Array.from(destination);
+    const item = sourceClone[droppableSource.index];
+
+    destClone.splice(droppableDestination.index, 0, { item });
+    return destClone;
+  };
+
+  const move = (source, destination, droppableSource, droppableDestination) => {
+    const sourceClone = Array.from(source);
+    const destClone = Array.from(destination);
+    const [removed] = sourceClone.splice(droppableSource.index, 1);
+
+    destClone.splice(droppableDestination.index, 0, removed);
+
+    const result = {};
+    result[droppableSource.droppableId] = sourceClone;
+    result[droppableDestination.droppableId] = destClone;
+
+    return result;
+  };
+
+  const onDragEnd = (result) => {
+    const { destination, source } = result;
+
+    if (!destination) return;
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    // console.log("dest", destination);
+    // console.log("sourc", source);
+    console.log("res", result);
+    try {
+      // const items = Array.from(dragData);
+
+      // const [reorderedItem] = items.splice(source.index, 1);
+      // items.splice(destination.index, 0, reorderedItem);
+
+      // setDragData(items);
+      switch (source.droppableId) {
+        case destination.droppableId:
+          const items = Array.from(dragData);
+          const [reorderedItem] = items.splice(source.index, 1);
+          items.splice(destination.index, 0, reorderedItem);
+          setDragData(items);
+          break;
+        case "formFields":
+          const sourceClone = Array.from(source);
+          const destClone = Array.from(destination);
+          const playgroundItem = sourceClone[source.index];
+
+          destClone.splice(destination.index, 0, playgroundItem);
+          console.log("DESTCL", destClone);
+          break;
+        default:
+          const defSourceClone = Array.from(source);
+          const defDestClone = Array.from(destination);
+          const [removed] = defSourceClone.splice(source.index, 1);
+
+          defDestClone.splice(destination.index, 0, removed);
+
+          const res = {};
+          res[source.droppableId] = defSourceClone;
+          res[destination.droppableId] = defDestClone;
+
+          return res;
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        text: "Error dragging field forms",
+        title: "Error",
+      });
+    }
   };
 
   const handleDragDropPlayground = async (
@@ -261,7 +344,7 @@ function CreateForm() {
     }
 
     const dup = cloneDeep(dragData);
-    
+
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 
@@ -361,24 +444,26 @@ function CreateForm() {
           </Paper>
 
           <Grid container sx={{ position: "relative" }}>
-            <Grid item xs={3} sx={{ position: "relative", top: 63 }}>
-              <FormFieldPicker
-                onDragStart={onDragStart}
-                onDragEnter={onDragEnter}
-              />
-            </Grid>
-            <Grid item xs={6} sx={{ position: "relative", marginTop: 10 }}>
-              <Playground
-                data={dragData}
-                fields={fieldForms}
-                setSelected={setSelected}
-                onDragOver={onDragOver}
-                onDrop={onDrop}
-                selected={selected}
-                handleDelete={handleDelete}
-                handleDragDropPlayground={handleDragDropPlayground}
-              />
-            </Grid>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Grid item xs={3} sx={{ position: "relative", top: 63 }}>
+                <FormFieldPicker
+                  onDragStart={onDragStart}
+                  onDragEnter={onDragEnter}
+                />
+              </Grid>
+              <Grid item xs={6} sx={{ position: "relative", marginTop: 10 }}>
+                <Playground
+                  data={dragData}
+                  fields={fieldForms}
+                  setSelected={setSelected}
+                  onDragOver={onDragOver}
+                  onDrop={onDrop}
+                  selected={selected}
+                  handleDelete={handleDelete}
+                  handleDragDropPlayground={handleDragDropPlayground}
+                />
+              </Grid>
+            </DragDropContext>
             <Grid
               item
               xs={3}
