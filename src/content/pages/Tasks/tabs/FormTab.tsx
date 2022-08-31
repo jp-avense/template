@@ -71,7 +71,7 @@ const FormTab = (props: Props) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [selected, baseUrl]);
+  }, [selected, baseUrl, region]);
 
   useEffect(() => {
     settingsService.getAll().then(({ data }) => {
