@@ -33,6 +33,7 @@ const FormTab = (props: Props) => {
   const [imgSrc, setImgSrc] = useState([]);
   const [clickedImg, setClickedImg] = useState(0);
   const [baseUrl, setBaseUrl] = useState("");
+  const [region, setRegion] = useState("");
 
   const {
     t,
@@ -70,14 +71,15 @@ const FormTab = (props: Props) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [selected]);
+  }, [selected, baseUrl]);
 
   useEffect(() => {
     settingsService.getAll().then(({ data }) => {
-      console.log(data);
       const item = data.find((x) => x.key === "bucketName");
-      console.log(item);
-      setBaseUrl(item?.value);
+      const item2 = data.find((x) => x.key === "s3Region");
+      
+      setBaseUrl(item?.value ?? "");
+      setRegion(item2?.value ?? "");
     });
   }, []);
 
@@ -110,7 +112,7 @@ const FormTab = (props: Props) => {
         if (inputType === InputTypeEnum.SIGNATURE) vals = [`image.png`];
 
         const promises = vals.map(async (name) => {
-          return formService.getImage(baseUrl, taskId, name);
+          return formService.getImage(baseUrl, region, taskId, name);
         });
 
         const results = await Promise.all(promises);

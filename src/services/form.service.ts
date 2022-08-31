@@ -58,9 +58,14 @@ export const formService = {
     return apiService.delete(`${BASE_FORM_URL}/bulk`, { data: ids });
   },
 
-  async getImage(baseUrl: string, taskId: string, filename: string) {
+  async getImage(
+    bucketName: string,
+    region: string,
+    taskId: string,
+    filename: string
+  ) {
     return apiService.post(`${BASE_FILE_URL}/pre-signed-download`, {
-      filePath: `${baseUrl}/${taskId}/${filename}`,
+      filePath: `https://${bucketName}.s3.${region}.amazonaws.com/${taskId}/${filename}`,
     });
   },
 };
