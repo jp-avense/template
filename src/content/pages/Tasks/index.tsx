@@ -1,5 +1,5 @@
 import { Container, Grid, Paper } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
@@ -17,7 +17,7 @@ import { formService } from "src/services/form.service";
 const TaskPage = () => {
   const context = useContext(FilterContext);
   const agentctx = useContext(AgentContext);
-
+  const [createRowsDone, setCreateRowsDone] = useState(false);
   const { t } = useTranslation();
 
   const {
@@ -30,7 +30,7 @@ const TaskPage = () => {
       setTotal,
       setLoading,
       setSettings,
-      setForms
+      setForms,
     },
   } = context;
 
@@ -52,9 +52,8 @@ const TaskPage = () => {
 
     promise
       .then((res) => {
-        const [taskRes, details, statuses, types, agents, settings, forms] = res.map(
-          (item) => item.data
-        );
+        const [taskRes, details, statuses, types, agents, settings, forms] =
+          res.map((item) => item.data);
 
         setOriginalData(taskRes.tasks);
         setDetails(details);
@@ -63,15 +62,20 @@ const TaskPage = () => {
         setStatus(statuses);
 
         types.sort((a, b) => a.label.localeCompare(b.label));
-        setTypes(types);  
+        setTypes(types);
         setTotal(taskRes.totalDocuments);
 
         setSettings(settings);
-        setForms(forms)
+        setForms(forms);
       })
-      .catch(console.log)
+      .catch((e) => {
+        console.log(e);
+        setCreateRowsDone(true);
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  console.log(createRowsDone);
 
   return (
     <>
@@ -90,7 +94,10 @@ const TaskPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={8}>
-              <TaskTable />
+              <TaskTable
+                createRowsDone={createRowsDone}
+                setCreateRowsDone={setCreateRowsDone}
+              />
             </Grid>
             <Grid item xs={4}>
               <InfoTab />
