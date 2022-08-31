@@ -296,6 +296,7 @@ const Playground = ({
           height: "auto",
           marginTop: "2rem",
           marginBottom: "2rem",
+          zIndex: 2,
         }}
       >
         <Box display="flex" justifyContent={"center"} py={5}>
@@ -312,7 +313,7 @@ const Playground = ({
           pb={10}
           mt={2}
         >
-          <Droppable droppableId="droppable">
+          <Droppable droppableId="playground">
             {(droppableProvided, droppableSnapshot) => (
               <Grid
                 container
@@ -320,7 +321,7 @@ const Playground = ({
                 {...droppableProvided.droppableProps}
               >
                 {data.map((item, index) => {
-                  const obj = fields.find((x) => x._id == item.key);
+                  const obj = fields.find((x) => x._id === item.key);
                   return (
                     <Draggable
                       key={item.key}

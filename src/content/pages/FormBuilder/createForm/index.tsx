@@ -218,14 +218,6 @@ function CreateForm() {
     setDragData(data);
   };
 
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
-  };
-
   const copy = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
@@ -261,44 +253,52 @@ function CreateForm() {
       return;
     }
 
-    // console.log("dest", destination);
-    // console.log("sourc", source);
-    console.log("res", result);
     try {
-      // const items = Array.from(dragData);
-
-      // const [reorderedItem] = items.splice(source.index, 1);
-      // items.splice(destination.index, 0, reorderedItem);
-
-      // setDragData(items);
       switch (source.droppableId) {
-        case destination.droppableId:
+        case "playground":
           const items = Array.from(dragData);
           const [reorderedItem] = items.splice(source.index, 1);
           items.splice(destination.index, 0, reorderedItem);
           setDragData(items);
           break;
         case "formFields":
-          const sourceClone = Array.from(source);
-          const destClone = Array.from(destination);
-          const playgroundItem = sourceClone[source.index];
+          const res = {
+            key: result.draggableId,
+            conditions: {},
+            rules: {},
+          };
 
-          destClone.splice(destination.index, 0, playgroundItem);
-          console.log("DESTCL", destClone);
+          const data = [...dragData, res];
+
+          const key = fieldForms.findIndex(
+            (item) => item._id === result.draggableId
+          );
+
+          source.index = key;
+
+          console.log("key", key);
+
+          // console.log("test", key);
+
+          // const sourceArr = Array.from(fieldForms);
+          // const destId = Array.from(data);
+
+          // const itemForm = sourceArr[key];
+
+          // destId.splice(destination.index, 0, itemForm);
+
+          const [reorderedFields] = data.splice(key, 1);
+
+          data.splice(destination.index, 0, reorderedFields);
+
+          // console.log("itemForm", itemForm);
+          // console.log("Source", sourceArr);
+          // console.log("DestId", destId);
+
+          // setDragData(data);
           break;
-        default:
-          const defSourceClone = Array.from(source);
-          const defDestClone = Array.from(destination);
-          const [removed] = defSourceClone.splice(source.index, 1);
-
-          defDestClone.splice(destination.index, 0, removed);
-
-          const res = {};
-          res[source.droppableId] = defSourceClone;
-          res[destination.droppableId] = defDestClone;
-
-          return res;
       }
+      console.log("res", result);
     } catch (err) {
       Swal.fire({
         icon: "error",
