@@ -169,11 +169,16 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const val = JSON.stringify(value);
+
+    const val =
+      type === "Array" || type === "Object"
+        ? JSON.stringify(value)
+        : `${value}`;
+        
     const res = {
       key: key,
       value: val,
-      oldKey: selected.key
+      oldKey: selected.key,
     };
     try {
       setError("");
@@ -277,7 +282,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
             ) : (
               <></>
             )}
-             {type === "boolean" ? (
+            {type === "boolean" ? (
               <>
                 <TextField
                   select

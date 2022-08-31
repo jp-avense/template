@@ -153,7 +153,7 @@ const AddAppSettingsForm = ({ data, onDone }: Props) => {
     if (type === "Object" || type === "Array") {
       val = JSON.stringify(value);
     } else if (type === "Number") {
-      val = +value;
+      val = `${value}`;
     }
 
     const res = {

@@ -2,7 +2,6 @@ import { apiService } from "./api.service";
 
 const BASE_FIELD_URL = "form-fields";
 const BASE_FORM_URL = "forms";
-const BASE_S3_URL = "https://product-client-dev2.s3.eu-central-1.amazonaws.com";
 const BASE_FILE_URL = "files";
 export class SimpleFormField {
   key: string;
@@ -59,9 +58,14 @@ export const formService = {
     return apiService.delete(`${BASE_FORM_URL}/bulk`, { data: ids });
   },
 
-  async getImage(taskId: string, filename: string) {
+  async getImage(
+    bucketName: string,
+    region: string,
+    taskId: string,
+    filename: string
+  ) {
     return apiService.post(`${BASE_FILE_URL}/pre-signed-download`, {
-      filePath: `${BASE_S3_URL}/${taskId}/${filename}`,
+      filePath: `https://${bucketName}.s3.${region}.amazonaws.com/${taskId}/${filename}`,
     });
   },
 };
