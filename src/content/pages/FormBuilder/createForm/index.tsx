@@ -197,12 +197,17 @@ function CreateForm() {
   };
 
   const handleDelete = (id) => {
-    const filtered = dragData.filter((item) => item.key !== id);
+    const dragIndex = dragData.findIndex((item) => item.key === id);
+    const currentDrag = dragData.slice();
+    currentDrag.splice(dragIndex, 1);
+    // const filtered = dragData.filter((item) => item.key !== id);
     const index = fieldSettings.findIndex((item) => item._id === id);
     const current = fieldSettings.slice();
     current.splice(index, 1);
 
-    setDragData(filtered);
+    console.log("cur", currentDrag);
+
+    setDragData(currentDrag);
     setFieldSettings(current);
   };
 
@@ -242,6 +247,7 @@ function CreateForm() {
           const key = fieldForms.findIndex(
             (item) => item._id === result.draggableId
           );
+
           source.index = key;
 
           const sourceClone = Array.from(fieldForms);
@@ -258,7 +264,12 @@ function CreateForm() {
           });
 
           const itemClone = sourceData[key];
+
           destinationClone.splice(destination.index, 0, { ...itemClone });
+
+          const findDup = itemClone.key;
+
+          if (dragData.find((item) => item.key === findDup)) return;
 
           setDragData(destinationClone);
           break;

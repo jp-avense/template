@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Typography,
@@ -12,13 +12,19 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  styled,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { formService } from "src/services/form.service";
 import Scrollbar from "src/components/Scrollbar";
 import { useTranslation } from "react-i18next";
 import "./style.css";
-import { Droppable, Draggable } from "react-beautiful-dnd";
+import {
+  Droppable,
+  Draggable,
+  NotDraggingStyle,
+  DraggingStyle,
+} from "react-beautiful-dnd";
 
 type Props = {
   onDragEnter: any;
@@ -111,10 +117,10 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                     </AccordionSummary>
                     <AccordionDetails>
                       <Droppable droppableId="formFields" isDropDisabled={true}>
-                        {(droppableProvided, droppableSnapshot) => (
+                        {(provided, snapshot) => (
                           <Box
-                            ref={droppableProvided.innerRef}
-                            {...droppableProvided.droppableProps}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
                           >
                             {x.forms.map((item, index) => {
                               const { key } = item;
@@ -125,7 +131,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                                   index={index}
                                 >
                                   {(provided, snapshot) => (
-                                    <>
+                                    <React.Fragment>
                                       <Box
                                         key={key}
                                         py={2}
@@ -142,6 +148,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                                             ? "#e8eaf6"
                                             : "unset",
                                         }}
+                                        style={provided.draggableProps.style}
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
@@ -150,42 +157,25 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                                           {item.label} ({key})
                                         </Typography>
                                       </Box>
+                                      {snapshot.isDragging && (
+                                        <Box py={2} px={3.5}>
+                                          <Typography
+                                            className={`dnd-copy`}
+                                            variant="body2"
+                                          >
+                                            {item.label} ({key})
+                                          </Typography>
+                                        </Box>
+                                      )}
                                       <Divider />
-                                    </>
+                                    </React.Fragment>
                                   )}
                                 </Draggable>
                               );
                             })}
-                            {droppableProvided.placeholder}
                           </Box>
                         )}
                       </Droppable>
-                      {/* {x.forms.map((item) => {
-                        const { key } = item;
-                        return (
-                          <>
-                            <Box
-                              draggable="true"
-                              onDragStart={(e) => onDragStart(e, item._id)}
-                              onDragEnter={(e) => onDragEnter(e, item._id)}
-                              key={key}
-                              py={2}
-                              px={3.5}
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#f0f2f5",
-                                  transitionDuration: "150ms",
-                                },
-                              }}
-                            >
-                              <Typography variant="body2">
-                                {item.label} ({key})
-                              </Typography>
-                            </Box>
-                            <Divider />
-                          </>
-                        );
-                      })} */}
                     </AccordionDetails>
                   </Accordion>
                 ))}

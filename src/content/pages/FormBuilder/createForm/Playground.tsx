@@ -29,16 +29,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import "./style.css";
 import { InputTypeEnum } from "../../FormFields/form-field.interface";
 import _ from "lodash";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-  ResponderProvided,
-  DraggableProvided,
-  DroppableProvided,
-  DraggableStateSnapshot,
-} from "react-beautiful-dnd";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 
 interface IFields {
   _id: string;
@@ -321,11 +312,12 @@ const Playground = ({
                 {...droppableProvided.droppableProps}
               >
                 {data.map((item, index) => {
+                  console.log("dragData", data);
                   const obj = fields.find((x) => x._id === item.key);
                   return (
                     <Draggable
                       key={item.key}
-                      draggableId={`${item.key}`}
+                      draggableId={`key${item.key}`}
                       index={index}
                     >
                       {(draggableProvided, draggableSnapshot) => (
