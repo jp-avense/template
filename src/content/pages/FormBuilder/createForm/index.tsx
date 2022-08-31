@@ -218,29 +218,6 @@ function CreateForm() {
     setDragData(data);
   };
 
-  const copy = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const item = sourceClone[droppableSource.index];
-
-    destClone.splice(droppableDestination.index, 0, { item });
-    return destClone;
-  };
-
-  const move = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-    destClone.splice(droppableDestination.index, 0, removed);
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-    result[droppableDestination.droppableId] = destClone;
-
-    return result;
-  };
-
   const onDragEnd = (result) => {
     const { destination, source } = result;
 
@@ -262,40 +239,28 @@ function CreateForm() {
           setDragData(items);
           break;
         case "formFields":
-          const res = {
-            key: result.draggableId,
-            conditions: {},
-            rules: {},
-          };
-
-          const data = [...dragData, res];
-
           const key = fieldForms.findIndex(
             (item) => item._id === result.draggableId
           );
-
           source.index = key;
 
-          console.log("key", key);
+          const sourceClone = Array.from(fieldForms);
+          const destinationClone = Array.from(dragData);
 
-          // console.log("test", key);
+          const sourceData = sourceClone.map((item) => {
+            const res = {
+              key: item._id,
+              conditions: {},
+              rules: {},
+            };
 
-          // const sourceArr = Array.from(fieldForms);
-          // const destId = Array.from(data);
+            return res;
+          });
 
-          // const itemForm = sourceArr[key];
+          const itemClone = sourceData[key];
+          destinationClone.splice(destination.index, 0, { ...itemClone });
 
-          // destId.splice(destination.index, 0, itemForm);
-
-          const [reorderedFields] = data.splice(key, 1);
-
-          data.splice(destination.index, 0, reorderedFields);
-
-          // console.log("itemForm", itemForm);
-          // console.log("Source", sourceArr);
-          // console.log("DestId", destId);
-
-          // setDragData(data);
+          setDragData(destinationClone);
           break;
       }
       console.log("res", result);
