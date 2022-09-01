@@ -80,6 +80,8 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
           width: 300,
           height: "100vh",
           backgroundColor: "white",
+          position: "fixed",
+          zIndex: 1000,
         }}
       >
         <Scrollbar>
