@@ -48,4 +48,8 @@ export const agentService = {
   async update(sub: string, values: UpdateDto) {
     return apiService.patch(`${ALL_URL}/${sub}`, values);
   },
+
+  async bulkDelete(emails: string[]) {
+    return apiService.delete(`${ALL_URL}/bulk`, { data: { emails } });
+  },
 };

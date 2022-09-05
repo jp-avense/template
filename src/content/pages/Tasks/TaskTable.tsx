@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useState,
-  createElement,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Divider,
@@ -78,6 +72,7 @@ const TaskTable = () => {
   const [fileName, setFileName] = useState("");
 
   const isAdmin = roles.includes("admin");
+  const isBackoffice = roles.includes("backoffice");
 
   const {
     handleFilter: {
@@ -513,7 +508,6 @@ const TaskTable = () => {
     }
   };
 
-  console.log("tableData", tableData);
   return (
     <Card>
       <Box
@@ -524,12 +518,12 @@ const TaskTable = () => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
-          {selectedRows.length > 0 && isAdmin ? (
+          {selectedRows.length > 0 && (isAdmin || isBackoffice) ? (
             <Box>
               <AssignTaskForm selected={selectedRows}></AssignTaskForm>
             </Box>
           ) : null}
-          {selectedRows.length == 1 && isAdmin ? (
+          {selectedRows.length == 1 && (isAdmin || isBackoffice) ? (
             <Box>
               <UpdateTaskForm selected={selectedRows[0]}></UpdateTaskForm>
             </Box>
@@ -644,100 +638,106 @@ const TaskTable = () => {
         alignItems="center"
       >
         <Box>
-          <Button
-            disabled={loading || downloading}
-            variant="contained"
-            onClick={xlsExport}
-            sx={{ marginRight: 2 }}
-          >
-            {loading || downloading ? (
-              <CircularProgress size={18} />
-            ) : (
-              <>
-                <Typography variant="h5" sx={{ mr: "5px" }}>
-                  {t("download")}
-                </Typography>
-                <FileDownloadIcon fontSize="small" />
-              </>
-            )}
-          </Button>
-          <ModalButton
-            text={
-              loading || downloading2 ? (
+          {isAdmin ? (
+            <Button
+              disabled={loading || downloading}
+              variant="contained"
+              onClick={xlsExport}
+              sx={{ marginRight: 2 }}
+            >
+              {loading || downloading ? (
                 <CircularProgress size={18} />
               ) : (
-                t("upload")
-              )
-            }
-            title={t("upload")}
-            buttonProps={{
-              variant: "contained",
-              size: "medium",
-              disabled: loading || downloading2,
-            }}
-          >
-            <Box display="flex" flexDirection="column" gap={2} pt={2}>
-              {uploadStatus.status !== "" ? (
-                <Alert severity={uploadStatus.status as any}>
-                  {uploadStatus.message}
-                </Alert>
-              ) : null}
-              {fileName !== "" ? (
-                <Alert severity="info">{`${t("fileName")}: ${fileName}`}</Alert>
-              ) : null}
-              <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignItems="center"
-              >
-                <TextField
-                  select
-                  onChange={(e) => setImportType(e.target.value)}
-                  required
-                  label={t("taskType")}
-                  fullWidth
-                >
-                  {types.map((item) => (
-                    <MenuItem key={item.key} value={item.key}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-                <Box sx={{ width: "20%" }}>
-                  <div>
-                    <input
-                      style={{ display: "none" }}
-                      id="upload-file"
-                      type="file"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <label htmlFor="upload-file">
-                    <Button
-                      disabled={loading || downloading2}
-                      variant="outlined"
-                      component="span"
-                    >
-                      {t("upload")}
-                    </Button>
-                  </label>
-                </Box>
-              </Box>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={onSubmit}
-                disabled={loading || downloading2}
-              >
-                {loading || downloading2 ? (
-                  <CircularProgress size={20} />
+                <>
+                  <Typography variant="h5" sx={{ mr: "5px" }}>
+                    {t("download")}
+                  </Typography>
+                  <FileDownloadIcon fontSize="small" />
+                </>
+              )}
+            </Button>
+          ) : null}
+          {isAdmin || isBackoffice ? (
+            <ModalButton
+              text={
+                loading || downloading2 ? (
+                  <CircularProgress size={18} />
                 ) : (
-                  t("submit")
-                )}
-              </Button>
-            </Box>
-          </ModalButton>
+                  t("upload")
+                )
+              }
+              title={t("upload")}
+              buttonProps={{
+                variant: "contained",
+                size: "medium",
+                disabled: loading || downloading2,
+              }}
+            >
+              <Box display="flex" flexDirection="column" gap={2} pt={2}>
+                {uploadStatus.status !== "" ? (
+                  <Alert severity={uploadStatus.status as any}>
+                    {uploadStatus.message}
+                  </Alert>
+                ) : null}
+                {fileName !== "" ? (
+                  <Alert severity="info">{`${t(
+                    "fileName"
+                  )}: ${fileName}`}</Alert>
+                ) : null}
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap={2}
+                  alignItems="center"
+                >
+                  <TextField
+                    select
+                    onChange={(e) => setImportType(e.target.value)}
+                    required
+                    label={t("taskType")}
+                    fullWidth
+                  >
+                    {types.map((item) => (
+                      <MenuItem key={item.key} value={item.key}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <Box sx={{ width: "20%" }}>
+                    <div>
+                      <input
+                        style={{ display: "none" }}
+                        id="upload-file"
+                        type="file"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                    <label htmlFor="upload-file">
+                      <Button
+                        disabled={loading || downloading2}
+                        variant="outlined"
+                        component="span"
+                      >
+                        {t("upload")}
+                      </Button>
+                    </label>
+                  </Box>
+                </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={onSubmit}
+                  disabled={loading || downloading2}
+                >
+                  {loading || downloading2 ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    t("submit")
+                  )}
+                </Button>
+              </Box>
+            </ModalButton>
+          ) : null}
         </Box>
         <TablePagination
           component="div"

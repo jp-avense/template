@@ -119,4 +119,8 @@ export const taskService = {
   async bulkDeleteDetails(ids: string[]) {
     return apiService.delete(`${DETAILS_URL}/bulk`, { data: { ids } });
   },
+
+  async updateDetail(id: string, values) {
+    return apiService.patch(`${DETAILS_URL}/${id}`, values);
+  },
 };
