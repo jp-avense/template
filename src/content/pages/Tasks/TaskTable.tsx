@@ -439,12 +439,21 @@ const TaskTable = () => {
 
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
     const rowFix = rows.map((i) => i.replace(/\r/g, ""));
-    console.log("headerFix", headers);
-    console.log("rowFix", rowFix);
+    // console.log("headerFix", headers);
 
     const arr = rowFix.map((row) => {
       // const values = row.split(comma);
-      const values = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
+
+      // const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+      // const values = row.split(/,(?=(?:[^"]*"[^"]*")*(?![^"]*"))/);
+      const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      // const values = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
+
+      // const values = row.split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
+      // const values = row.split(/(?:([^",]+?)|"(.+?)") *, */).filter((e) => e);
+
+      console.log("values", values);
 
       const el = headerFix.reduce((acc, cur, index) => {
         acc[cur] = values[index];
@@ -466,29 +475,29 @@ const TaskTable = () => {
       const csv = e.target.result;
       const data = csvToJson(csv);
       console.log("data", data);
-      try {
-        setUploadStatus({
-          status: "",
-          message: "",
-        });
-        setDownloading2(true);
-        await taskService.import(importType, data);
+      // try {
+      //   setUploadStatus({
+      //     status: "",
+      //     message: "",
+      //   });
+      //   setDownloading2(true);
+      //   await taskService.import(importType, data);
 
-        const name = fileName;
-        setUploadStatus({
-          status: "success",
-          message: t("success") + " - " + name,
-        });
+      //   const name = fileName;
+      //   setUploadStatus({
+      //     status: "success",
+      //     message: t("success") + " - " + name,
+      //   });
 
-        setFileName("");
-      } catch (error) {
-        setUploadStatus({
-          status: "error",
-          message: getAxiosErrorMessage(error),
-        });
-      } finally {
-        setDownloading2(false);
-      }
+      //   setFileName("");
+      // } catch (error) {
+      //   setUploadStatus({
+      //     status: "error",
+      //     message: getAxiosErrorMessage(error),
+      //   });
+      // } finally {
+      //   setDownloading2(false);
+      // }
     };
 
     reader.readAsText(input);
