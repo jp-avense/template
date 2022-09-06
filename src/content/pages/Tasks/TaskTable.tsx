@@ -310,11 +310,9 @@ const TaskTable = () => {
   };
 
   const download = (data) => {
-    const blob = new Blob([data], { type: "text/csv;charset=utf8,%EF%BB%BF" });
-    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
-    a.setAttribute("href", url);
+    a.setAttribute("href", 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(data).replaceAll('#', '%23'));
     a.setAttribute("download", "task_table.csv");
     document.body.appendChild(a);
     a.click();
@@ -350,10 +348,13 @@ const TaskTable = () => {
     for (const index in data) {
       const row = data[index];
       let values = headers.map((header) => {
+        if(row[header] == null) return ""
+        
         const escaped = ("" + row[header])
           .replace(/\n/g, "")
           .replace(/,/g, "")
           .replace(/"/g, '\\"');
+
         return `${escaped}`.replace(" ", "");
       });
 
@@ -361,19 +362,22 @@ const TaskTable = () => {
 
       const val = getKey.map((head, index) => {
         const x = rowX[head];
-        
-        if(x == null) return ""
+
+        if(x == null) {
+          return ""
+        }
 
         if (typeof x === "string" || typeof x === "number") {
           const escape = ("" + rowX[head])
             .replace(/\n/g, "")
             .replace(/,/g, "")
             .replace(/"/g, '\\"');
+
           return `${escape}`;
         }
 
         if (typeof x === "object") {
-          return x.value;
+          return x.value ?? "";
         }
       });
       values = values.concat(val);
