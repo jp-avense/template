@@ -310,7 +310,7 @@ const TaskTable = () => {
   };
 
   const download = (data) => {
-    const blob = new Blob([data], { type: "text/csv" });
+    const blob = new Blob([data], { type: "text/csv;charset=utf8,%EF%BB%BF" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
@@ -361,6 +361,8 @@ const TaskTable = () => {
 
       const val = getKey.map((head, index) => {
         const x = rowX[head];
+        
+        if(x == null) return ""
 
         if (typeof x === "string" || typeof x === "number") {
           const escape = ("" + rowX[head])
@@ -427,7 +429,7 @@ const TaskTable = () => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-    const rowFix = rows.map((i) => i.replace(/\r/g, ""));
+    const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean)
 
     const arr = rowFix.map((row) => {
       const values = row.split(comma);
