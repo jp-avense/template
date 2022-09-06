@@ -36,6 +36,7 @@ import { taskService } from "src/services/task.service";
 import Swal from "sweetalert2";
 import moment from "moment";
 import ModalButton from "src/components/ModalButton";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 interface State {
   order: "asc" | "desc";
@@ -434,11 +435,13 @@ const TaskTable = () => {
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
 
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean)
 
+
     const arr = rowFix.map((row) => {
-      // const values = row.split(comma);
-      const values = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
+      const rowVal = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      const values = rowVal.map((e) => e.replace(/"/g, "").replace(/\\/g, ""));
 
       const el = headerFix.reduce((acc, cur, index) => {
         acc[cur] = values[index];
@@ -447,7 +450,6 @@ const TaskTable = () => {
       return el;
     });
 
-    console.log("arr", arr);
     return arr;
   };
 
@@ -459,7 +461,6 @@ const TaskTable = () => {
     reader.onload = async (e) => {
       const csv = e.target.result;
       const data = csvToJson(csv);
-      console.log("data", data);
       try {
         setUploadStatus({
           status: "",
@@ -476,6 +477,7 @@ const TaskTable = () => {
 
         setFileName("");
       } catch (error) {
+        console.log(error);
         setUploadStatus({
           status: "error",
           message: getAxiosErrorMessage(error),

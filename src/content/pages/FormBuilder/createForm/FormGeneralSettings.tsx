@@ -115,7 +115,7 @@ const FormGeneralSettings = ({
           value={values.description}
         />
       </Box>
-      <Box display="flex" gap={1} flexDirection="column">
+      {/* <Box display="flex" gap={1} flexDirection="column">
         <span>{t("formType")}</span>
         <Select
           fullWidth
@@ -127,7 +127,7 @@ const FormGeneralSettings = ({
           <MenuItem value="create">Create form</MenuItem>
           <MenuItem value="execute">Execution form</MenuItem>
         </Select>
-      </Box>
+      </Box> */}
       <Box display="flex" gap={1} flexDirection="column" sx={{ flexGrow: 1 }}>
         <span>{t("taskType")}</span>
         <Select

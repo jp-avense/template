@@ -217,9 +217,7 @@ function SidebarMenu() {
                   {t("dashboard")}
                 </Button>
               </ListItem>
-            </List>
-            {isAdmin && (
-              <List component="div">
+              {isAdmin && (
                 <ListItem component="div">
                   <Button
                     disableRipple
@@ -231,8 +229,8 @@ function SidebarMenu() {
                     {t("reports")}
                   </Button>
                 </ListItem>
-              </List>
             )}
+           </List>
           </SubMenuWrapper>
         </List>
         <List
