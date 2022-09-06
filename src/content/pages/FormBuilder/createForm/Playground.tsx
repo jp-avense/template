@@ -29,6 +29,8 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import "./style.css";
 import { InputTypeEnum } from "../../FormFields/form-field.interface";
 import _ from "lodash";
+import { Droppable, Draggable } from "react-beautiful-dnd";
+
 interface IFields {
   _id: string;
   key: string;
@@ -80,27 +82,6 @@ const Playground = ({
     setSelected([id]);
   };
 
-  const onDragStart = (e, type: string) => {
-    // e.target.classList.add("playground-drag-source");
-    e.dataTransfer.effectAllowed = "move";
-    setDragPlay(type);
-  };
-
-  const onDragEnter = (e, type: string) => {
-    // e.currentTarget.classList.add("playground-drag-target");
-    if (type === dragPlay) return;
-    e.stopPropagation();
-  };
-
-  const onDragEnd = (e) => {
-    e.preventDefault();
-    // e.target.classList.remove("playground-drag-source");
-  };
-
-  const onDragLeave = (e) => {
-    // e.currentTarget.classList.remove("drag-target");
-  };
-
   const onDropData = (e) => {
     onDrop(e);
     setDrag("");
@@ -112,13 +93,8 @@ const Playground = ({
     if (dataTarget !== dragPlay && dragPlay)
       handleDragDropPlayground(e, dragPlay, dataTarget);
 
-    // console.log("Data Target: ", dataTarget);
-    // console.log("Drag Play: ", dragPlay);
-
     setDragPlay("");
   };
-
-  // console.log("Data", data);
 
   const handleChange = (e) => {};
 
@@ -311,6 +287,7 @@ const Playground = ({
           height: "auto",
           marginTop: "2rem",
           marginBottom: "2rem",
+          zIndex: 2,
         }}
       >
         <Box display="flex" justifyContent={"center"} py={5}>
@@ -327,56 +304,79 @@ const Playground = ({
           pb={10}
           mt={2}
         >
-          {data.map((item, index) => {
-            const obj = fields.find((x) => x._id == item.key);
-            return (
-              <Box
-                draggable="true"
-                onDragStart={(e) => onDragStart(e, item.key)}
-                onDragEnter={(e) => onDragEnter(e, item.key)}
-                onDragOver={(e) => onDragOver(e)}
-                onDragEnd={(e) => onDragEnd(e)}
-                onDragLeave={(e) => onDragLeave(e)}
-                onDrop={(e) => onDropPlayground(e, item.key)}
-                onClick={(e) => handleClick(item.key)}
-                key={index}
-                sx={[
-                  {
-                    width: "100%",
-                    alignItems: "center",
-                    "&:hover": {
-                      backgroundColor: "#f0f2f5",
-                      transitionDuration: "150ms",
-                    },
-                  },
-                  selected.includes(item.key)
-                    ? {
-                        backgroundColor: "#e8eaf6",
-                      }
-                    : null,
-                ]}
-                px={2}
-                py={2}
+          <Droppable droppableId="playground">
+            {(droppableProvided, droppableSnapshot) => (
+              <Grid
+                container
+                ref={droppableProvided.innerRef}
+                {...droppableProvided.droppableProps}
               >
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  spacing={2}
-                >
-                  <Grid item xs={11}>
-                    {handleData(obj)}
-                  </Grid>
-                  <Grid item xs={1}>
-                    <IconButton onClick={(e) => handleDelete(item.key)}>
-                      <DeleteRoundedIcon fontSize="small" />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Box>
-            );
-          })}
+                {data.map((item, index) => {
+                  console.log("dragData", data);
+                  const obj = fields.find((x) => x._id === item.key);
+                  return (
+                    <Draggable
+                      key={item.key}
+                      draggableId={`key${item.key}`}
+                      index={index}
+                    >
+                      {(draggableProvided, draggableSnapshot) => (
+                        <Box
+                          p={2}
+                          my={1}
+                          onClick={(e) => handleClick(item.key)}
+                          sx={[
+                            {
+                              width: "100%",
+                              alignItems: "center",
+                              "&:hover": {
+                                backgroundColor: "#f0f2f5",
+                                transitionDuration: "150ms",
+                              },
+                              boxShadow: draggableSnapshot.isDragging
+                                ? "0 5px 5px rgba(0, 0, 0, 0.2)"
+                                : "unset",
+                              backgroundColor: draggableSnapshot.isDragging
+                                ? "#e8eaf6"
+                                : "unset",
+                            },
+                            selected.includes(item.key)
+                              ? {
+                                  backgroundColor: "#e8eaf6",
+                                }
+                              : null,
+                          ]}
+                          ref={draggableProvided.innerRef}
+                          {...draggableProvided.draggableProps}
+                          {...draggableProvided.dragHandleProps}
+                        >
+                          <Grid
+                            container
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <Grid item xs={11}>
+                              {handleData(obj)}
+                            </Grid>
+                            <Grid item xs={1}>
+                              <IconButton
+                                onClick={(e) => handleDelete(item.key)}
+                              >
+                                <DeleteRoundedIcon fontSize="small" />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {droppableProvided.placeholder}
+              </Grid>
+            )}
+          </Droppable>
         </Box>
       </Card>
     </>

@@ -28,6 +28,7 @@ import enFlag from "../../../../assets/images/icons/enFlag.svg";
 import { FormField } from "../../FormFields/form-field.interface";
 import { Form } from "../form.interface";
 import { CollectionsBookmarkOutlined } from "@mui/icons-material";
+import { DragDropContext } from "react-beautiful-dnd";
 
 type Values = {
   name: string;
@@ -196,12 +197,17 @@ function CreateForm() {
   };
 
   const handleDelete = (id) => {
-    const filtered = dragData.filter((item) => item.key !== id);
+    const dragIndex = dragData.findIndex((item) => item.key === id);
+    const currentDrag = dragData.slice();
+    currentDrag.splice(dragIndex, 1);
+    // const filtered = dragData.filter((item) => item.key !== id);
     const index = fieldSettings.findIndex((item) => item._id === id);
     const current = fieldSettings.slice();
     current.splice(index, 1);
-    console.log(filtered);
-    setDragData(filtered);
+
+    console.log("cur", currentDrag);
+
+    setDragData(currentDrag);
     setFieldSettings(current);
   };
 
@@ -214,15 +220,68 @@ function CreateForm() {
 
     const data = [...dragData, res];
 
-    const dataKey = data.map((item) => item);
-    console.log("Form Field Data: ", dataKey);
-
-    const sourceidx = dataKey.findIndex((item) => item.key === source);
-    const targetidx = dataKey.findIndex((item) => item.key === target);
-
-    console.log("Source", sourceidx);
-    console.log("Target", targetidx);
     setDragData(data);
+  };
+
+  const onDragEnd = (result) => {
+    const { destination, source } = result;
+
+    if (!destination) return;
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    try {
+      switch (source.droppableId) {
+        case "playground":
+          const items = Array.from(dragData);
+          const [reorderedItem] = items.splice(source.index, 1);
+          items.splice(destination.index, 0, reorderedItem);
+          setDragData(items);
+          break;
+        case "formFields":
+          const key = fieldForms.findIndex(
+            (item) => item._id === result.draggableId
+          );
+
+          source.index = key;
+
+          const sourceClone = Array.from(fieldForms);
+          const destinationClone = Array.from(dragData);
+
+          const sourceData = sourceClone.map((item) => {
+            const res = {
+              key: item._id,
+              conditions: {},
+              rules: {},
+            };
+
+            return res;
+          });
+
+          const itemClone = sourceData[key];
+
+          destinationClone.splice(destination.index, 0, { ...itemClone });
+
+          const findDup = itemClone.key;
+
+          if (dragData.find((item) => item.key === findDup)) return;
+
+          setDragData(destinationClone);
+          break;
+      }
+      console.log("res", result);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        text: "Error dragging field forms",
+        title: "Error",
+      });
+    }
   };
 
   const handleDragDropPlayground = async (
@@ -261,7 +320,7 @@ function CreateForm() {
     }
 
     const dup = cloneDeep(dragData);
-    
+
     for (const setting of fieldSettings) {
       const { _id, conditions, rules } = setting;
 
@@ -361,24 +420,26 @@ function CreateForm() {
           </Paper>
 
           <Grid container sx={{ position: "relative" }}>
-            <Grid item xs={3} sx={{ position: "relative", top: 63 }}>
-              <FormFieldPicker
-                onDragStart={onDragStart}
-                onDragEnter={onDragEnter}
-              />
-            </Grid>
-            <Grid item xs={6} sx={{ position: "relative", marginTop: 10 }}>
-              <Playground
-                data={dragData}
-                fields={fieldForms}
-                setSelected={setSelected}
-                onDragOver={onDragOver}
-                onDrop={onDrop}
-                selected={selected}
-                handleDelete={handleDelete}
-                handleDragDropPlayground={handleDragDropPlayground}
-              />
-            </Grid>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Grid item xs={3} sx={{ position: "relative", top: 63 }}>
+                <FormFieldPicker
+                  onDragStart={onDragStart}
+                  onDragEnter={onDragEnter}
+                />
+              </Grid>
+              <Grid item xs={6} sx={{ position: "relative", marginTop: 10 }}>
+                <Playground
+                  data={dragData}
+                  fields={fieldForms}
+                  setSelected={setSelected}
+                  onDragOver={onDragOver}
+                  onDrop={onDrop}
+                  selected={selected}
+                  handleDelete={handleDelete}
+                  handleDragDropPlayground={handleDragDropPlayground}
+                />
+              </Grid>
+            </DragDropContext>
             <Grid
               item
               xs={3}
