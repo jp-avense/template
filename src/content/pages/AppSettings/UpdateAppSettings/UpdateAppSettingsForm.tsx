@@ -167,20 +167,24 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
     }
   };
 
-  console.log(arr);
-  console.log(obj);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const val = JSON.stringify(value);
+
+    const val =
+      type === "Array" || type === "Object"
+        ? JSON.stringify(value)
+        : `${value}`;
+        
     const res = {
       key: key,
       value: val,
+      oldKey: selected.key,
     };
     try {
       setError("");
       setSuccess("");
       setIsSubmitting(true);
+
       await settingsService.updateSettings(res);
 
       setSuccess("Success");
@@ -278,7 +282,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
             ) : (
               <></>
             )}
-             {type === "boolean" ? (
+            {type === "boolean" ? (
               <>
                 <TextField
                   select

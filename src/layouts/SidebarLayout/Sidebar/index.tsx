@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Scrollbar from "src/components/Scrollbar";
 import { SidebarContext } from "src/contexts/SidebarContext";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ import {
 import SidebarMenu from "./SidebarMenu";
 import logo from "src/assets/images/logo.png";
 import { indigo } from "@mui/material/colors";
+import { settingsService } from "src/services/settings.service";
 
 const SidebarWrapper = styled(Box)(
   ({ theme }) => `
@@ -33,9 +34,20 @@ const SidebarWrapper = styled(Box)(
 function Sidebar() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const closeSidebar = () => toggleSidebar();
+
   const { i18n } = useTranslation();
+
   const direction = i18n.dir();
   const theme = useTheme();
+
+  const [tenantLogo, setLogo] = useState("");
+
+  useEffect(() => {
+    settingsService.getAll().then(({ data }) => {
+      const logo = data.find((item) => item.key === "tenantLogo")?.value;
+      setLogo(logo);
+    });
+  }, []);
 
   return (
     <>
@@ -68,7 +80,7 @@ function Sidebar() {
               alignItems="center"
               borderRadius={1}
             >
-              <img src={logo} alt="Milgam Logo" />
+              <img src={tenantLogo || logo} alt="Logo" />
             </Box>
           </Box>
           <Divider

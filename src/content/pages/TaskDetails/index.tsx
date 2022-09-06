@@ -111,7 +111,7 @@ const TaskDetailPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      // await taskService.bulkDeleteDetails(selected);
+      await taskService.bulkDeleteDetails(selected);
 
       const filtered = details.filter((item) => !selected.includes(item._id));
 

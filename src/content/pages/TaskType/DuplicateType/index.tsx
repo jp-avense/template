@@ -29,20 +29,16 @@ const DuplicateTypeForm = ({ onFinish, source }: Props) => {
       setSuccess("");
       setError("");
 
-      const notValid = Number.isNaN(+key);
+      const res = {
+        ...source,
+        key,
+      };
 
-      if (notValid) setError("Key must only be numbers");
-      else {
-        const res = {
-          ...source,
-          key,
-        };
+      delete res._id;
+      await taskService.createTaskTypes(res);
+      await onFinish();
+      setSuccess("Success");
 
-        delete res._id;
-        await taskService.createTaskTypes(res);
-        await onFinish()
-        setSuccess("Success");
-      }
     } catch (error) {
       setError(getAxiosErrorMessage(error));
     } finally {
@@ -59,7 +55,7 @@ const DuplicateTypeForm = ({ onFinish, source }: Props) => {
         helperText="Enter a new key for the duplicate"
         onChange={handleChange}
         value={key}
-        type="number"
+        type="text"
       />
       <LoadingButton
         loading={loading}

@@ -1,19 +1,24 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { FilterContext } from "src/contexts/FilterContext";
-import { Button, Grid } from "@mui/material";
+import {
+  Button,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Tooltip,
+  Box,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { taskService } from "src/services/task.service";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 function TaskFilter() {
   const { t } = useTranslation();
-  const filters = [
-    { label: "new", value: "new" },
-    { label: "assigned", value: "assigned" },
-    { label: "inProgress", value: "inProgress" },
-    { label: "done", value: "done" },
-    { label: "clearFilters", value: "clear_filters" },
-  ];
+  const [status, setStatus] = useState([]);
+
   const context = useContext(FilterContext);
   const {
     handleFilter: {
@@ -26,6 +31,20 @@ function TaskFilter() {
       dynamicFilters,
     },
   } = context;
+
+  useEffect(() => {
+    setLoading(true);
+    taskService
+      .getStatuses()
+      .then(({ data }) => {
+        data.sort((a, b) => a.order - b.order);
+        const res = data.map((c) => {
+          return { label: c.label, value: c.Key };
+        });
+        setStatus(res);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (filter === "clear_filters" && dynamicFilters.length === 0) {
@@ -43,7 +62,11 @@ function TaskFilter() {
   };
 
   const handleChange = async (value: string) => {
-    setFilter(value);
+    if (value === "clear_filters") {
+      setFilter("");
+    } else {
+      setFilter(value);
+    }
 
     setLoading(true);
     if (value === "clear_filters" && dynamicFilters.length > 0) {
@@ -57,17 +80,36 @@ function TaskFilter() {
 
   return (
     <Grid container spacing={2}>
-      {filters.map((c) => (
-        <Grid item key={c.value}>
-          <Button
-            variant={filter == c.value ? "contained" : "text"}
-            disabled={loading}
-            onClick={() => handleChange(c.value)}
+      <Grid item>
+        <FormControl sx={{ minWidth: 100 }}>
+          <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Filter"
+            onChange={(e) => handleChange(e.target.value)}
+            value={filter}
           >
-            {t(c.label)}
-          </Button>
-        </Grid>
-      ))}
+            {status.map((c) => {
+              return (
+                <MenuItem key={c.value} value={c.value}>
+                  {" "}
+                  {c.label}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item>
+        <Box ml={2}>
+          <Tooltip title="Clear Filters" placement="top">
+            <Button onClick={(e) => handleChange("clear_filters")}>
+              <RestartAltIcon />
+            </Button>
+          </Tooltip>
+        </Box>
+      </Grid>
     </Grid>
   );
 }

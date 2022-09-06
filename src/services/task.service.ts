@@ -1,3 +1,4 @@
+import { ICreateDetails } from "src/content/pages/TaskDetails/details.interface";
 import { TaskStatusState } from "src/content/pages/TaskStatus/status.interface";
 import { apiService } from "./api.service";
 
@@ -109,5 +110,17 @@ export const taskService = {
       taskData: data,
       taskType,
     });
+  },
+
+  async createDetails(values: ICreateDetails) {
+    return apiService.post(DETAILS_URL, values);
+  },
+
+  async bulkDeleteDetails(ids: string[]) {
+    return apiService.delete(`${DETAILS_URL}/bulk`, { data: { ids } });
+  },
+
+  async updateDetail(id: string, values) {
+    return apiService.patch(`${DETAILS_URL}/${id}`, values);
   },
 };

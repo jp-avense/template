@@ -33,7 +33,10 @@ type Props = {
 };
 
 const validationSchema = yup.object({
-  Key: yup.string().required("required"),
+  Key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .required("required"),
   label: yup.string().required("required"),
   description: yup.string().optional(),
   systemStatusKey: yup.string().required(),
@@ -97,24 +100,42 @@ const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
         </Grid>
-        <Grid item>
-          <TextField
-            name="Key"
-            label={t("key")}
-            value={formik.values.Key}
-            error={formik.touched.Key && Boolean(formik.errors.Key)}
-            helperText={formik.touched.Key && formik.errors.Key}
-            fullWidth
-            onChange={(e) => handleKeyChange(e)}
-          />
-          {!uniq ? (
-            <>
-              <Typography color={"red"}>Key already exists</Typography>
-            </>
-          ) : (
-            <></>
-          )}
-        </Grid>
+        {selectedStatus.isSystemStatus ? (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="Key"
+                label={t("key")}
+                defaultValue={selectedStatus.Key}
+                disabled
+                fullWidth
+                helperText={t("cantChangeField")}
+              />
+            </Grid>
+          </>
+        ) : (
+          <>
+            {" "}
+            <Grid item>
+              <TextField
+                name="Key"
+                label={t("key")}
+                fullWidth
+                value={formik.values.Key}
+                onChange={(e) => handleKeyChange(e)}
+              />
+              {!uniq ? (
+                <>
+                  <Typography color={"red"}>Key already exists</Typography>
+                </>
+              ) : (
+                <></>
+              )}
+            </Grid>
+          </>
+        )}
+
         <Grid item>
           <TextField
             name="label"
