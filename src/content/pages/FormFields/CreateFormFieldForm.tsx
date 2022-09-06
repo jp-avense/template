@@ -61,7 +61,6 @@ function FormFieldForm({ onDone }) {
     description: yup.string(),
     note: yup.string(),
     validation: yup.string(),
-    value: yup.string(),
     defaultValue: yup.string(),
     placeholder: yup.string(),
   });
@@ -73,7 +72,6 @@ function FormFieldForm({ onDone }) {
       description: "",
       note: "",
       validation: "",
-      value: false,
       defaultValue: "",
       placeholder: "",
     },
@@ -262,18 +260,6 @@ function FormFieldForm({ onDone }) {
                     helperText={
                       formik.touched.placeholder && formik.errors.placeholder
                     }
-                    fullWidth
-                  ></TextField>
-                  <TextField
-                    sx={{ mt: 2 }}
-                    id="value"
-                    name="value"
-                    label="Value"
-                    value="false"
-                    disabled={true}
-                    onChange={(e) => handleChange(e)}
-                    error={formik.touched.value && Boolean(formik.errors.value)}
-                    helperText={formik.touched.value && formik.errors.value}
                     fullWidth
                   ></TextField>
                   {type === "checkboxes" ||

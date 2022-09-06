@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Typography,
@@ -12,12 +12,19 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  styled,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { formService } from "src/services/form.service";
 import Scrollbar from "src/components/Scrollbar";
 import { useTranslation } from "react-i18next";
 import "./style.css";
+import {
+  Droppable,
+  Draggable,
+  NotDraggingStyle,
+  DraggingStyle,
+} from "react-beautiful-dnd";
 
 type Props = {
   onDragEnter: any;
@@ -74,6 +81,7 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
           height: "100vh",
           backgroundColor: "white",
           position: "fixed",
+          zIndex: 1000,
         }}
       >
         <Scrollbar>
@@ -110,32 +118,66 @@ function FormFieldPicker({ onDragEnter, onDragStart }: Props) {
                       <Typography>{t(x.inputType)}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      {x.forms.map((item) => {
-                        const { key } = item;
-                        return (
-                          <>
-                            <Box
-                              draggable="true"
-                              onDragStart={(e) => onDragStart(e, item._id)}
-                              onDragEnter={(e) => onDragEnter(e, item._id)}
-                              key={key}
-                              py={2}
-                              px={3.5}
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#f0f2f5",
-                                  transitionDuration: "150ms",
-                                },
-                              }}
-                            >
-                              <Typography variant="body2">
-                                {item.label} ({key})
-                              </Typography>
-                            </Box>
-                            <Divider />
-                          </>
-                        );
-                      })}
+                      <Droppable droppableId="formFields" isDropDisabled={true}>
+                        {(provided, snapshot) => (
+                          <Box
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                          >
+                            {x.forms.map((item, index) => {
+                              const { key } = item;
+                              return (
+                                <Draggable
+                                  key={item._id}
+                                  draggableId={item._id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <React.Fragment>
+                                      <Box
+                                        key={key}
+                                        py={2}
+                                        px={3.5}
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "#f0f2f5",
+                                            transitionDuration: "150ms",
+                                          },
+                                          boxShadow: snapshot.isDragging
+                                            ? "0 5px 5px rgba(0, 0, 0, 0.2)"
+                                            : "unset",
+                                          backgroundColor: snapshot.isDragging
+                                            ? "#e8eaf6"
+                                            : "unset",
+                                        }}
+                                        style={provided.draggableProps.style}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Typography variant="body2">
+                                          {item.label} ({key})
+                                        </Typography>
+                                      </Box>
+                                      {snapshot.isDragging && (
+                                        <Box py={2} px={3.5}>
+                                          <Typography
+                                            className={`dnd-copy`}
+                                            variant="body2"
+                                          >
+                                            {item.label} ({key})
+                                          </Typography>
+                                        </Box>
+                                      )}
+                                      <Divider />
+                                    </React.Fragment>
+                                  )}
+                                </Draggable>
+                              );
+                            })}
+                          </Box>
+                        )}
+                      </Droppable>
                     </AccordionDetails>
                   </Accordion>
                 ))}

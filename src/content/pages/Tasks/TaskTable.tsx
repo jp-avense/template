@@ -368,19 +368,18 @@ const TaskTable = () => {
         }
 
         if (typeof x === "string" || typeof x === "number") {
-          const escape = ("" + rowX[head])
-            .replace(/\n/g, "")
-            .replace(/,/g, "")
-            .replace(/"/g, '\\"');
+          const escape = ("" + rowX[head]).replace(/\n/g, "");
 
-          return `${escape}`;
+          return `"${escape}"`;
         }
 
         if (typeof x === "object") {
           return x.value ?? "";
         }
       });
+
       values = values.concat(val);
+
       csvRows.push(values.join(","));
     }
 
@@ -414,6 +413,7 @@ const TaskTable = () => {
       const csvData = objectToCsv(table, tasks);
       download(csvData);
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -432,11 +432,14 @@ const TaskTable = () => {
   const csvToJson = (str, comma = ",") => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
+
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean)
 
     const arr = rowFix.map((row) => {
-      const values = row.split(comma);
+      // const values = row.split(comma);
+      const values = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
+
       const el = headerFix.reduce((acc, cur, index) => {
         acc[cur] = values[index];
         return acc;
@@ -444,6 +447,7 @@ const TaskTable = () => {
       return el;
     });
 
+    console.log("arr", arr);
     return arr;
   };
 
@@ -455,6 +459,7 @@ const TaskTable = () => {
     reader.onload = async (e) => {
       const csv = e.target.result;
       const data = csvToJson(csv);
+      console.log("data", data);
       try {
         setUploadStatus({
           status: "",
