@@ -30,7 +30,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import SignaturePad from "signature_pad";
 import "./style.css";
 import { useTranslation } from "react-i18next";
-import _ from 'lodash';
+import _ from "lodash";
 
 type Props = {
   data: Form;
@@ -45,6 +45,7 @@ const PreviewModal = ({ data, text, title }: Props) => {
   const handleClose = (e) => {
     e.stopPropagation();
     setOpen(false);
+    setValues({});
   };
   const handleOpen = (e) => {
     e.stopPropagation();
@@ -82,6 +83,20 @@ const PreviewModal = ({ data, text, title }: Props) => {
     setValues({
       ...values,
       [name]: value,
+    });
+  };
+
+  const handleButtonClick = (name) => {
+    setValues({
+      ...values,
+      [name]: "click",
+    });
+  };
+
+  const handleSignatureChange = (name) => {
+    setValues({
+      ...values,
+      [name]: "signed",
     });
   };
 
@@ -226,6 +241,7 @@ const PreviewModal = ({ data, text, title }: Props) => {
           <Box>
             <Box mb={1}>{label}</Box>
             <DateTimePicker
+              inputFormat="dd/MM/yyyy HH:mm"
               renderInput={(props) => (
                 <TextField
                   {...props}
@@ -267,7 +283,11 @@ const PreviewModal = ({ data, text, title }: Props) => {
         return (
           <Box>
             <FormControl>
-              <Button variant="contained" endIcon={<AttachmentIcon />}>
+              <Button
+                variant="contained"
+                endIcon={<AttachmentIcon />}
+                onClick={() => handleButtonClick(pk)}
+              >
                 {label}
               </Button>
               <FormHelperText>{description}</FormHelperText>
@@ -279,7 +299,11 @@ const PreviewModal = ({ data, text, title }: Props) => {
         return (
           <Box>
             <FormControl>
-              <Button variant="contained" endIcon={<TodayIcon />}>
+              <Button
+                variant="contained"
+                endIcon={<TodayIcon />}
+                onClick={() => handleButtonClick(pk)}
+              >
                 {label}
               </Button>
               <FormHelperText>{description}</FormHelperText>
@@ -291,7 +315,23 @@ const PreviewModal = ({ data, text, title }: Props) => {
         return (
           <Box>
             <FormControl>
-              <Button variant="contained" endIcon={<PrintIcon />}>
+              <Button
+                variant="contained"
+                endIcon={<PrintIcon />}
+                onClick={() => handleButtonClick(pk)}
+              >
+                {label}
+              </Button>
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          </Box>
+        );
+
+      case InputTypeEnum.BUTTON:
+        return (
+          <Box>
+            <FormControl>
+              <Button variant="contained" onClick={() => handleButtonClick(pk)}>
                 {label}
               </Button>
               <FormHelperText>{description}</FormHelperText>
@@ -303,7 +343,11 @@ const PreviewModal = ({ data, text, title }: Props) => {
         return (
           <Box>
             <FormControl>
-              <Button variant="contained" endIcon={<CameraAltIcon />}>
+              <Button
+                variant="contained"
+                endIcon={<CameraAltIcon />}
+                onClick={() => handleButtonClick(pk)}
+              >
                 {label}
               </Button>
               <FormHelperText>{description}</FormHelperText>
@@ -312,12 +356,10 @@ const PreviewModal = ({ data, text, title }: Props) => {
         );
 
       case InputTypeEnum.MARKUP:
-        let res = value || defaultValue
-        res = _.unescape(res)
+        let res = value || defaultValue;
+        res = _.unescape(res);
 
-        return (
-          <div dangerouslySetInnerHTML={{ __html: res }} />
-        );
+        return <div dangerouslySetInnerHTML={{ __html: res }} />;
 
       case InputTypeEnum.SIGNATURE:
         return (
@@ -328,6 +370,7 @@ const PreviewModal = ({ data, text, title }: Props) => {
               height="300"
               width="500"
               ref={(e) => setCanvas(e)}
+              onClick={() => handleSignatureChange(pk)}
             ></canvas>
             <Box mt={1}>{description}</Box>
           </Box>
