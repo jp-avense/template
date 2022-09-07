@@ -84,7 +84,6 @@ function ReportsTable({
   };
   return (
     <>
-      {" "}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

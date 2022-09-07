@@ -113,7 +113,7 @@ function PageHeader() {
       }
 
       formik.setFieldValue("taskId", taskNumber);
-      formik.setFieldTouched('taskId', true)
+      formik.setFieldTouched("taskId", true);
     } catch (error) {
       setStatus({
         state: "error",
@@ -124,13 +124,13 @@ function PageHeader() {
 
   return (
     <>
-      <Grid container justifyContent="space-between" alignItems="center">
-        <Grid item>
+      <Grid container justifyContent="end">
+        {/* <Grid item>
           <Typography variant="h3" component="h3" gutterBottom>
             {t("tasks")}
           </Typography>
-          <Typography variant="subtitle2">{t("taskDescription")}</Typography>
-        </Grid>
+        </Grid> */}
+
         {showCreateTask ? (
           <Grid item>
             <ModalButton
@@ -161,7 +161,9 @@ function PageHeader() {
               />
             </ModalButton>
           </Grid>
-        ) : null}
+        ) : (
+          <CircularProgress size={20} />
+        )}
       </Grid>
     </>
   );

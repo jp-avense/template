@@ -262,12 +262,12 @@ function DashboardCrypto() {
             <Paper>
               <Box p={3}>
                 {loading ? (
-                  <Box display="flex" justifyContent="center" py={11}>
+                  <Box display="flex" justifyContent="center" py={13.5}>
                     <CircularProgress size={50} />
                   </Box>
                 ) : (
                   <Chart
-                    height={250}
+                    height={290}
                     options={chartOptions}
                     series={chartSeries}
                     type="pie"

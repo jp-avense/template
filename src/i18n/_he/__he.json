@@ -17,7 +17,7 @@
   "addFilter": "הוספת מסנן",
   "addUser": "הוספת משתמש",
   "addTask": "הוספת משימה",
-  "submitFilter": "סינון",
+  "submitFilter": "שלח מסנן",
   "none": "אף אחד",
   "status": "סטטוס",
   "Status": "סטטוס",
@@ -227,5 +227,7 @@
   "formSubmitted": "הטופס נשלח",
   "getNewTaskId": "קבלת מספר משימה חדש",
   "taskId": "מספר משימה",
-  "reports": "דוחות"
+  "reports": "דוחות",
+  "filterTask": "משימת סינון",
+  "dragItems": "גרור פריטים לכאן!"
 }

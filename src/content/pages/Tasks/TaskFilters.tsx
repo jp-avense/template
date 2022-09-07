@@ -79,9 +79,9 @@ function TaskFilter() {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} alignItems="center">
       <Grid item>
-        <FormControl sx={{ minWidth: 100 }}>
+        <FormControl sx={{ minWidth: 120 }}>
           <InputLabel id="demo-simple-select-label">Filter</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -102,7 +102,7 @@ function TaskFilter() {
         </FormControl>
       </Grid>
       <Grid item>
-        <Box ml={2}>
+        <Box ml={1}>
           <Tooltip title="Clear Filters" placement="top">
             <Button onClick={(e) => handleChange("clear_filters")}>
               <RestartAltIcon />

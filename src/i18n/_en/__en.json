@@ -17,7 +17,7 @@
   "addFilter": "Add filter",
   "addUser": "Add User",
   "addTask": "Add Task",
-  "submitFilter": "Filter",
+  "submitFilter": "Submit Filter",
   "none": "None",
   "status": "Status",
   "Status": "Status",
@@ -230,5 +230,7 @@
   "formSubmitted": "Form submitted",
   "getNewTaskId": "Get new ID",
   "taskId": "Task ID",
-  "reports": "Reports"
+  "reports": "Reports",
+  "filterTask": "Filter task",
+  "dragItems": "Drag items here!"
 }

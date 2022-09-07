@@ -1,4 +1,11 @@
-import { Grid, Card, Typography, Box, CircularProgress } from "@mui/material";
+import {
+  Grid,
+  Card,
+  Typography,
+  Box,
+  CircularProgress,
+  Avatar,
+} from "@mui/material";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import AssignmentLateIcon from "@mui/icons-material/AssignmentLate";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -31,21 +38,11 @@ function TaskGrid({
     <Grid container spacing={2}>
       <Grid item xs={6} md={6} lg={6}>
         <Card>
-          <Box sx={{ m: 2, px: 1 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <AssignmentLateIcon
-                fontSize="small"
-                color="success"
-                sx={{ mr: 1 }}
-              />
-              {t("new")}
-            </Typography>
+          <Box display="flex" alignItems="center" sx={{ m: 2, px: 1 }}>
+            <Avatar sx={{ bgcolor: "#57CA22", marginRight: 1 }}>
+              <AssignmentLateIcon fontSize="small" />
+            </Avatar>
+            <Typography variant="h4">{t("new")}</Typography>
           </Box>
           <Box
             sx={{ mx: 2, mt: 4, px: 1 }}
@@ -69,17 +66,11 @@ function TaskGrid({
       </Grid>
       <Grid item xs={6} md={6} lg={6}>
         <Card>
-          <Box sx={{ m: 2, px: 1 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <AssignmentIcon fontSize="small" color="error" sx={{ mr: 1 }} />
-              {t("unDone")}
-            </Typography>
+          <Box display="flex" alignItems="center" sx={{ m: 2, px: 1 }}>
+            <Avatar sx={{ bgcolor: "#FF1943", marginRight: 1 }}>
+              <AssignmentLateIcon fontSize="small" />
+            </Avatar>
+            <Typography variant="h4">{t("unDone")}</Typography>
           </Box>
           <Box
             sx={{ mx: 2, mt: 4, px: 1 }}
@@ -104,21 +95,11 @@ function TaskGrid({
       </Grid>
       <Grid item xs={6} md={6} lg={6}>
         <Card>
-          <Box sx={{ m: 2, px: 1 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <AssignmentTurnedInIcon
-                fontSize="small"
-                color="primary"
-                sx={{ mr: 1 }}
-              />
-              {t("done")}
-            </Typography>
+          <Box display="flex" alignItems="center" sx={{ m: 2, px: 1 }}>
+            <Avatar sx={{ bgcolor: "#5569ff", marginRight: 1 }}>
+              <AssignmentTurnedInIcon fontSize="small" />
+            </Avatar>
+            <Typography variant="h4">{t("done")}</Typography>
           </Box>
           <Box
             sx={{ mx: 2, mt: 4, px: 1 }}
@@ -143,17 +124,11 @@ function TaskGrid({
       </Grid>
       <Grid item xs={6} md={6} lg={6}>
         <Card>
-          <Box sx={{ m: 2, px: 1 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <AssignmentIcon fontSize="small" color="warning" sx={{ mr: 1 }} />
-              {t("inProgress")}
-            </Typography>
+          <Box display="flex" alignItems="center" sx={{ m: 2, px: 1 }}>
+            <Avatar sx={{ bgcolor: "#FFA319", marginRight: 1 }}>
+              <AssignmentIcon fontSize="small" />
+            </Avatar>
+            <Typography variant="h4">{t("inProgress")}</Typography>
           </Box>
           <Box
             sx={{ mx: 2, mt: 4, px: 1 }}
