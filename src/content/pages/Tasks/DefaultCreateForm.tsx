@@ -1,4 +1,3 @@
-import types from "@emotion/styled";
 import {
   Alert,
   Grid,
@@ -34,7 +33,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
   const context = useContext(FilterContext);
 
   const {
-    handleFilter: { details, types, originalData },
+    handleFilter: { details, originalData },
   } = context;
 
   if (!details.length) {

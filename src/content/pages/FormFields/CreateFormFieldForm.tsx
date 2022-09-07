@@ -12,12 +12,15 @@ import {
   Alert,
   FormHelperText,
   IconButton,
+  FormControlLabel,
+  FormGroup,
+  Autocomplete,
 } from "@mui/material";
 import { t } from "i18next";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
@@ -25,12 +28,16 @@ import _ from "lodash";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { taskService } from "src/services/task.service";
 
 function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldInCreate, setFieldInCreate] = useState(false);
+  const [details, setDetails] = useState([]);
+  const [relatedDetail, setRelatedDetail] = useState(null);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
@@ -48,6 +55,15 @@ function FormFieldForm({ onDone }) {
     "signature",
     "geo",
   ];
+
+  useEffect(() => {
+    if (fieldInCreate && details.length === 0) {
+      taskService.getDetails().then(({ data }) => {
+        console.log(data);
+        setDetails(data);
+      });
+    }
+  }, [fieldInCreate]);
 
   const validationSchema = yup.object({
     key: yup
@@ -176,7 +192,6 @@ function FormFieldForm({ onDone }) {
         spacing={1}
         paddingBottom={1}
         paddingLeft={1}
-        sx={{ minHeight: 500 }}
       >
         <Grid item>
           <form onSubmit={formik.handleSubmit} style={{ paddingTop: "1rem" }}>
@@ -399,6 +414,32 @@ function FormFieldForm({ onDone }) {
                     helperText={formik.touched.note && formik.errors.note}
                     fullWidth
                   ></TextField>
+                  <Box mt={2} display="flex" flexDirection="column" gap={2}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={fieldInCreate}
+                          onChange={(e) => setFieldInCreate(e.target.checked)}
+                        />
+                      }
+                      label="Use in task create form"
+                    />
+                    {fieldInCreate && (
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={details}
+                        fullWidth
+                        blurOnSelect
+
+                        onChange={(e, value) => setRelatedDetail(value)}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Related task detail" />
+                        )}
+                      />
+                    )}
+                    {false}
+                  </Box>
                 </Box>
 
                 <div style={{ paddingTop: "10px" }}>

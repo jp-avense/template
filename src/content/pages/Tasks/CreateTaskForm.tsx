@@ -57,7 +57,6 @@ const CreateTaskForm = ({ formik, status, setStatus, getNewTaskId }: Props) => {
 
   const typesMap = useMemo(() => {
     const mapping = toMap("key", types);
-
     for (const value of Object.values<any>(mapping)) {
       let newFormObj = {
         execute: "",
@@ -112,7 +111,7 @@ const CreateTaskForm = ({ formik, status, setStatus, getNewTaskId }: Props) => {
             variant="outlined"
             onClick={getId}
             disabled={idLoading}
-            sx={{ flexGrow: 1 }}
+            sx={{ flexGrow: 1 }}  
           >
             {idLoading ? <CircularProgress size={20} /> : t("getNewTaskId")}
           </Button>

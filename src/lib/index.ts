@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import { cloneDeep } from "lodash";
 import { TaskDefaultColumns } from "src/consts";
 
 export const handleAxiosError = (error: AxiosError) => {
@@ -48,7 +49,9 @@ export const isDefaultColumn = (string: string) => {
 };
 
 export const toMap = (key: string, data: any[]) => {
-  return data.reduce((acc, x) => {
+  const d = cloneDeep(data)
+
+  return d.reduce((acc, x) => {
     const mapKey = x[key];
 
     return {
