@@ -216,10 +216,6 @@ function SidebarMenu() {
                   {t("dashboard")}
                 </Button>
               </ListItem>
-            </List>
-          </SubMenuWrapper>
-          <SubMenuWrapper>
-            <List component="div">
               <ListItem component="div">
                 <Button
                   disableRipple
