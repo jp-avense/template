@@ -10,6 +10,7 @@ import TaskHeader from "./Tasks/TaskHeader";
 import TaskGrid from "./Tasks/TaskGrid";
 import { agentService } from "src/services/agent.service";
 import { parseAgentResponse } from "src/contexts/AgentContext";
+import { apiService } from "src/services/api.service";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 
@@ -27,7 +28,11 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    init();
+    if (apiService.defaults.headers.common["x-tenant-name"]) {
+      init();
+    } else {
+      setTimeout(init, 500);
+    }
   }, []);
 
   const init = async () => {

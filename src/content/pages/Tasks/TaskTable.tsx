@@ -55,7 +55,7 @@ interface Rows {
   executionStartDate: string;
 }
 
-const TaskTable = () => {
+const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
@@ -235,9 +235,12 @@ const TaskTable = () => {
       rows.push(details);
     });
 
-    setTableData(() => {
-      return rows;
-    });
+    if (data.length > 0) {
+      setTableData(() => {
+        setCreateRowsDone(true);
+        return rows;
+      });
+    }
   };
 
   const headCells = () => {
@@ -598,7 +601,7 @@ const TaskTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? (
+            {!createRowsDone || loading ? (
               <TableRow>
                 <TableCell colSpan={headers.length + 1} align="center">
                   <CircularProgress size={30} />

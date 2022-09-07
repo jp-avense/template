@@ -51,7 +51,7 @@ type Values = {
   name: string;
   description: string;
   type: string;
-  formType: 'create' | 'execute' 
+  formType: "create" | "execute";
 };
 
 function TabPanel(props) {
@@ -150,7 +150,6 @@ function FormFieldSettings({
   }, [selectedForm]);
 
   useEffect(() => {
-    console.log(action)
     const res = action.map((c) => {
       return { value: c, label: t(c) };
     });
@@ -441,7 +440,12 @@ function FormFieldSettings({
                                 alignItems="center"
                                 justifyContent="center"
                               >
-                                {!form.value?.includes("!null") ? (
+                                {!form.value?.includes("!null") &&
+                                form.inputType !== "cameraButton" &&
+                                form.inputType !== "attachButton" &&
+                                form.inputType !== "dateTimeRegister" &&
+                                form.inputType !== "button" &&
+                                form.inputType !== "signature" ? (
                                   <>
                                     <Typography
                                       variant="h5"

@@ -1,5 +1,5 @@
 import { Container, Grid, Paper } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import PageTitleWrapper from "src/components/PageTitleWrapper";
 import TaskHeader from "./TaskHeader";
@@ -17,7 +17,7 @@ import { formService } from "src/services/form.service";
 const TaskPage = () => {
   const context = useContext(FilterContext);
   const agentctx = useContext(AgentContext);
-
+  const [createRowsDone, setCreateRowsDone] = useState(false);
   const { t } = useTranslation();
 
   const {
@@ -68,7 +68,10 @@ const TaskPage = () => {
         setSettings(settings);
         setForms(forms);
       })
-      .catch(console.log)
+      .catch((e) => {
+        console.log(e);
+        setCreateRowsDone(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -105,7 +108,10 @@ const TaskPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={8}>
-              <TaskTable />
+              <TaskTable
+                createRowsDone={createRowsDone}
+                setCreateRowsDone={setCreateRowsDone}
+              />
             </Grid>
             <Grid item xs={4}>
               <InfoTab />
