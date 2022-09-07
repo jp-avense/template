@@ -15,8 +15,6 @@ import { useFormik } from "formik";
 import { getAxiosErrorMessage } from "src/lib";
 import { taskService } from "src/services/task.service";
 import * as yup from "yup";
-import { useNavigate } from "react-router";
-import { Form } from "../../FormBuilder/form.interface";
 import { IDetails } from "../details.interface";
 import { useTranslation } from "react-i18next";
 
@@ -36,6 +34,7 @@ const validationSchema = yup.object({
 const UpdateTaskDetail = ({ selectedDetail, onDone }: Props) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [order, setOrder] = useState(selectedDetail.order);
 
   const { t } = useTranslation();
 
@@ -49,16 +48,20 @@ const UpdateTaskDetail = ({ selectedDetail, onDone }: Props) => {
     },
     validationSchema,
     onSubmit: async (values, actions) => {
-      console.log(values);
-      // try {
-      //   setError("");
-      //   setSuccess("");
-      //   await taskService.updateDetail(selectedDetail._id, values);
-      //   setSuccess("Updated detail");
-      //   await onDone();
-      // } catch (error) {
-      //   setError(getAxiosErrorMessage(error));
-      // }
+      try {
+        setError("");
+        setSuccess("");
+        let o = values.showInTable ? order : null;
+
+        await taskService.updateDetail(selectedDetail._id, {
+          ...values,
+          order: o,
+        });
+        setSuccess(t("success"));
+        await onDone();
+      } catch (error) {
+        setError(getAxiosErrorMessage(error));
+      }
     },
   });
 
@@ -147,6 +150,20 @@ const UpdateTaskDetail = ({ selectedDetail, onDone }: Props) => {
               </FormHelperText>
             </FormControl>
           </Grid>
+          {formik.values.showInTable ? (
+            <Grid item>
+              <TextField
+                fullWidth
+                value={order}
+                onChange={(e) => setOrder(Number(e.target.value) || null)}
+                type="number"
+                inputProps={{ min: 1 }}
+                label={t("order")}
+                placeholder={t("order")}
+                required
+              />
+            </Grid>
+          ) : null}
           <Grid item>
             <TextField
               label={t("description")}

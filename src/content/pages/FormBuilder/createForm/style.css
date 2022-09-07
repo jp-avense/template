@@ -20,3 +20,7 @@
 .is-active {
   background: #b4bbf3;
 }
+
+.dnd-copy ~ div {
+  transform: none !important;
+}

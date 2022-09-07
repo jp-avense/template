@@ -139,7 +139,11 @@ const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
     setLoading(true);
 
     try {
-      console.log("Agents has been deleted.");
+      // TODO we might want to switch from email in selected array to sub
+
+      await agentService.bulkDelete(selectedAgents)
+      await callback()
+      
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -197,14 +201,7 @@ const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
                     color: "warning",
                   }}
                 />
-              ) : // <Button
-              //   variant="contained"
-              //   color="warning"
-              //   onClick={() => handleDelete()}
-              // >
-              //   {t("delete")}
-              // </Button>
-              null}
+              ) : null}
             </Box>
           ) : null
         }

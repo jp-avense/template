@@ -61,9 +61,7 @@ const UpdateStatusForm = ({ selectedStatus, onDone, data }: Props) => {
       try {
         setError("");
         setSuccess("");
-        if (selectedStatus.isSystemStatus) {
-          delete values.Key;
-        }
+
         await taskService.updateStatus(selectedStatus._id, values);
         setSuccess("Updated status");
 

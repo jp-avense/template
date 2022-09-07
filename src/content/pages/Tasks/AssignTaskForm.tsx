@@ -167,6 +167,7 @@ const AssignTaskForm = ({ selected }: Props) => {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e)}
                 minDate={new Date()}
+                inputFormat="dd/MM/yyyy"
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
               <Button

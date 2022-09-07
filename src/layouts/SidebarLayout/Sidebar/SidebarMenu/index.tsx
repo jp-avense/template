@@ -177,6 +177,7 @@ function SidebarMenu() {
   const roles = useRoles();
 
   const isAdmin = roles.includes("admin");
+  const isBackoffice = roles.includes("backoffice");
 
   const {
     handleAccess: { setAccessToken },
@@ -217,21 +218,21 @@ function SidebarMenu() {
                 </Button>
               </ListItem>
             </List>
-          </SubMenuWrapper>
-          <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/reports"
-                  startIcon={<ReportIcon />}
-                >
-                  {t("reports")}
-                </Button>
-              </ListItem>
-            </List>
+            {isAdmin && (
+              <List component="div">
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/reports"
+                    startIcon={<ReportIcon />}
+                  >
+                    {t("reports")}
+                  </Button>
+                </ListItem>
+              </List>
+            )}
           </SubMenuWrapper>
         </List>
         <List

@@ -21,6 +21,7 @@ import Lightbox from "react-image-lightbox";
 
 import "react-image-lightbox/style.css";
 import "./style.css";
+import { settingsService } from "src/services/settings.service";
 
 type Props = {};
 
@@ -31,6 +32,8 @@ const FormTab = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState([]);
   const [clickedImg, setClickedImg] = useState(0);
+  const [baseUrl, setBaseUrl] = useState("");
+  const [region, setRegion] = useState("");
 
   const {
     t,
@@ -68,7 +71,17 @@ const FormTab = (props: Props) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [selected]);
+  }, [selected, baseUrl, region]);
+
+  useEffect(() => {
+    settingsService.getAll().then(({ data }) => {
+      const item = data.find((x) => x.key === "bucketName");
+      const item2 = data.find((x) => x.key === "s3Region");
+      
+      setBaseUrl(item?.value ?? "");
+      setRegion(item2?.value ?? "");
+    });
+  }, []);
 
   const createComponent = async (item: FormFieldExtended, taskId = null) => {
     const { value, inputType, options, key } = item;
@@ -99,7 +112,7 @@ const FormTab = (props: Props) => {
         if (inputType === InputTypeEnum.SIGNATURE) vals = [`image.png`];
 
         const promises = vals.map(async (name) => {
-          return formService.getImage(taskId, name);
+          return formService.getImage(baseUrl, region, taskId, name);
         });
 
         const results = await Promise.all(promises);

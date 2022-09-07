@@ -234,11 +234,16 @@ const TaskStatusPage = () => {
   };
 
   const descendingComparator = (a, b, orderBy) => {
-    if (orderBy === "isSystemStatus" || orderBy === "description") {
+    if (
+      orderBy === "isSystemStatus" ||
+      orderBy === "description" ||
+      orderBy === "systemStatusKey"
+    ) {
       return b[orderBy] - a[orderBy];
     }
 
     if (orderBy) {
+      console.log(orderBy);
       return b[orderBy].localeCompare(a[orderBy]);
     }
 

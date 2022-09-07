@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useState,
-  createElement,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Divider,
@@ -78,6 +72,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   const [fileName, setFileName] = useState("");
 
   const isAdmin = roles.includes("admin");
+  const isBackoffice = roles.includes("backoffice");
 
   const {
     handleFilter: {
@@ -318,11 +313,9 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   };
 
   const download = (data) => {
-    const blob = new Blob([data], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
-    a.setAttribute("href", url);
+    a.setAttribute("href", 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(data).replaceAll('#', '%23'));
     a.setAttribute("download", "task_table.csv");
     document.body.appendChild(a);
     a.click();
@@ -358,10 +351,13 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     for (const index in data) {
       const row = data[index];
       let values = headers.map((header) => {
+        if(row[header] == null) return ""
+        
         const escaped = ("" + row[header])
           .replace(/\n/g, "")
           .replace(/,/g, "")
           .replace(/"/g, '\\"');
+
         return `${escaped}`.replace(" ", "");
       });
 
@@ -370,19 +366,23 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       const val = getKey.map((head, index) => {
         const x = rowX[head];
 
+        if(x == null) {
+          return ""
+        }
+
         if (typeof x === "string" || typeof x === "number") {
-          const escape = ("" + rowX[head])
-            .replace(/\n/g, "")
-            .replace(/,/g, "")
-            .replace(/"/g, '\\"');
-          return `${escape}`;
+          const escape = ("" + rowX[head]).replace(/\n/g, "");
+
+          return `"${escape}"`;
         }
 
         if (typeof x === "object") {
-          return x.value;
+          return x.value ?? "";
         }
       });
+
       values = values.concat(val);
+
       csvRows.push(values.join(","));
     }
 
@@ -416,6 +416,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       const csvData = objectToCsv(table, tasks);
       download(csvData);
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -434,11 +435,14 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   const csvToJson = (str, comma = ",") => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
+
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-    const rowFix = rows.map((i) => i.replace(/\r/g, ""));
+    const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean)
 
     const arr = rowFix.map((row) => {
-      const values = row.split(comma);
+      // const values = row.split(comma);
+      const values = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
+
       const el = headerFix.reduce((acc, cur, index) => {
         acc[cur] = values[index];
         return acc;
@@ -446,6 +450,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       return el;
     });
 
+    console.log("arr", arr);
     return arr;
   };
 
@@ -457,6 +462,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     reader.onload = async (e) => {
       const csv = e.target.result;
       const data = csvToJson(csv);
+      console.log("data", data);
       try {
         setUploadStatus({
           status: "",
@@ -516,7 +522,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     }
   };
 
-  console.log("tableData", tableData);
   return (
     <Card>
       <Box
@@ -527,12 +532,12 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       >
         <Box fontWeight="bold" display="flex" gap={3} alignItems="center">
           <Box>{t("task")}</Box>
-          {selectedRows.length > 0 && isAdmin ? (
+          {selectedRows.length > 0 && (isAdmin || isBackoffice) ? (
             <Box>
               <AssignTaskForm selected={selectedRows}></AssignTaskForm>
             </Box>
           ) : null}
-          {selectedRows.length == 1 && isAdmin ? (
+          {selectedRows.length == 1 && (isAdmin || isBackoffice) ? (
             <Box>
               <UpdateTaskForm selected={selectedRows[0]}></UpdateTaskForm>
             </Box>
@@ -647,100 +652,106 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
         alignItems="center"
       >
         <Box>
-          <Button
-            disabled={loading || downloading}
-            variant="contained"
-            onClick={xlsExport}
-            sx={{ marginRight: 2 }}
-          >
-            {loading || downloading ? (
-              <CircularProgress size={18} />
-            ) : (
-              <>
-                <Typography variant="h5" sx={{ mr: "5px" }}>
-                  {t("download")}
-                </Typography>
-                <FileDownloadIcon fontSize="small" />
-              </>
-            )}
-          </Button>
-          <ModalButton
-            text={
-              loading || downloading2 ? (
+          {isAdmin ? (
+            <Button
+              disabled={loading || downloading}
+              variant="contained"
+              onClick={xlsExport}
+              sx={{ marginRight: 2 }}
+            >
+              {loading || downloading ? (
                 <CircularProgress size={18} />
               ) : (
-                t("upload")
-              )
-            }
-            title={t("upload")}
-            buttonProps={{
-              variant: "contained",
-              size: "medium",
-              disabled: loading || downloading2,
-            }}
-          >
-            <Box display="flex" flexDirection="column" gap={2} pt={2}>
-              {uploadStatus.status !== "" ? (
-                <Alert severity={uploadStatus.status as any}>
-                  {uploadStatus.message}
-                </Alert>
-              ) : null}
-              {fileName !== "" ? (
-                <Alert severity="info">{`${t("fileName")}: ${fileName}`}</Alert>
-              ) : null}
-              <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignItems="center"
-              >
-                <TextField
-                  select
-                  onChange={(e) => setImportType(e.target.value)}
-                  required
-                  label={t("taskType")}
-                  fullWidth
-                >
-                  {types.map((item) => (
-                    <MenuItem key={item.key} value={item.key}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-                <Box sx={{ width: "20%" }}>
-                  <div>
-                    <input
-                      style={{ display: "none" }}
-                      id="upload-file"
-                      type="file"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <label htmlFor="upload-file">
-                    <Button
-                      disabled={loading || downloading2}
-                      variant="outlined"
-                      component="span"
-                    >
-                      {t("upload")}
-                    </Button>
-                  </label>
-                </Box>
-              </Box>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={onSubmit}
-                disabled={loading || downloading2}
-              >
-                {loading || downloading2 ? (
-                  <CircularProgress size={20} />
+                <>
+                  <Typography variant="h5" sx={{ mr: "5px" }}>
+                    {t("download")}
+                  </Typography>
+                  <FileDownloadIcon fontSize="small" />
+                </>
+              )}
+            </Button>
+          ) : null}
+          {isAdmin || isBackoffice ? (
+            <ModalButton
+              text={
+                loading || downloading2 ? (
+                  <CircularProgress size={18} />
                 ) : (
-                  t("submit")
-                )}
-              </Button>
-            </Box>
-          </ModalButton>
+                  t("upload")
+                )
+              }
+              title={t("upload")}
+              buttonProps={{
+                variant: "contained",
+                size: "medium",
+                disabled: loading || downloading2,
+              }}
+            >
+              <Box display="flex" flexDirection="column" gap={2} pt={2}>
+                {uploadStatus.status !== "" ? (
+                  <Alert severity={uploadStatus.status as any}>
+                    {uploadStatus.message}
+                  </Alert>
+                ) : null}
+                {fileName !== "" ? (
+                  <Alert severity="info">{`${t(
+                    "fileName"
+                  )}: ${fileName}`}</Alert>
+                ) : null}
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap={2}
+                  alignItems="center"
+                >
+                  <TextField
+                    select
+                    onChange={(e) => setImportType(e.target.value)}
+                    required
+                    label={t("taskType")}
+                    fullWidth
+                  >
+                    {types.map((item) => (
+                      <MenuItem key={item.key} value={item.key}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <Box sx={{ width: "20%" }}>
+                    <div>
+                      <input
+                        style={{ display: "none" }}
+                        id="upload-file"
+                        type="file"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                    <label htmlFor="upload-file">
+                      <Button
+                        disabled={loading || downloading2}
+                        variant="outlined"
+                        component="span"
+                      >
+                        {t("upload")}
+                      </Button>
+                    </label>
+                  </Box>
+                </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={onSubmit}
+                  disabled={loading || downloading2}
+                >
+                  {loading || downloading2 ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    t("submit")
+                  )}
+                </Button>
+              </Box>
+            </ModalButton>
+          ) : null}
         </Box>
         <TablePagination
           component="div"
