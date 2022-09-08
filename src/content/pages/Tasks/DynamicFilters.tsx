@@ -446,14 +446,13 @@ function DynamicFilter() {
               return (
                 <Grid item key={index}>
                   <Box display="flex" gap={1} mb={2}>
-                    <Tooltip title="Delete filter" placement="top">
-                      <IconButton
-                        onClick={() => deleteFilterGroup(item)}
-                        color="error"
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    <IconButton
+                      onClick={() => deleteFilterGroup(item)}
+                      color="error"
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+
                     <Select
                       value={type}
                       onChange={(e) => {
