@@ -340,7 +340,10 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   };
 
   const objectToCsv = (data, allTasks) => {
+    // console.log("allTask", allTasks);
     const details = allTasks[0].taskDetails;
+    const formLabel = allTasks[0].form;
+
     const getLabel = details.map((item) => {
       return item.label;
     });
@@ -349,14 +352,34 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       return item.key;
     });
 
+    const getFormKey = formLabel.map((item) => {
+      return item.key;
+      // if (item.label) {
+      //   return item.label;
+      // } else {
+      //   return item.key;
+      // }
+    });
+
     const csvRows = [];
     const headers = Object.keys(data[0]);
-    const x = headers.concat(getLabel);
+    const x = headers.concat(getLabel, getFormKey);
     csvRows.push(x.join(","));
 
     const getValues = Object.values(allTasks).map((item: any) => {
       const values = item.taskDetails;
       return values.reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    });
+
+    const getFormValues = Object.values(allTasks).map((item: any) => {
+      const formValues = item.form;
+      return formValues?.reduce(
         (acc, item) => ({
           ...acc,
           [item.key]: item.value,
@@ -379,6 +402,35 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       });
 
       const rowX = getValues[index];
+      const rowForm = getFormValues[index] ? getFormValues[index] : "";
+      console.log("rowForm", rowForm);
+
+      const formVal = getFormKey.map((head, index) => {
+        const a = rowForm[head];
+
+        if (a == null) {
+          return "";
+        }
+
+        if (typeof a === "string" || typeof a === "number") {
+          const escape = ("" + rowForm[head]).replace(/\n/g, "");
+
+          return `"${escape}"`;
+        }
+
+        if (typeof a === "boolean") {
+          return a.toString();
+        }
+
+        if (head === "lastKnownGeoLocation") {
+          const lat = a?.coords?.latitude ? a.coords.latitude : "0";
+          const long = a?.coords?.longitude ? a.coords.longitude : "0";
+
+          return `Latitude: ${lat} - Longitude: ${long}`;
+        }
+
+        return a;
+      });
 
       const val = getKey.map((head, index) => {
         const x = rowX[head];
@@ -398,7 +450,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
         }
       });
 
-      values = values.concat(val);
+      values = values.concat(val, formVal);
 
       csvRows.push(values.join(","));
     }
@@ -411,6 +463,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       setDownloading(true);
 
       const res = await taskService.getAllTask();
+
       const tasks = res.data.tasks;
 
       setXlsData(tasks);
@@ -431,6 +484,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       }));
 
       const csvData = objectToCsv(table, tasks);
+      // console.log("csv", csvData);
       download(csvData);
     } catch (error) {
       console.log(error);
@@ -454,7 +508,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     const headerFix = headers.map((i) => i.replace(/\r/g, ""));
 
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean);
 
     const arr = rowFix.map((row) => {
