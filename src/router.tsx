@@ -186,11 +186,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: (
-          <AdminOnlyRoute>
-            <ProfilePage />
-          </AdminOnlyRoute>
-        ),
+        element: <ProfilePage />,
       },
     ],
   },
