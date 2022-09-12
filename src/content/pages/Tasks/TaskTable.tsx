@@ -340,7 +340,18 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   };
 
   const objectToCsv = (data, allTasks) => {
-    // console.log("allTask", allTasks);
+    const taskVal = data.reduce((acc, cur) => {
+      if (acc[cur.taskType]) {
+        acc[cur.taskType].push(cur);
+      } else {
+        Object.assign(acc, { [cur.taskType]: [cur] });
+      }
+
+      return acc;
+    }, {});
+
+    console.log("sep", taskVal);
+
     const details = allTasks[0].taskDetails;
     const formLabel = allTasks[0].form;
 
@@ -354,11 +365,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
 
     const getFormKey = formLabel.map((item) => {
       return item.key;
-      // if (item.label) {
-      //   return item.label;
-      // } else {
-      //   return item.key;
-      // }
     });
 
     const csvRows = [];
@@ -403,7 +409,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
 
       const rowX = getValues[index];
       const rowForm = getFormValues[index] ? getFormValues[index] : "";
-      console.log("rowForm", rowForm);
 
       const formVal = getFormKey.map((head, index) => {
         const a = rowForm[head];
@@ -471,6 +476,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       const table = tasks.map((item) => ({
         id: item._id,
         taskId: item.taskId,
+        taskType: item.taskType,
         executionStartDate: item.executionStartDate
           ? new Date(item.executionStartDate).toLocaleDateString()
           : "",
@@ -484,8 +490,8 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       }));
 
       const csvData = objectToCsv(table, tasks);
-      // console.log("csv", csvData);
       download(csvData);
+      // console.log("csv", csvData);
     } catch (error) {
       console.log(error);
       Swal.fire({
