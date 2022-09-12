@@ -18,16 +18,17 @@ import { FilterContext } from "src/contexts/FilterContext";
 import { DatePicker } from "@mui/lab";
 
 type Props = {
-  formik: any;
   setStatus: Dispatch<
     SetStateAction<{
       state: string;
       message: string;
     }>
   >;
+  values: any;
+  setValues: (e: any) => void;
 };
 
-const DefaultCreateForm = ({ formik, setStatus }: Props) => {
+const DefaultCreateForm = ({ setStatus, setValues, values }: Props) => {
   const { t } = useTranslation();
 
   const context = useContext(FilterContext);
@@ -45,10 +46,13 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
       state: "",
       message: "",
     });
-    formik.handleChange(e);
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const createRows = (formik) => {
+  const createRows = () => {
     const defaultProperties = Object.keys(originalData[0]);
 
     const d = details
@@ -76,7 +80,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
                 label={item.label}
                 id={item.key}
                 name={item.key}
-                value={formik.values[item.key]}
+                value={values[item.key]}
                 onChange={handleChange}
               >
                 <MenuItem value="">None</MenuItem>
@@ -95,7 +99,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
               label={t(item.label)}
               defaultValue=""
               fullWidth
-              value={formik.values[item.key]}
+              value={values[item.key]}
               name={item.key}
               onChange={handleChange}
             />
@@ -105,9 +109,9 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
         case "time":
           return (
             <DatePicker
-              value={formik.values[item.key] || null}
+              value={values[item.key] || null}
               label={t(item.label)}
-              onChange={(e) => formik.setFieldValue(item.key, e)}
+              onChange={(e) => setValues({ ...values, [item.key]: e })}
               renderInput={(params) => (
                 <TextField {...params} name={item.key} fullWidth />
               )}
@@ -118,7 +122,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
             <TextField
               name={item.key}
               placeholder={t(item.label)}
-              value={formik.values[item.key]}
+              value={values[item.key]}
               onChange={handleChange}
               label={t(item.label)}
               fullWidth
@@ -134,7 +138,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
                 <Checkbox
                   defaultChecked
                   name={item.key}
-                  value={formik.values[item.key]}
+                  value={values[item.key]}
                   onChange={handleChange}
                 />
               }
@@ -149,8 +153,8 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
               multiline
               maxRows={6}
               fullWidth
-              value={formik.values[item.key]}
-              onChange={(e) => formik.setFieldValue(item.key, e.target.value)}
+              value={values[item.key]}
+              onChange={(e) => setValues({ ...values, [item.key]: e })}
             />
           );
         default:
@@ -163,7 +167,7 @@ const DefaultCreateForm = ({ formik, setStatus }: Props) => {
     });
   };
 
-  const rows = createRows(formik);
+  const rows = createRows();
 
   return (
     <Grid container spacing={2} direction="column" alignItems="stretch">
