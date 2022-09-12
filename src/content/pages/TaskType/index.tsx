@@ -98,8 +98,6 @@ const TaskTypePage = () => {
         }
       }
 
-      console.log(data)
-
       setTypes(data);
       setHeaders(headers);
     } catch (error) {
