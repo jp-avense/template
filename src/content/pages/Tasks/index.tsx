@@ -75,22 +75,36 @@ const TaskPage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  console.log(createRowsDone);
-
   return (
     <>
       <Helmet>
         <title>{t("taskManagementTask")}</title>
       </Helmet>
       <TabsProvider>
-        <PageTitleWrapper>
-          <TaskHeader />
-        </PageTitleWrapper>
+        {/* <PageTitleWrapper>
+        </PageTitleWrapper> */}
         <Container maxWidth="xl">
           <Grid container direction="row" alignItems="stretch" spacing={3}>
+            {/* <Grid item xs={12} mt={3}>
+              <TaskHeader />
+            </Grid> */}
             <Grid item xs={12}>
               <Paper>
-                <DynamicFilter />
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={1}
+                  mt={3}
+                >
+                  <Grid item xs={6}>
+                    <DynamicFilter />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TaskHeader />
+                  </Grid>
+                </Grid>
               </Paper>
             </Grid>
             <Grid item xs={8}>

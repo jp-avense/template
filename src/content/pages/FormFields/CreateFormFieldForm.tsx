@@ -20,7 +20,7 @@ import { t } from "i18next";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
@@ -37,6 +37,7 @@ function FormFieldForm({ onDone }) {
   const [success, setSuccess] = useState("");
   const [fieldInCreate, setFieldInCreate] = useState(false);
   const [details, setDetails] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [relatedDetail, setRelatedDetail] = useState(null);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
@@ -58,10 +59,15 @@ function FormFieldForm({ onDone }) {
 
   useEffect(() => {
     if (fieldInCreate && details.length === 0) {
-      taskService.getDetails().then(({ data }) => {
-        console.log(data);
-        setDetails(data);
-      });
+      setLoading(true);
+      taskService
+        .getDetails()
+        .then(({ data }) => {
+          data.sort((a, b) => a.label.localeCompare(b));
+
+          setDetails(data);
+        })
+        .finally(() => setLoading(false));
     }
   }, [fieldInCreate]);
 
@@ -128,10 +134,15 @@ function FormFieldForm({ onDone }) {
           else res.defaultValue = _.escape(res.defaultValue);
         }
 
+        if (fieldInCreate) {
+          const exist = details.find((item) => item._id === relatedDetail._id);
+
+          if (!exist) errors.unshift("Related task detail does not exist");
+        }
+
         if (!errors.length) {
-          console.log(res);
-          await formService.createField(res);
-          await onDone();
+          await formService.createField({ ...res, taskDetailKey: relatedDetail._id });
+          await onDone(); 
 
           setSuccess("Success");
         } else setError(errors[0]);
@@ -431,10 +442,16 @@ function FormFieldForm({ onDone }) {
                         options={details}
                         fullWidth
                         blurOnSelect
-
+                        disabled={loading}
                         onChange={(e, value) => setRelatedDetail(value)}
                         renderInput={(params) => (
-                          <TextField {...params} label="Related task detail" />
+                          <TextField
+                            {...params}
+                            label={
+                              loading ? t("loading") : "Related task field"
+                            }
+                            placeholder={loading && t("loading")}
+                          />
                         )}
                       />
                     )}

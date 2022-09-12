@@ -141,9 +141,8 @@ const AgentTable: FC<{ agents }> = ({ agents: agentData }) => {
     try {
       // TODO we might want to switch from email in selected array to sub
 
-      await agentService.bulkDelete(selectedAgents)
-      await callback()
-      
+      await agentService.bulkDelete(selectedAgents);
+      await callback();
     } catch (error) {
       Swal.fire({
         icon: "error",
