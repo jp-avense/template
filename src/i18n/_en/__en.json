@@ -232,5 +232,7 @@
   "taskId": "Task ID",
   "reports": "Reports",
   "filterTask": "Filter task",
-  "dragItems": "Drag items here!"
+  "dragItems": "Drag items here!",
+  "useInCreateForm": "Use in task create form",
+  "relatedTaskDetail": "Related task detail"
 }

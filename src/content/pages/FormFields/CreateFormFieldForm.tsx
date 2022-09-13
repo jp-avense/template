@@ -433,7 +433,7 @@ function FormFieldForm({ onDone }) {
                           onChange={(e) => setFieldInCreate(e.target.checked)}
                         />
                       }
-                      label="Use in task create form"
+                      label={t('useInCreateForm')}
                     />
                     {fieldInCreate && (
                       <Autocomplete
@@ -448,14 +448,13 @@ function FormFieldForm({ onDone }) {
                           <TextField
                             {...params}
                             label={
-                              loading ? t("loading") : "Related task field"
+                              loading ? t("loading") : t('relatedTaskDetail')
                             }
                             placeholder={loading && t("loading")}
                           />
                         )}
                       />
                     )}
-                    {false}
                   </Box>
                 </Box>
 

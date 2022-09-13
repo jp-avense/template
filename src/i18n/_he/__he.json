@@ -230,5 +230,7 @@
   "reports": "דוחות",
   "filterTask": "משימת סינון",
   "dragItems": "גרור פריטים לכאן!",
-  "loading": "טוען"
+  "loading": "טוען",
+  "useInCreateForm": "השתמש ליצירת משימות",
+  "relatedTaskDetail": "פירוט משימה קשור"
 }

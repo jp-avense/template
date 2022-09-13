@@ -138,9 +138,18 @@ function PageHeader() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      const temp = Object.entries(valueBag).reduce<any>((acc, [key, value]) => {
+        if (value == null || value == "") return acc;
+
+        return {
+          ...acc,
+          [key]: value,
+        };
+      }, {});
+
       await taskService.createTask({
-        ...valueBag,
-        taskId: +valueBag.taskId,
+        ...temp,
+        taskId: +temp.taskId,
         taskType: chosenType,
       });
       setStatus({
@@ -278,7 +287,6 @@ function PageHeader() {
                     );
                   })}
                 </TextField>
-                {/* TODO change the way the custom and default create form works with data */}
                 {chosenType ? (
                   chosenForm ? (
                     <CustomCreateForm
