@@ -133,6 +133,7 @@ const TaskDetailPage = () => {
   }, [selected, details]);
 
   const onDone = (e) => {
+    // TODO implement on done
     console.log(e);
   };
 

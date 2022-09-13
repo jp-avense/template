@@ -12,6 +12,9 @@ import {
   Alert,
   FormHelperText,
   IconButton,
+  FormControlLabel,
+  FormGroup,
+  Autocomplete,
 } from "@mui/material";
 import { t } from "i18next";
 
@@ -25,12 +28,17 @@ import _ from "lodash";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { taskService } from "src/services/task.service";
 
 function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldInCreate, setFieldInCreate] = useState(false);
+  const [details, setDetails] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [relatedDetail, setRelatedDetail] = useState(null);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
   const types = [
@@ -48,6 +56,20 @@ function FormFieldForm({ onDone }) {
     "signature",
     "geo",
   ];
+
+  useEffect(() => {
+    if (fieldInCreate && details.length === 0) {
+      setLoading(true);
+      taskService
+        .getDetails()
+        .then(({ data }) => {
+          data.sort((a, b) => a.label.localeCompare(b));
+
+          setDetails(data);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [fieldInCreate]);
 
   const validationSchema = yup.object({
     key: yup
@@ -112,10 +134,15 @@ function FormFieldForm({ onDone }) {
           else res.defaultValue = _.escape(res.defaultValue);
         }
 
+        if (fieldInCreate) {
+          const exist = details.find((item) => item._id === relatedDetail._id);
+
+          if (!exist) errors.unshift("Related task detail does not exist");
+        }
+
         if (!errors.length) {
-          console.log(res);
-          await formService.createField(res);
-          await onDone();
+          await formService.createField({ ...res, taskDetailKey: relatedDetail._id });
+          await onDone(); 
 
           setSuccess("Success");
         } else setError(errors[0]);
@@ -176,7 +203,6 @@ function FormFieldForm({ onDone }) {
         spacing={1}
         paddingBottom={1}
         paddingLeft={1}
-        sx={{ minHeight: 500 }}
       >
         <Grid item>
           <form onSubmit={formik.handleSubmit} style={{ paddingTop: "1rem" }}>
@@ -399,6 +425,37 @@ function FormFieldForm({ onDone }) {
                     helperText={formik.touched.note && formik.errors.note}
                     fullWidth
                   ></TextField>
+                  <Box mt={2} display="flex" flexDirection="column" gap={2}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={fieldInCreate}
+                          onChange={(e) => setFieldInCreate(e.target.checked)}
+                        />
+                      }
+                      label={t('useInCreateForm')}
+                    />
+                    {fieldInCreate && (
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={details}
+                        fullWidth
+                        blurOnSelect
+                        disabled={loading}
+                        onChange={(e, value) => setRelatedDetail(value)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={
+                              loading ? t("loading") : t('relatedTaskDetail')
+                            }
+                            placeholder={loading && t("loading")}
+                          />
+                        )}
+                      />
+                    )}
+                  </Box>
                 </Box>
 
                 <div style={{ paddingTop: "10px" }}>

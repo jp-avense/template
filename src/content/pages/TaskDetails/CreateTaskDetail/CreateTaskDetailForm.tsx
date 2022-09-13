@@ -52,9 +52,6 @@ const CreateTaskDetailForm = ({ onDone }) => {
         actions.resetForm();
         setSuccess(t("success"));
         await onDone();
-
-
-        // TODO on done missing
         
       } catch (error) {
         setError(getAxiosErrorMessage(error));

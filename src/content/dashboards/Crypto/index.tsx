@@ -10,6 +10,7 @@ import TaskHeader from "./Tasks/TaskHeader";
 import TaskGrid from "./Tasks/TaskGrid";
 import { agentService } from "src/services/agent.service";
 import { parseAgentResponse } from "src/contexts/AgentContext";
+import { apiService } from "src/services/api.service";
 import { getAxiosErrorMessage } from "src/lib";
 import Swal from "sweetalert2";
 
@@ -27,7 +28,11 @@ function DashboardCrypto() {
   } = useTranslation();
 
   useEffect(() => {
-    init();
+    if (apiService.defaults.headers.common["x-tenant-name"]) {
+      init();
+    } else {
+      setTimeout(init, 500);
+    }
   }, []);
 
   const init = async () => {
@@ -262,12 +267,12 @@ function DashboardCrypto() {
             <Paper>
               <Box p={3}>
                 {loading ? (
-                  <Box display="flex" justifyContent="center" py={11}>
+                  <Box display="flex" justifyContent="center" py={13.5}>
                     <CircularProgress size={50} />
                   </Box>
                 ) : (
                   <Chart
-                    height={250}
+                    height={290}
                     options={chartOptions}
                     series={chartSeries}
                     type="pie"

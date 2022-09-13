@@ -29,12 +29,12 @@ import { Form } from "../FormBuilder/form.interface";
 import { InputTypeEnum, FormFieldExtended } from "../FormFields/form-field.interface";
 
 type Props = {
-  data: Form;
-  onChange?: (values: object) => any
+  form: Form;
+  setValues: (value: any) => any;
+  values: any
 };
 
-const CustomCreateForm = ({ data, onChange }: Props) => {
-  const [values, setValues] = useState({});
+const CustomCreateForm = ({ form, setValues, values }: Props) => {
 
   const [canvas, setCanvas] = useState(null);
   const [pad, setPad] = useState(null);
@@ -42,7 +42,7 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const fields = data.formFields;
+    const fields = form.formFields;
 
     const res = fields.reduce((acc, item) => {
       const { inputType, key } = item;
@@ -57,7 +57,7 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
     }, {});
 
     setValues(res);
-  }, [data]);
+  }, [form]);
 
   useEffect(() => {
     if (canvas) setPad(new SignaturePad(canvas));
@@ -98,7 +98,7 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
         obj[key] = value;
     }
 
-    const invalidFields = data.formFields.filter(
+    const invalidFields = form.formFields.filter(
       (item) => !checkConditions(obj, item)
     );
 
@@ -340,8 +340,8 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
   };
 
   const shownFields = useMemo(() => {
-    return data.formFields.filter((item) => checkConditions(values, item));
-  }, [values, data]);
+    return form.formFields.filter((item) => checkConditions(values, item));
+  }, [values, form]);
 
   return (
     <>

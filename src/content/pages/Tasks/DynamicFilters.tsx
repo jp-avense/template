@@ -9,6 +9,9 @@ import {
   TextField,
   Box,
   CircularProgress,
+  Typography,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import { DatePicker } from "@mui/lab";
@@ -21,9 +24,11 @@ import { getAxiosErrorMessage, isDefaultColumn } from "src/lib";
 import { startOfDay } from "date-fns";
 import swal from "sweetalert2";
 import { taskService } from "src/services/task.service";
+import Modals from "../Components/Modals";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 const width = {
-  width: "200px",
+  width: "230px",
 };
 
 const width2 = {
@@ -36,6 +41,7 @@ function DynamicFilter() {
 
   const context = useContext(FilterContext);
   const agentContext = useContext(AgentContext);
+  const [open, setOpen] = useState(false);
 
   const {
     handleAgents: { agents, getAgents },
@@ -390,72 +396,103 @@ function DynamicFilter() {
       });
     } finally {
       setLoading(false);
+      setOpen(false);
     }
   };
   taskDetails.sort((a, b) => {
     return a.label.localeCompare(b.label);
   });
+
+  const handleClose = (e) => {
+    e.stopPropagation();
+    setOpen(false);
+  };
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    setOpen(true);
+  };
+
   return (
-    <Grid
-      container
-      direction="column"
-      spacing={1}
-      paddingBottom={1}
-      paddingLeft={1}
-    >
+    <Grid container direction="column" spacing={1}>
       <Grid item>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
-          onClick={addFilterGroup}
+          startIcon={<FilterAltIcon />}
+          onClick={handleOpen}
           disabled={loading}
         >
-          {t("addFilter")}
+          {t("filterTask")}
         </Button>
       </Grid>
 
-      {dynamicFilters.map((item, index) => {
-        const { selectedType: type } = item;
-
-        const valueComponent = createValueComponent(item);
-
-        return (
-          <Grid item key={index}>
-            <Box display="flex" gap={1}>
-              <Button onClick={() => deleteFilterGroup(item)} size="small">
-                <CloseIcon fontSize="small" />
-              </Button>
-              <Select
-                value={type}
-                onChange={(e) => {
-                  changeFilterGroupType(e, item);
-                }}
-                sx={width}
-                displayEmpty
-              >
-                <MenuItem value="none">{t("none")}</MenuItem>
-                {taskDetails.map((c) => (
-                  <MenuItem
-                    key={c.key}
-                    value={c.key}
-                    disabled={typeExists(c.key)}
-                  >
-                    {t(c.label)}
-                  </MenuItem>
-                ))}
-              </Select>
-              {valueComponent}
-            </Box>
+      <Modals onClose={handleClose} open={open} title={t("filterTask")}>
+        <Grid container direction="column">
+          <Grid item mb={3}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={addFilterGroup}
+              disabled={loading}
+            >
+              <Typography>{t("addFilter")}</Typography>
+            </Button>
           </Grid>
-        );
-      })}
-      {dynamicFilters.length ? (
-        <Grid item>
-          <Button variant="contained" onClick={submitFilter} disabled={loading}>
-            {loading ? <CircularProgress size={18} /> : t("submitFilter")}
-          </Button>
+          <Grid item>
+            {dynamicFilters.map((item, index) => {
+              const { selectedType: type } = item;
+
+              const valueComponent = createValueComponent(item);
+
+              return (
+                <Grid item key={index}>
+                  <Box display="flex" gap={1} mb={2}>
+                    <Tooltip title="Delete filter" placement="top">
+                      <IconButton
+                        onClick={() => deleteFilterGroup(item)}
+                        color="error"
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Select
+                      value={type}
+                      onChange={(e) => {
+                        changeFilterGroupType(e, item);
+                      }}
+                      sx={width}
+                      displayEmpty
+                    >
+                      <MenuItem value="none">{t("none")}</MenuItem>
+                      {taskDetails.map((c) => (
+                        <MenuItem
+                          key={c.key}
+                          value={c.key}
+                          disabled={typeExists(c.key)}
+                        >
+                          {t(c.label)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {valueComponent}
+                  </Box>
+                </Grid>
+              );
+            })}
+          </Grid>
+          {dynamicFilters.length ? (
+            <Grid item xs={12} mt={3}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={submitFilter}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={18} /> : t("submitFilter")}
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
-      ) : null}
+      </Modals>
     </Grid>
   );
 }
