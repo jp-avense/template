@@ -25,32 +25,20 @@ function TaskFilter() {
       filter,
       setFilter,
       setLoading,
-      loading,
       getDataAndSet,
       setDynamicFilters,
-      dynamicFilters,
+      status: statuses,
     },
   } = context;
 
   useEffect(() => {
     setLoading(true);
-    taskService
-      .getStatuses()
-      .then(({ data }) => {
-        data.sort((a, b) => a.order - b.order);
-        const res = data.map((c) => {
-          return { label: c.label, value: c.Key };
-        });
-        setStatus(res);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (filter === "clear_filters" && dynamicFilters.length === 0) {
-      handleRefresh();
-    }
-  }, [dynamicFilters]);
+    const res = statuses.map((c) => {
+      return { label: c.label, value: c.Key };
+    });
+    setStatus(res);
+    setLoading(false);
+  }, [statuses]);
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -64,18 +52,16 @@ function TaskFilter() {
   const handleChange = async (value: string) => {
     if (value === "clear_filters") {
       setFilter("");
+      setDynamicFilters([]);
+      await handleRefresh();
     } else {
       setFilter(value);
-    }
-
-    setLoading(true);
-    if (value === "clear_filters" && dynamicFilters.length > 0) {
-      setDynamicFilters([]);
-    } else
+      setLoading(true)
       await getDataAndSet({
-        statusId: value === "clear_filters" ? undefined : value,
+        statusId: value,
       });
-    setLoading(false);
+      setLoading(false)
+    }
   };
 
   return (

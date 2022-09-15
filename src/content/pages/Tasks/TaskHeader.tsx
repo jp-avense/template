@@ -62,6 +62,7 @@ function PageHeader() {
   const showCreateTask = useMemo(
     () =>
       settings?.find((item) => item.key === "showCreateTask")?.value == "true",
+
     [settings]
   );
 
@@ -305,9 +306,7 @@ function PageHeader() {
               </Box>
             </ModalButton>
           </Grid>
-        ) : (
-          <CircularProgress size={20} />
-        )}
+        ) : null}
       </Grid>
     </>
   );
