@@ -361,31 +361,82 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     // csvRows.push(x.join(","));
     const newArr = [];
 
-    const getValues = Object.values(allTasks).map((item: any) => {
+    const getDetailValues = Object.values(allTasks).map((item: any) => {
       const values = item.taskDetails;
-      return values.reduce(
-        (acc, item) => ({
-          ...acc,
-          [item.key]: item.value,
-        }),
-        {}
-      );
+
+      const detailValues = values.reduce((acc, item) => {
+        const detailObj = item.value;
+
+        if (typeof detailObj == null) {
+          return { ...acc, [item.key]: "" };
+        }
+
+        if (typeof detailObj === "object") {
+          return { ...acc, [item.key]: `"${detailObj?.value}"` };
+        }
+
+        if (typeof detailObj === "string" || typeof detailObj === "number") {
+          return { ...acc, [item.key]: `"${detailObj}"` };
+        }
+
+        return { ...acc, [item.key]: detailObj };
+      }, {});
+
+      return detailValues;
     });
 
     const getFormValues = Object.values(allTasks).map((item: any) => {
       const formValues = item.form;
-      return formValues?.reduce(
-        (acc, item) => ({
-          ...acc,
-          [item.key]: item.value,
-        }),
-        {}
-      );
+
+      const formX = formValues?.reduce((acc, item) => {
+        const formObj = item.value;
+
+        if (typeof formObj == null) {
+          return { ...acc, [item.key]: "" };
+        }
+
+        if (typeof formObj === "object") {
+          const lat = formObj?.coords?.latitude;
+          const long = formObj?.coords?.longitude;
+
+          if (formObj == null) {
+            return {
+              ...acc,
+              [item.key]: formObj,
+            };
+          } else {
+            return {
+              ...acc,
+              [item.key]: `Latitude ${lat} - Longtitude ${long}`,
+            };
+          }
+        }
+
+        if (typeof formObj === "string") {
+          return { ...acc, [item.key]: formObj };
+        }
+
+        if (typeof formObj === "number") {
+          return { ...acc, [item.key]: formObj };
+        }
+
+        if (Array.isArray(formObj)) {
+          return { ...acc, [item.key]: `"${formObj}"` };
+        }
+
+        return { ...acc, [item.key]: formObj };
+      }, {});
+
+      return formX;
     });
 
+    // console.log("getForm", getFormValues);
+
     const newData = data.map((item, index) =>
-      Object.assign({}, item, getValues[index], getFormValues[index])
+      Object.assign({}, item, getDetailValues[index], getFormValues[index])
     );
+
+    // console.log("newData", newData);
 
     const taskVal = newData.reduce((acc, cur) => {
       if (acc[cur.taskType]) {
@@ -402,6 +453,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       newArr.push(key);
 
       const taskValues = value.map((item) => Object.values(item));
+      // console.log("taskValues", taskValues);
 
       const findKey = value
         .map((item) => Object.keys(item))
@@ -412,21 +464,16 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       for (const index in taskValues) {
         const row = taskValues[index];
 
-        // if (row == null) {
-        //   return "test";
-        // }
+        newArr.push(row.join(","));
 
-        // if (typeof row === "string" || typeof row === "number") {
-        //   const escape = ("" + taskValues[index]).replace(/\n/g, "");
-
-        //   return `"${escape}"`;
-        // }
-
-        console.log("row", row);
+        // const row = taskValues[index] ? taskValues[index] : "";
+        // console.log("row", row);
 
         newArr.push(row.join(","));
       }
     });
+
+    // console.log("taskVal", taskVal);
 
     return newArr.join("\r\n");
 
@@ -547,10 +594,14 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
 
   const csvToJson = (str, comma = ",") => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
-    const headerFix = headers.map((i) => i.replace(/\r/g, ""));
+    const headerFix = headers.map((i) => i.replace(/\r|"|\\/g, ""));
+
+    console.log("headerFix", headerFix);
 
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean);
+
+    console.log("rowFix", rowFix);
 
     const arr = rowFix.map((row) => {
       const rowVal = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
