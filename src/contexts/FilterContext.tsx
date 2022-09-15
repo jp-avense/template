@@ -66,7 +66,7 @@ export const FilterProvider = ({ children }) => {
   const [types, setTypes] = useState([]);
   const [status, setStatus] = useState([]);
 
-  const [filter, setFilter] = useState("clear_filters");
+  const [filter, setFilter] = useState("");
   const [dynamicFilters, setDynamicFilters] = useState([]);
 
   const [forms, setForms] = useState<Form[]>([]);
@@ -75,7 +75,7 @@ export const FilterProvider = ({ children }) => {
     setSelectedRows([]);
     const finalFilters = {};
 
-    if (filter !== "clear_filters") finalFilters["statusId"] = filter;
+    if (filter !== "") finalFilters["statusId"] = filter;
 
     const errors = [];
     dynamicFilters.forEach((x) => {

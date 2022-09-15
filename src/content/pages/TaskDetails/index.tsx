@@ -13,6 +13,7 @@ import DynamicTable from "../Components/DynamicTable";
 import ConfirmModal from "src/components/ConfirmModal";
 import UpdateTaskDetail from "./UpdateTaskDetail";
 import UpdateTaskDetailForm from "./UpdateTaskDetail/UpdateTaskDetailForm";
+import Label from "src/components/Label";
 
 interface State {
   order: "asc" | "desc";
@@ -68,6 +69,14 @@ const TaskDetailPage = () => {
       {
         key: "description",
         label: t("description"),
+      },
+      {
+        key: "showInTable",
+        label: t("showInTable"),
+        render: (val) => {
+          console.log(val);
+          return val.toString();
+        },
       },
     ];
 

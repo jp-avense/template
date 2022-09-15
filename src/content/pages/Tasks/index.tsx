@@ -17,7 +17,6 @@ import { formService } from "src/services/form.service";
 const TaskPage = () => {
   const context = useContext(FilterContext);
   const agentctx = useContext(AgentContext);
-  const [createRowsDone, setCreateRowsDone] = useState(false);
   const { t } = useTranslation();
 
   const {
@@ -58,7 +57,7 @@ const TaskPage = () => {
         setOriginalData(taskRes.tasks);
         setDetails(details);
 
-        statuses.sort((a, b) => a.label.localeCompare(b.label));
+        statuses.sort((a, b) => a.order - b.order);
         setStatus(statuses);
 
         types.sort((a, b) => a.label.localeCompare(b.label));
@@ -70,7 +69,6 @@ const TaskPage = () => {
       })
       .catch((e) => {
         console.log(e);
-        setCreateRowsDone(true);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -81,13 +79,8 @@ const TaskPage = () => {
         <title>{t("taskManagementTask")}</title>
       </Helmet>
       <TabsProvider>
-        {/* <PageTitleWrapper>
-        </PageTitleWrapper> */}
         <Container maxWidth="xl">
           <Grid container direction="row" alignItems="stretch" spacing={3}>
-            {/* <Grid item xs={12} mt={3}>
-              <TaskHeader />
-            </Grid> */}
             <Grid item xs={12}>
               <Paper>
                 <Grid
@@ -108,10 +101,7 @@ const TaskPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={8}>
-              <TaskTable
-                createRowsDone={createRowsDone}
-                setCreateRowsDone={setCreateRowsDone}
-              />
+              <TaskTable />
             </Grid>
             <Grid item xs={4}>
               <InfoTab />
