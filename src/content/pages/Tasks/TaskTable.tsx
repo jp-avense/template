@@ -340,37 +340,26 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   };
 
   const objectToCsv = (data, allTasks) => {
-    const taskVal = data.reduce((acc, cur) => {
-      if (acc[cur.taskType]) {
-        acc[cur.taskType].push(cur);
-      } else {
-        Object.assign(acc, { [cur.taskType]: [cur] });
-      }
+    // const details = allTasks[0].taskDetails;
+    // const formLabel = allTasks[0].form;
 
-      return acc;
-    }, {});
+    // const getLabel = details.map((item) => {
+    //   return item.label;
+    // });
 
-    console.log("sep", taskVal);
+    // const getKey = details.map((item) => {
+    //   return item.key;
+    // });
 
-    const details = allTasks[0].taskDetails;
-    const formLabel = allTasks[0].form;
+    // const getFormKey = formLabel.map((item) => {
+    //   return item.key;
+    // });
 
-    const getLabel = details.map((item) => {
-      return item.label;
-    });
-
-    const getKey = details.map((item) => {
-      return item.key;
-    });
-
-    const getFormKey = formLabel.map((item) => {
-      return item.key;
-    });
-
-    const csvRows = [];
-    const headers = Object.keys(data[0]);
-    const x = headers.concat(getLabel, getFormKey);
-    csvRows.push(x.join(","));
+    // const csvRows = [];
+    // const headers = Object.keys(data[0]);
+    // const x = headers.concat(getLabel, getFormKey);
+    // csvRows.push(x.join(","));
+    const newArr = [];
 
     const getValues = Object.values(allTasks).map((item: any) => {
       const values = item.taskDetails;
@@ -394,73 +383,120 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       );
     });
 
-    for (const index in data) {
-      const row = data[index];
-      let values = headers.map((header) => {
-        if (row[header] == null) return "";
+    const newData = data.map((item, index) =>
+      Object.assign({}, item, getValues[index], getFormValues[index])
+    );
 
-        const escaped = ("" + row[header])
-          .replace(/\n/g, "")
-          .replace(/,/g, "")
-          .replace(/"/g, '\\"');
+    const taskVal = newData.reduce((acc, cur) => {
+      if (acc[cur.taskType]) {
+        acc[cur.taskType].push(cur);
+      } else {
+        Object.assign(acc, { [cur.taskType]: [cur] });
+      }
 
-        return `${escaped}`.replace(" ", "");
-      });
+      return acc;
+    }, {});
 
-      const rowX = getValues[index];
-      const rowForm = getFormValues[index] ? getFormValues[index] : "";
+    Object.entries(taskVal).map(([key, value]: [string, any]) => {
+      newArr.push("\n");
+      newArr.push(key);
 
-      const formVal = getFormKey.map((head, index) => {
-        const a = rowForm[head];
+      const taskValues = value.map((item) => Object.values(item));
 
-        if (a == null) {
-          return "";
-        }
+      const findKey = value
+        .map((item) => Object.keys(item))
+        .reduce((acc, cur) => (acc > cur.length ? acc : cur), {});
 
-        if (typeof a === "string" || typeof a === "number") {
-          const escape = ("" + rowForm[head]).replace(/\n/g, "");
+      newArr.push(findKey.join(","));
 
-          return `"${escape}"`;
-        }
+      for (const index in taskValues) {
+        const row = taskValues[index];
 
-        if (typeof a === "boolean") {
-          return a.toString();
-        }
+        // if (row == null) {
+        //   return "test";
+        // }
 
-        if (head === "lastKnownGeoLocation") {
-          const lat = a?.coords?.latitude ? a.coords.latitude : "0";
-          const long = a?.coords?.longitude ? a.coords.longitude : "0";
+        // if (typeof row === "string" || typeof row === "number") {
+        //   const escape = ("" + taskValues[index]).replace(/\n/g, "");
 
-          return `Latitude: ${lat} - Longitude: ${long}`;
-        }
+        //   return `"${escape}"`;
+        // }
 
-        return a;
-      });
+        console.log("row", row);
 
-      const val = getKey.map((head, index) => {
-        const x = rowX[head];
+        newArr.push(row.join(","));
+      }
+    });
 
-        if (x == null) {
-          return "";
-        }
+    return newArr.join("\r\n");
 
-        if (typeof x === "string" || typeof x === "number") {
-          const escape = ("" + rowX[head]).replace(/\n/g, "");
+    // for (const index in data) {
+    //   const row = data[index];
+    //   let values = headers.map((header) => {
+    //     if (row[header] == null) return "";
 
-          return `"${escape}"`;
-        }
+    //     const escaped = ("" + row[header])
+    //       .replace(/\n/g, "")
+    //       .replace(/,/g, "")
+    //       .replace(/"/g, '\\"');
 
-        if (typeof x === "object") {
-          return x.value ?? "";
-        }
-      });
+    //     return `${escaped}`.replace(" ", "");
+    //   });
 
-      values = values.concat(val, formVal);
+    //   const rowX = getValues[index];
+    //   const rowForm = getFormValues[index] ? getFormValues[index] : "";
 
-      csvRows.push(values.join(","));
-    }
+    //   const formVal = getFormKey.map((head, index) => {
+    //     const a = rowForm[head];
 
-    return csvRows.join("\r\n");
+    //     if (a == null) {
+    //       return "";
+    //     }
+
+    //     if (typeof a === "string" || typeof a === "number") {
+    //       const escape = ("" + rowForm[head]).replace(/\n/g, "");
+
+    //       return `"${escape}"`;
+    //     }
+
+    //     if (typeof a === "boolean") {
+    //       return a.toString();
+    //     }
+
+    //     if (head === "lastKnownGeoLocation") {
+    //       const lat = a?.coords?.latitude ? a.coords.latitude : "0";
+    //       const long = a?.coords?.longitude ? a.coords.longitude : "0";
+
+    //       return `Latitude: ${lat} - Longitude: ${long}`;
+    //     }
+
+    //     return a;
+    //   });
+
+    //   const val = getKey.map((head, index) => {
+    //     const x = rowX[head];
+
+    //     if (x == null) {
+    //       return "";
+    //     }
+
+    //     if (typeof x === "string" || typeof x === "number") {
+    //       const escape = ("" + rowX[head]).replace(/\n/g, "");
+
+    //       return `"${escape}"`;
+    //     }
+
+    //     if (typeof x === "object") {
+    //       return x.value ?? "";
+    //     }
+    //   });
+
+    //   values = values.concat(val, formVal);
+
+    //   csvRows.push(values.join(","));
+    // }
+
+    // return csvRows.join("\r\n");
   };
 
   const xlsExport = async () => {
