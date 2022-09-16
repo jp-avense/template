@@ -379,7 +379,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
           return { ...acc, [item.key]: `"${detailObj}"` };
         }
 
-        return { ...acc, [item.key]: detailObj };
+        return { ...acc, [item.key]: item.value };
       }, {});
 
       return detailValues;
@@ -389,42 +389,49 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       const formValues = item.form;
 
       const formX = formValues?.reduce((acc, item) => {
+        const formKey = item.key;
         const formObj = item.value;
 
-        if (typeof formObj == null) {
-          return { ...acc, [item.key]: "" };
-        }
+        // if (typeof formObj == null) {
+        //   return { ...acc, [item.key]: "" };
+        // }
 
-        if (typeof formObj === "object") {
-          const lat = formObj?.coords?.latitude;
-          const long = formObj?.coords?.longitude;
+        // if (typeof formObj === "object") {
+        //   const lat = formObj?.coords?.latitude;
+        //   const long = formObj?.coords?.longitude;
 
+        //   if (formObj == null) {
+        //     return {
+        //       ...acc,
+        //       [item.key]: formObj,
+        //     };
+        //   } else {
+        //     return {
+        //       ...acc,
+        //       [item.key]: `Latitude ${lat} - Longtitude ${long}`,
+        //     };
+        //   }
+        // }
+        if (formKey === "lastKnownGeoLocation") {
           if (formObj == null) {
-            return {
-              ...acc,
-              [item.key]: formObj,
-            };
+            return { ...acc, [formKey]: "" };
           } else {
             return {
               ...acc,
-              [item.key]: `Latitude ${lat} - Longtitude ${long}`,
+              [formKey]: `Latitude ${formObj?.coords?.latitude} - Longitude ${formObj?.coords?.longitude} `,
             };
           }
         }
 
-        if (typeof formObj === "string") {
-          return { ...acc, [item.key]: formObj };
-        }
-
-        if (typeof formObj === "number") {
-          return { ...acc, [item.key]: formObj };
+        if (typeof formObj === "string" || typeof formObj === "number") {
+          return { ...acc, [formKey]: `"${formObj}"` };
         }
 
         if (Array.isArray(formObj)) {
-          return { ...acc, [item.key]: `"${formObj}"` };
+          return { ...acc, [formKey]: `"${formObj}"` };
         }
 
-        return { ...acc, [item.key]: formObj };
+        return { ...acc, [formKey]: formObj };
       }, {});
 
       return formX;
@@ -436,8 +443,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       Object.assign({}, item, getDetailValues[index], getFormValues[index])
     );
 
-    // console.log("newData", newData);
-
     const taskVal = newData.reduce((acc, cur) => {
       if (acc[cur.taskType]) {
         acc[cur.taskType].push(cur);
@@ -448,12 +453,14 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       return acc;
     }, {});
 
+    console.log("taskVal", taskVal);
+
     Object.entries(taskVal).map(([key, value]: [string, any]) => {
       newArr.push("\n");
       newArr.push(key);
 
       const taskValues = value.map((item) => Object.values(item));
-      // console.log("taskValues", taskValues);
+      console.log("taskValues", taskValues);
 
       const findKey = value
         .map((item) => Object.keys(item))
@@ -462,18 +469,15 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       newArr.push(findKey.join(","));
 
       for (const index in taskValues) {
+        // console.log("asd", taskValues[index]);
         const row = taskValues[index];
-
         newArr.push(row.join(","));
-
         // const row = taskValues[index] ? taskValues[index] : "";
         // console.log("row", row);
-
-        newArr.push(row.join(","));
       }
     });
 
-    // console.log("taskVal", taskVal);
+    console.log("taskVal", taskVal);
 
     return newArr.join("\r\n");
 
