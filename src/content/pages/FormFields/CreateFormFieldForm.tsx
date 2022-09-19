@@ -69,9 +69,7 @@ function FormFieldForm({ onDone }) {
 
           const defaultProps = Object.values(TaskDefaultColumns);
 
-          const res = data.filter(
-            (item) => !defaultProps.includes(item.key)
-          );
+          const res = data.filter((item) => !defaultProps.includes(item.key));
 
           setDetails(res);
         })
@@ -107,60 +105,67 @@ function FormFieldForm({ onDone }) {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try {
-        setError("");
-        setSuccess("");
+      setError("");
+      setSuccess("");
 
-        const res = { ...values } as any;
-        res.inputType = type;
+      const res = { ...values } as any;
+      res.inputType = type;
 
-        let errors = [];
+      let errors = [];
 
-        if (type === "radios" || type === "checkboxes" || type === "dropdown") {
-          const reduced = options.reduce((acc, x) => {
-            return {
-              ...acc,
-              [x.key]: x.value,
-            };
-          }, {});
+      if (type === "radios" || type === "checkboxes" || type === "dropdown") {
+        const reduced = options.reduce((acc, x) => {
+          return {
+            ...acc,
+            [x.key]: x.value,
+          };
+        }, {});
 
-          res.options = reduced;
+        res.options = reduced;
 
-          if (
-            res.defaultValue &&
-            !Object.keys(res.options).includes(res.defaultValue)
-          ) {
-            errors.push("Default value must exist in the options");
-          }
+        if (
+          res.defaultValue &&
+          !Object.keys(res.options).includes(res.defaultValue)
+        ) {
+          errors.push("Default value must exist in the options");
         }
+      }
 
-        if (type === "textarea") res.rows = rows;
-        if (type === "markup" && res.defaultValue) {
-          const hasScript = /<script.+>/g.test(res.defaultValue);
+      if (type === "textarea") res.rows = rows;
+      if (type === "markup" && res.defaultValue) {
+        const hasScript = /<script.+>/g.test(res.defaultValue);
 
-          if (hasScript) errors.unshift("Default value invalid");
-          else res.defaultValue = _.escape(res.defaultValue);
-        }
+        if (hasScript) errors.unshift("Default value invalid");
+        else res.defaultValue = _.escape(res.defaultValue);
+      }
 
-        if (fieldInCreate) {
+      if (fieldInCreate) {
+        if (relatedDetail?._id != null) {
           const exist = details.find((item) => item._id === relatedDetail._id);
 
           if (!exist) errors.unshift("Related task detail does not exist");
+        } else {
+          errors.unshift("Please choose a related task detail");
         }
+      }
 
-        if (!errors.length) {
-          await formService.createField({
+      if (!errors.length) {
+        try {
+          const params = {
             ...res,
-            taskDetailKey: relatedDetail._id,
-          });
+          };
+
+          if (fieldInCreate) params["taskDetailKey"] = relatedDetail._id;
+
+          await formService.createField(params);
           await onDone();
 
           setSuccess("Success");
-        } else setError(errors[0]);
-      } catch (error) {
-        console.log(error);
-        setError(getAxiosErrorMessage(error));
-      }
+        } catch (error) {
+          console.log(error);
+          setError(getAxiosErrorMessage(error));
+        }
+      } else setError(errors[0]);
     },
   });
 
