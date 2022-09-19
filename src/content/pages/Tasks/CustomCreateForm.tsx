@@ -26,16 +26,18 @@ import "./style.css";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import { Form } from "../FormBuilder/form.interface";
-import { InputTypeEnum, FormFieldExtended } from "../FormFields/form-field.interface";
+import {
+  InputTypeEnum,
+  FormFieldExtended,
+} from "../FormFields/form-field.interface";
 
 type Props = {
   form: Form;
   setValues: (value: any) => any;
-  values: any
+  values: any;
 };
 
 const CustomCreateForm = ({ form, setValues, values }: Props) => {
-
   const [canvas, setCanvas] = useState(null);
   const [pad, setPad] = useState(null);
 
@@ -121,7 +123,7 @@ const CustomCreateForm = ({ form, setValues, values }: Props) => {
       inputType,
       value,
     } = field;
-
+    
     switch (inputType) {
       case InputTypeEnum.DROPDOWN:
         return (
@@ -237,7 +239,13 @@ const CustomCreateForm = ({ form, setValues, values }: Props) => {
                   return (
                     <FormControlLabel
                       key={key}
-                      control={<Radio id={`${pk}.${inputType}`} value={key} />}
+                      control={
+                        <Radio
+                          id={`${pk}.${inputType}`}
+                          value={key}
+                          checked={values[pk] == key}
+                        />
+                      }
                       onChange={handleChange}
                       label={inputLabel}
                     />
