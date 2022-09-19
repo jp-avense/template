@@ -180,12 +180,19 @@ function PageHeader() {
         const fields = chosenForm.formFields;
 
         const res = fields.reduce((acc, item) => {
-          const { inputType, key } = item;
+          const { inputType, key, defaultValue } = item;
+
+          let arrayDefault = defaultValue
+
+          if(inputType === InputTypeEnum.CHECKBOX) {
+            arrayDefault = defaultValue ?? []
+            arrayDefault = Array.isArray(arrayDefault) ? arrayDefault : [defaultValue]
+          }
 
           if (inputType === InputTypeEnum.CHECKBOX) {
-            acc[key] = [];
+            acc[key] = arrayDefault
           } else {
-            acc[key] = "";
+            acc[key] = defaultValue ?? "";
           }
 
           return acc;
@@ -215,6 +222,7 @@ function PageHeader() {
     }
   }, [types, details, originalData, chosenType, chosenForm]);
 
+    console.log('valueBag', valueBag)
   return (
     <>
       <Grid container justifyContent="end">
