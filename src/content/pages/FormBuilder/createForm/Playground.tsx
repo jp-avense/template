@@ -20,6 +20,7 @@ import {
   Grid,
   IconButton,
   Select,
+  Alert,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useTranslation } from "react-i18next";
@@ -311,68 +312,81 @@ const Playground = ({
                 ref={droppableProvided.innerRef}
                 {...droppableProvided.droppableProps}
               >
-                {data.map((item, index) => {
-                  console.log("dragData", data);
-                  const obj = fields.find((x) => x._id === item.key);
-                  return (
-                    <Draggable
-                      key={item.key}
-                      draggableId={`key${item.key}`}
-                      index={index}
-                    >
-                      {(draggableProvided, draggableSnapshot) => (
-                        <Box
-                          p={2}
-                          my={1}
-                          onClick={(e) => handleClick(item.key)}
-                          sx={[
-                            {
-                              width: "100%",
-                              alignItems: "center",
-                              "&:hover": {
-                                backgroundColor: "#f0f2f5",
-                                transitionDuration: "150ms",
+                {data.length > 0 ? (
+                  data.map((item, index) => {
+                    const obj = fields.find((x) => x._id === item.key);
+                    return (
+                      <Draggable
+                        key={item.key}
+                        draggableId={`key${item.key}`}
+                        index={index}
+                      >
+                        {(draggableProvided, draggableSnapshot) => (
+                          <Box
+                            p={2}
+                            my={1}
+                            onClick={(e) => handleClick(item.key)}
+                            sx={[
+                              {
+                                width: "100%",
+                                alignItems: "center",
+                                "&:hover": {
+                                  backgroundColor: "#f0f2f5",
+                                  transitionDuration: "150ms",
+                                },
+                                boxShadow: draggableSnapshot.isDragging
+                                  ? "0 5px 5px rgba(0, 0, 0, 0.2)"
+                                  : "unset",
+                                backgroundColor: draggableSnapshot.isDragging
+                                  ? "#e8eaf6"
+                                  : "unset",
                               },
-                              boxShadow: draggableSnapshot.isDragging
-                                ? "0 5px 5px rgba(0, 0, 0, 0.2)"
-                                : "unset",
-                              backgroundColor: draggableSnapshot.isDragging
-                                ? "#e8eaf6"
-                                : "unset",
-                            },
-                            selected.includes(item.key)
-                              ? {
-                                  backgroundColor: "#e8eaf6",
-                                }
-                              : null,
-                          ]}
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.draggableProps}
-                          {...draggableProvided.dragHandleProps}
-                        >
-                          <Grid
-                            container
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            spacing={2}
+                              selected.includes(item.key)
+                                ? {
+                                    backgroundColor: "#e8eaf6",
+                                  }
+                                : null,
+                            ]}
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            {...draggableProvided.dragHandleProps}
                           >
-                            <Grid item xs={11}>
-                              {handleData(obj)}
+                            <Grid
+                              container
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              spacing={2}
+                            >
+                              <Grid item xs={11}>
+                                {handleData(obj)}
+                              </Grid>
+                              <Grid item xs={1}>
+                                <IconButton
+                                  onClick={(e) => handleDelete(item.key)}
+                                >
+                                  <DeleteRoundedIcon fontSize="small" />
+                                </IconButton>
+                              </Grid>
                             </Grid>
-                            <Grid item xs={1}>
-                              <IconButton
-                                onClick={(e) => handleDelete(item.key)}
-                              >
-                                <DeleteRoundedIcon fontSize="small" />
-                              </IconButton>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      )}
-                    </Draggable>
-                  );
-                })}
+                          </Box>
+                        )}
+                      </Draggable>
+                    );
+                  })
+                ) : (
+                  <Grid container justifyContent="center" mt={5}>
+                    <Alert
+                      severity="info"
+                      sx={{
+                        width: "90%",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {t("dragItems")}
+                    </Alert>
+                  </Grid>
+                )}
                 {droppableProvided.placeholder}
               </Grid>
             )}
