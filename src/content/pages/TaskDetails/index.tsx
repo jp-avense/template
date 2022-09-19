@@ -38,7 +38,7 @@ const TaskDetailPage = () => {
   }, []);
 
   useEffect(() => {
-    const tableHeaders = [
+    const headers = [
       {
         key: "key",
         label: t("key"),
@@ -51,9 +51,22 @@ const TaskDetailPage = () => {
         key: "description",
         label: t("description"),
       },
+      {
+        key: "showInTable",
+        label: t("showInTable"),
+        render: (val) => {
+          const str = val.toString();
+          const color = str === "true" ? "success" : "error";
+          return <Label color={color}>{str}</Label>;
+        },
+      },
+      {
+        key: "order",
+        label: t("order"),
+      },
     ];
 
-    setHeaders(tableHeaders);
+    setHeaders(headers);
   }, [language]);
 
   const init = async () => {
@@ -74,9 +87,14 @@ const TaskDetailPage = () => {
         key: "showInTable",
         label: t("showInTable"),
         render: (val) => {
-          console.log(val);
-          return val.toString();
+          const str = val.toString();
+          const color = str === "true" ? "success" : "error";
+          return <Label color={color}>{str}</Label>;
         },
+      },
+      {
+        key: "order",
+        label: t("order"),
       },
     ];
 
@@ -85,6 +103,15 @@ const TaskDetailPage = () => {
 
       const { data: response }: { data: IDetails[] } =
         await taskService.getDetails();
+
+      response.sort((a, b) => {
+        if (!a.order && !b.order) return a.key.localeCompare(b.key);
+
+        if (!a.order) return 1;
+        if (!b.order) return -1;
+
+        return a.order - b.order;
+      });
       setDetails(response);
 
       setHeaders(headers);
@@ -159,7 +186,12 @@ const TaskDetailPage = () => {
 
   const descendingComparator = (a, b, orderBy) => {
     if (orderBy) {
-      return b[orderBy].localeCompare(a[orderBy]);
+      if (a[orderBy] == null && b[orderBy] == null) return 0;
+      if (b[orderBy] == null) return -1;
+      if (a[orderBy] == null) return 1;
+
+      if (b[orderBy] < a[orderBy]) return 1;
+      else if (b[orderBy] > a[orderBy]) return -1;
     }
     return 0;
   };

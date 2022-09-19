@@ -156,7 +156,7 @@ const DynamicTable = ({
                 {sort
                   ? sorted()
                       .slice(page * limit, page * limit + limit)
-                      .map((item) => {
+                      .map((item, idx) => {
                         const isSelected = selected.includes(item._id);
                         const { key } = item;
                         return (
