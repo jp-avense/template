@@ -236,5 +236,6 @@
   "useInCreateForm": "Use in task create form",
   "relatedTaskDetail": "Related task detail",
   "mustBeRegex": "Must be a regular expression",
-  "order": "Order"
+  "order": "Order",
+  "canSelectMultiple": "You can select multiple values"
 }
