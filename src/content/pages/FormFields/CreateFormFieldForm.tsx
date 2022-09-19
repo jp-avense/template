@@ -29,6 +29,8 @@ import _ from "lodash";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { taskService } from "src/services/task.service";
+import { InputTypeEnum } from "./form-field.interface";
+import { TaskDefaultColumns } from "src/consts";
 
 function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
@@ -65,7 +67,13 @@ function FormFieldForm({ onDone }) {
         .then(({ data }) => {
           data.sort((a, b) => a.label.localeCompare(b));
 
-          setDetails(data);
+          const defaultProps = Object.values(TaskDefaultColumns);
+
+          const res = data.filter(
+            (item) => !defaultProps.includes(item.key)
+          );
+
+          setDetails(res);
         })
         .finally(() => setLoading(false));
     }
@@ -141,8 +149,11 @@ function FormFieldForm({ onDone }) {
         }
 
         if (!errors.length) {
-          await formService.createField({ ...res, taskDetailKey: relatedDetail._id });
-          await onDone(); 
+          await formService.createField({
+            ...res,
+            taskDetailKey: relatedDetail._id,
+          });
+          await onDone();
 
           setSuccess("Success");
         } else setError(errors[0]);
@@ -337,23 +348,28 @@ function FormFieldForm({ onDone }) {
                       fullWidth
                     ></TextField>
                   )}
+                  {type === InputTypeEnum.TEXT ||
+                  type === InputTypeEnum.TEXTAREA ? (
+                    <TextField
+                      sx={{ mt: 2 }}
+                      id="validation"
+                      name="validation"
+                      label={t("validation")}
+                      value={formik.values.validation}
+                      onChange={(e) => handleChange(e)}
+                      error={
+                        formik.touched.validation &&
+                        Boolean(formik.errors.validation)
+                      }
+                      helperText={
+                        (formik.touched.validation &&
+                          formik.errors.validation) ||
+                        t("mustBeRegex")
+                      }
+                      fullWidth
+                    ></TextField>
+                  ) : null}
 
-                  <TextField
-                    sx={{ mt: 2 }}
-                    id="validation"
-                    name="validation"
-                    label={t("validation")}
-                    value={formik.values.validation}
-                    onChange={(e) => handleChange(e)}
-                    error={
-                      formik.touched.validation &&
-                      Boolean(formik.errors.validation)
-                    }
-                    helperText={
-                      formik.touched.validation && formik.errors.validation
-                    }
-                    fullWidth
-                  ></TextField>
                   {type === "textarea" ? (
                     <>
                       <TextField
@@ -433,7 +449,7 @@ function FormFieldForm({ onDone }) {
                           onChange={(e) => setFieldInCreate(e.target.checked)}
                         />
                       }
-                      label={t('useInCreateForm')}
+                      label={t("useInCreateForm")}
                     />
                     {fieldInCreate && (
                       <Autocomplete
@@ -448,7 +464,7 @@ function FormFieldForm({ onDone }) {
                           <TextField
                             {...params}
                             label={
-                              loading ? t("loading") : t('relatedTaskDetail')
+                              loading ? t("loading") : t("relatedTaskDetail")
                             }
                             placeholder={loading && t("loading")}
                           />

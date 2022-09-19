@@ -234,5 +234,7 @@
   "filterTask": "Filter task",
   "dragItems": "Drag items here!",
   "useInCreateForm": "Use in task create form",
-  "relatedTaskDetail": "Related task detail"
+  "relatedTaskDetail": "Related task detail",
+  "mustBeRegex": "Must be a regular expression",
+  "order": "Order"
 }

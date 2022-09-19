@@ -232,5 +232,7 @@
   "dragItems": "גרור פריטים לכאן!",
   "loading": "טוען",
   "useInCreateForm": "השתמש ליצירת משימות",
-  "relatedTaskDetail": "פירוט משימה קשור"
+  "relatedTaskDetail": "פירוט משימה קשור",
+  "mustBeRegex": "הערך חייב להיות ביטוי רגולרי",
+  "order": "להזמין"
 }

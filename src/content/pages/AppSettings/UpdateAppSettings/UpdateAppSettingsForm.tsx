@@ -92,9 +92,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
       } else if (type === "Array") {
         setArr(selected.value);
         setValue(selected.value);
-      } else if (type === "String") {
-        setValue(selected.value);
-      } else if (type === "Number") {
+      } else {
         setValue(selected.value);
       }
     } else {
@@ -174,7 +172,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
       type === "Array" || type === "Object"
         ? JSON.stringify(value)
         : `${value}`;
-        
+
     const res = {
       key: key,
       value: val,
@@ -282,7 +280,7 @@ const UpdateAppSettingsForm = ({ data, selected, onDone }: Props) => {
             ) : (
               <></>
             )}
-            {type === "boolean" ? (
+            {type === "Boolean" ? (
               <>
                 <TextField
                   select
