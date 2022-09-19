@@ -150,10 +150,14 @@ function FormFieldSettings({
   }, [selectedForm]);
 
   useEffect(() => {
-    const res = action.map((c) => {
-      return { value: c, label: t(c) };
-    });
-    setCurrentFormAction(res);
+    if (action?.length > 0) {
+      const res = action.map((c) => {
+        return { value: c, label: t(c) };
+      });
+      setCurrentFormAction(res);
+    } else {
+      setCurrentFormAction([]);
+    }
   }, [action]);
 
   useEffect(() => {

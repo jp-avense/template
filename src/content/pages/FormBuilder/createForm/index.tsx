@@ -272,9 +272,9 @@ function CreateForm() {
           if (dragData.find((item) => item.key === findDup)) return;
 
           setDragData(destinationClone);
+          setSelected([result.draggableId]);
           break;
       }
-      console.log("res", result);
     } catch (err) {
       Swal.fire({
         icon: "error",
