@@ -12,10 +12,13 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ModalButton from "src/components/ModalButton";
 import { FilterContext } from "src/contexts/FilterContext";
-import { getAxiosErrorMessage, toMap } from "src/lib";
+import { getAxiosErrorMessage, getDefaultValue, toMap } from "src/lib";
 import { settingsService } from "src/services/settings.service";
 import { taskService } from "src/services/task.service";
-import { InputTypeEnum } from "../FormFields/form-field.interface";
+import {
+  FormFieldExtended,
+  InputTypeEnum,
+} from "../FormFields/form-field.interface";
 import CustomCreateForm from "./CustomCreateForm";
 import DefaultCreateForm from "./DefaultCreateForm";
 
@@ -174,25 +177,48 @@ function PageHeader() {
     });
   };
 
+  const checkConditions = (currentValues, field: FormFieldExtended) => {
+    const { conditions } = field;
+
+    if (!conditions || Object.keys(conditions).length < 1) return true;
+
+    return Object.entries(conditions).every(
+      ([key, value]: [string, string[]]) => {
+        const formValue: string | string[] = currentValues[key];
+
+        return value.some((item) => {
+          if (item === "!null") {
+            return Array.isArray(formValue) ? formValue.length : formValue;
+          } else {
+            if (Array.isArray(formValue)) return formValue.includes(item);
+            return formValue == item;
+          }
+        });
+      }
+    );
+  };
+
   useEffect(() => {
     if (chosenType) {
       if (chosenForm) {
-        const fields = chosenForm.formFields;
+        const fields = chosenForm.formFields as FormFieldExtended[];
 
         const res = fields.reduce((acc, item) => {
-          const { inputType, key, defaultValue } = item;
+          const { conditions, key } = item;
 
-          let arrayDefault = defaultValue
+          const isConditionEmpty =
+            !conditions || Object.keys(conditions).length < 1;
 
-          if(inputType === InputTypeEnum.CHECKBOX) {
-            arrayDefault = defaultValue ?? []
-            arrayDefault = Array.isArray(arrayDefault) ? arrayDefault : [defaultValue]
-          }
+          const derivedDefault = getDefaultValue(item);
 
-          if (inputType === InputTypeEnum.CHECKBOX) {
-            acc[key] = arrayDefault
+          if (isConditionEmpty) {
+            acc[key] = derivedDefault;
           } else {
-            acc[key] = defaultValue ?? "";
+            const canShow = checkConditions(acc, item);
+
+            if (canShow) {
+              acc[key] = derivedDefault;
+            }
           }
 
           return acc;
@@ -222,7 +248,6 @@ function PageHeader() {
     }
   }, [types, details, originalData, chosenType, chosenForm]);
 
-    console.log('valueBag', valueBag)
   return (
     <>
       <Grid container justifyContent="end">
