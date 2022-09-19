@@ -234,5 +234,6 @@
   "useInCreateForm": "השתמש ליצירת משימות",
   "relatedTaskDetail": "פירוט משימה קשור",
   "mustBeRegex": "הערך חייב להיות ביטוי רגולרי",
-  "order": "להזמין"
+  "order": "להזמין",
+  "canSelectMultiple": "אתה יכול לבחור מספר ערכים"
 }
