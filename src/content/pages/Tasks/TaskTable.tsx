@@ -340,25 +340,6 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   };
 
   const objectToCsv = (data, allTasks) => {
-    // const details = allTasks[0].taskDetails;
-    // const formLabel = allTasks[0].form;
-
-    // const getLabel = details.map((item) => {
-    //   return item.label;
-    // });
-
-    // const getKey = details.map((item) => {
-    //   return item.key;
-    // });
-
-    // const getFormKey = formLabel.map((item) => {
-    //   return item.key;
-    // });
-
-    // const csvRows = [];
-    // const headers = Object.keys(data[0]);
-    // const x = headers.concat(getLabel, getFormKey);
-    // csvRows.push(x.join(","));
     const newArr = [];
 
     const getDetailValues = Object.values(allTasks).map((item: any) => {
@@ -389,54 +370,46 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       const formValues = item.form;
 
       const formX = formValues?.reduce((acc, item) => {
+        const formKey = item.key;
         const formObj = item.value;
 
-        if (typeof formObj == null) {
-          return { ...acc, [item.key]: "" };
+        if (formObj == null) {
+          return { ...acc, [formKey]: "" };
         }
 
-        if (typeof formObj === "object") {
-          const lat = formObj?.coords?.latitude;
-          const long = formObj?.coords?.longitude;
+        if (typeof formObj === "string" || typeof formObj === "number") {
+          const formStr = ("" + formObj).replace(/\n/g, "");
 
+          return { ...acc, [formKey]: `${formStr}` };
+        }
+
+        if (formKey === "lastKnownGeoLocation") {
           if (formObj == null) {
             return {
               ...acc,
-              [item.key]: formObj,
+              [formKey]: "",
             };
           } else {
             return {
               ...acc,
-              [item.key]: `Latitude ${lat} - Longtitude ${long}`,
+              [formKey]: `Latitude ${formObj?.coords?.latitude} - Longitude ${formObj?.coords?.longitude} `,
             };
           }
         }
 
-        if (typeof formObj === "string") {
-          return { ...acc, [item.key]: formObj };
-        }
-
-        if (typeof formObj === "number") {
-          return { ...acc, [item.key]: formObj };
-        }
-
         if (Array.isArray(formObj)) {
-          return { ...acc, [item.key]: `"${formObj}"` };
+          return { ...acc, [formKey]: `"${formObj}"` };
         }
 
-        return { ...acc, [item.key]: formObj };
+        return { ...acc, [formKey]: formObj };
       }, {});
 
       return formX;
     });
 
-    // console.log("getForm", getFormValues);
-
     const newData = data.map((item, index) =>
       Object.assign({}, item, getDetailValues[index], getFormValues[index])
     );
-
-    // console.log("newData", newData);
 
     const taskVal = newData.reduce((acc, cur) => {
       if (acc[cur.taskType]) {
@@ -452,98 +425,24 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       newArr.push("\n");
       newArr.push(key);
 
-      const taskValues = value.map((item) => Object.values(item));
-      // console.log("taskValues", taskValues);
-
       const findKey = value
         .map((item) => Object.keys(item))
         .reduce((acc, cur) => (acc > cur.length ? acc : cur), {});
 
       newArr.push(findKey.join(","));
 
+      const taskValues = value.map((item) => item);
+
       for (const index in taskValues) {
-        const row = taskValues[index];
+        const val = taskValues[index];
 
-        newArr.push(row.join(","));
+        const a = findKey.map((key) => val[key]);
 
-        // const row = taskValues[index] ? taskValues[index] : "";
-        // console.log("row", row);
-
-        newArr.push(row.join(","));
+        newArr.push(a.join(","));
       }
     });
 
-    // console.log("taskVal", taskVal);
-
     return newArr.join("\r\n");
-
-    // for (const index in data) {
-    //   const row = data[index];
-    //   let values = headers.map((header) => {
-    //     if (row[header] == null) return "";
-
-    //     const escaped = ("" + row[header])
-    //       .replace(/\n/g, "")
-    //       .replace(/,/g, "")
-    //       .replace(/"/g, '\\"');
-
-    //     return `${escaped}`.replace(" ", "");
-    //   });
-
-    //   const rowX = getValues[index];
-    //   const rowForm = getFormValues[index] ? getFormValues[index] : "";
-
-    //   const formVal = getFormKey.map((head, index) => {
-    //     const a = rowForm[head];
-
-    //     if (a == null) {
-    //       return "";
-    //     }
-
-    //     if (typeof a === "string" || typeof a === "number") {
-    //       const escape = ("" + rowForm[head]).replace(/\n/g, "");
-
-    //       return `"${escape}"`;
-    //     }
-
-    //     if (typeof a === "boolean") {
-    //       return a.toString();
-    //     }
-
-    //     if (head === "lastKnownGeoLocation") {
-    //       const lat = a?.coords?.latitude ? a.coords.latitude : "0";
-    //       const long = a?.coords?.longitude ? a.coords.longitude : "0";
-
-    //       return `Latitude: ${lat} - Longitude: ${long}`;
-    //     }
-
-    //     return a;
-    //   });
-
-    //   const val = getKey.map((head, index) => {
-    //     const x = rowX[head];
-
-    //     if (x == null) {
-    //       return "";
-    //     }
-
-    //     if (typeof x === "string" || typeof x === "number") {
-    //       const escape = ("" + rowX[head]).replace(/\n/g, "");
-
-    //       return `"${escape}"`;
-    //     }
-
-    //     if (typeof x === "object") {
-    //       return x.value ?? "";
-    //     }
-    //   });
-
-    //   values = values.concat(val, formVal);
-
-    //   csvRows.push(values.join(","));
-    // }
-
-    // return csvRows.join("\r\n");
   };
 
   const xlsExport = async () => {
