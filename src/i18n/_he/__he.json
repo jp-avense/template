@@ -243,5 +243,10 @@
   "Household appliances List": "רשימת מכשירי חשמל ביתיים",
   "Download": "הורד",
   "downloadPDF": "הורד PDF",
-  "detailsForPDF": "בחר פרטים נוספים שייכללו ב-PDF"
+  "detailsForPDF": "בחר פרטים נוספים שייכללו ב-PDF",
+  "useInCreateForm": "השתמש ליצירת משימות",
+  "relatedTaskDetail": "פירוט משימה קשור",
+  "mustBeRegex": "הערך חייב להיות ביטוי רגולרי",
+  "order": "להזמין",
+  "canSelectMultiple": "אתה יכול לבחור מספר ערכים"
 }

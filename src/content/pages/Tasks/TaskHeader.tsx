@@ -12,10 +12,13 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ModalButton from "src/components/ModalButton";
 import { FilterContext } from "src/contexts/FilterContext";
-import { getAxiosErrorMessage, toMap } from "src/lib";
+import { getAxiosErrorMessage, getDefaultValue, toMap } from "src/lib";
 import { settingsService } from "src/services/settings.service";
 import { taskService } from "src/services/task.service";
-import { InputTypeEnum } from "../FormFields/form-field.interface";
+import {
+  FormFieldExtended,
+  InputTypeEnum,
+} from "../FormFields/form-field.interface";
 import CustomCreateForm from "./CustomCreateForm";
 import DefaultCreateForm from "./DefaultCreateForm";
 
@@ -62,6 +65,7 @@ function PageHeader() {
   const showCreateTask = useMemo(
     () =>
       settings?.find((item) => item.key === "showCreateTask")?.value == "true",
+
     [settings]
   );
 
@@ -138,9 +142,18 @@ function PageHeader() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      const temp = Object.entries(valueBag).reduce<any>((acc, [key, value]) => {
+        if (value == null || value == "") return acc;
+
+        return {
+          ...acc,
+          [key]: value,
+        };
+      }, {});
+
       await taskService.createTask({
-        ...valueBag,
-        taskId: +valueBag.taskId,
+        ...temp,
+        taskId: +temp.taskId,
         taskType: chosenType,
       });
       setStatus({
@@ -164,18 +177,48 @@ function PageHeader() {
     });
   };
 
+  const checkConditions = (currentValues, field: FormFieldExtended) => {
+    const { conditions } = field;
+
+    if (!conditions || Object.keys(conditions).length < 1) return true;
+
+    return Object.entries(conditions).every(
+      ([key, value]: [string, string[]]) => {
+        const formValue: string | string[] = currentValues[key];
+
+        return value.some((item) => {
+          if (item === "!null") {
+            return Array.isArray(formValue) ? formValue.length : formValue;
+          } else {
+            if (Array.isArray(formValue)) return formValue.includes(item);
+            return formValue == item;
+          }
+        });
+      }
+    );
+  };
+
   useEffect(() => {
     if (chosenType) {
       if (chosenForm) {
-        const fields = chosenForm.formFields;
+        const fields = chosenForm.formFields as FormFieldExtended[];
 
         const res = fields.reduce((acc, item) => {
-          const { inputType, key } = item;
+          const { conditions, key } = item;
 
-          if (inputType === InputTypeEnum.CHECKBOX) {
-            acc[key] = [];
+          const isConditionEmpty =
+            !conditions || Object.keys(conditions).length < 1;
+
+          const derivedDefault = getDefaultValue(item);
+
+          if (isConditionEmpty) {
+            acc[key] = derivedDefault;
           } else {
-            acc[key] = "";
+            const canShow = checkConditions(acc, item);
+
+            if (canShow) {
+              acc[key] = derivedDefault;
+            }
           }
 
           return acc;
@@ -278,7 +321,6 @@ function PageHeader() {
                     );
                   })}
                 </TextField>
-                {/* TODO change the way the custom and default create form works with data */}
                 {chosenType ? (
                   chosenForm ? (
                     <CustomCreateForm
@@ -297,9 +339,7 @@ function PageHeader() {
               </Box>
             </ModalButton>
           </Grid>
-        ) : (
-          <CircularProgress size={20} />
-        )}
+        ) : null}
       </Grid>
     </>
   );

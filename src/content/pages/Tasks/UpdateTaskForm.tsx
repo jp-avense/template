@@ -25,6 +25,8 @@ type Props = {
 };
 
 const UpdateTaskForm = ({ selected }: Props) => {
+  // TODO make it dynamic just like in create
+  
   const { t } = useTranslation();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");

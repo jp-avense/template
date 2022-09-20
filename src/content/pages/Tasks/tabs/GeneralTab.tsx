@@ -57,7 +57,6 @@ const GeneralTab = () => {
               const toShow = !blacklist.includes(item.key) && !item.showInTable;
 
               if (!toShow) return null;
-
               return (
                 <TableRow key={index} hover>
                   <TableCell>{item.label}</TableCell>

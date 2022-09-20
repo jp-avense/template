@@ -12,15 +12,18 @@ import {
   Checkbox,
   CircularProgress,
   Alert,
+  Autocomplete,
+  FormControlLabel,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { taskService } from "src/services/task.service";
 
 interface KeyValuePair {
   key: string;
@@ -39,6 +42,7 @@ interface IFormType {
   defaultValue?: string;
   validation?: string;
   note?: string;
+  taskDetailKey?: string;
 }
 
 type Props = {
@@ -56,6 +60,42 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
+  const [fieldInCreate, setFieldInCreate] = useState(false);
+  const [details, setDetails] = useState([]);
+  const [relatedDetail, setRelatedDetail] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    if (selectedForm.taskDetailKey) {
+      setFieldInCreate(true);
+
+      const res = details.find(item => item._id === selectedForm.taskDetailKey) ?? null
+
+      setRelatedDetail(res);
+      setInputValue(res?.label ?? "")
+
+    }
+  }, [selectedForm, details]);
+
+  useEffect(() => {
+    const res = details.find((item) => item._id === relatedDetail)?.label || "";
+    setInputValue(res);
+  }, [relatedDetail]);
+
+  useEffect(() => {
+    if (fieldInCreate && details.length === 0) {
+      setLoading(true);
+      taskService
+        .getDetails()
+        .then(({ data }) => {
+          data.sort((a, b) => a.label.localeCompare(b));
+
+          setDetails(data);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [fieldInCreate]);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
 
@@ -100,6 +140,7 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
     placeholder: yup.string(),
   });
 
+
   const formik = useFormik({
     initialValues: {
       label: selectedForm.label,
@@ -117,6 +158,8 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
 
         const res = { ...values } as any;
         res.inputType = type;
+
+        if(fieldInCreate) res.taskDetailKey = relatedDetail._id
 
         let errors = [];
 
@@ -381,6 +424,44 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
                     helperText={formik.touched.note && formik.errors.note}
                     fullWidth
                   ></TextField>
+                  <Box mt={2} display="flex" flexDirection="column" gap={2}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={fieldInCreate}
+                          onChange={(e) => setFieldInCreate(e.target.checked)}
+                        />
+                      }
+                      label={t("useInCreateForm")}
+                    />
+                    {fieldInCreate && (
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={details}
+                        fullWidth
+                        blurOnSelect
+                        disabled={loading}
+                        value={relatedDetail}
+                        inputValue={inputValue}
+                        onChange={(e, value) => {
+                          setRelatedDetail(value);
+                        }}
+                        onInputChange={(e, value) => {
+                          setInputValue(value);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={
+                              loading ? t("loading") : t("relatedTaskDetail")
+                            }
+                            placeholder={loading && t("loading")}
+                          />
+                        )}
+                      />
+                    )}
+                  </Box>
                 </Box>
 
                 <div style={{ paddingTop: "10px" }}>

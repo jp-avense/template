@@ -115,6 +115,7 @@ function FormFieldSettings({
     const forms = cloneDeep(activeForms);
     const data = forms.filter((c) => e.target.value == c.label);
     let current = selectedForm.slice();
+    data[0].value = []
     current.splice(index, 1, data[0]);
     setSelectedForm(current);
   };
@@ -205,7 +206,6 @@ function FormFieldSettings({
   useEffect(() => {
     const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
     if (index > -1) {
-      // here
       const condition = Object.entries(fieldSettings[index].conditions)
         .map(([key, value]: [string, any]) => {
           const forms = cloneDeep(activeForms);
@@ -267,6 +267,7 @@ function FormFieldSettings({
 
   const changeTab = (e, newTab) => setCurrentTab(newTab);
 
+
   return (
     <Paper square elevation={0} sx={{ minHeight: "100%" }}>
       <AppBar position="static" sx={{ p: 1 }}>
@@ -311,6 +312,9 @@ function FormFieldSettings({
                 value={currentFormAction}
                 onChange={(e) => setSelectedAction(e)}
               />
+
+
+              
               {activeForms.length > 0 ? (
                 <>
                   <Grid
@@ -418,11 +422,12 @@ function FormFieldSettings({
                                 <TextField
                                   sx={{ mt: 2 }}
                                   fullWidth
-                                  label="value"
+                                  label={t('value')}
                                   onChange={(e) => setConditionValue(e, index)}
                                   value={form.value || []}
                                   select
                                   SelectProps={{ multiple: true }}
+                                  helperText={t('canSelectMultiple')}
                                 >
                                   {Object.entries(form.options).map(
                                     ([key, value]: [string, any]) => (
@@ -477,7 +482,7 @@ function FormFieldSettings({
                                         sx={{ mt: 1 }}
                                         key={valIndex}
                                         fullWidth
-                                        label="value"
+                                        label={t('value')}
                                         onChange={(e) =>
                                           setStringValue(e, index, valIndex)
                                         }

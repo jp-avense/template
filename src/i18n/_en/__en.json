@@ -245,5 +245,10 @@
   "Household appliances List": "Household appliances List",
   "Download": "Download",
   "downloadPDF": "Download PDF",
-  "detailsForPDF": "Select additional details to be included in the pdf"
+  "detailsForPDF": "Select additional details to be included in the pdf",
+  "useInCreateForm": "Use in task create form",
+  "relatedTaskDetail": "Related task detail",
+  "mustBeRegex": "Must be a regular expression",
+  "order": "Order",
+  "canSelectMultiple": "You can select multiple values"
 }
