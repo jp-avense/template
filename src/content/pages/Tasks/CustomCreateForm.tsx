@@ -44,24 +44,6 @@ const CustomCreateForm = ({ form, setValues, values }: Props) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const fields = form.formFields;
-
-    const res = fields.reduce((acc, item) => {
-      const { inputType, key } = item;
-
-      if (inputType === InputTypeEnum.CHECKBOX) {
-        acc[key] = [];
-      } else {
-        acc[key] = "";
-      }
-
-      return acc;
-    }, {});
-
-    setValues(res);
-  }, [form]);
-
-  useEffect(() => {
     if (canvas) setPad(new SignaturePad(canvas));
   }, [canvas]);
 

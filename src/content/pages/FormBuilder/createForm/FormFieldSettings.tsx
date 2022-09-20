@@ -105,17 +105,17 @@ function FormFieldSettings({
 
   const actions = [
     { value: "closeForm", label: t("closeForm") },
-    { value: "rescheduleTask", label: t("rescheduleTask") },
+    { value: "reschedualTask", label: t("reschedualTask") },
     { value: "transmitDone", label: t("transmitDone") },
-    { value: "transmitRescheduled", label: t("transmitRescheduled") },
+    { value: "transmitReschedualed", label: t("transmitReschedualed") },
     { value: "startTask", label: t("startTask") },
   ];
 
   const setSelectedCondition = (e, index) => {
     const forms = cloneDeep(activeForms);
-    const data = forms.filter((c) => e.target.value == c.label);
+    const data = forms.filter((c) => e.target.value == c.key);
     let current = selectedForm.slice();
-    data[0].value = []
+    data[0].value = [];
     current.splice(index, 1, data[0]);
     setSelectedForm(current);
   };
@@ -267,7 +267,6 @@ function FormFieldSettings({
 
   const changeTab = (e, newTab) => setCurrentTab(newTab);
 
-
   return (
     <Paper square elevation={0} sx={{ minHeight: "100%" }}>
       <AppBar position="static" sx={{ p: 1 }}>
@@ -313,8 +312,6 @@ function FormFieldSettings({
                 onChange={(e) => setSelectedAction(e)}
               />
 
-
-              
               {activeForms.length > 0 ? (
                 <>
                   <Grid
@@ -347,7 +344,7 @@ function FormFieldSettings({
                             label="Fields"
                             select
                             onChange={(e) => setSelectedCondition(e, index)}
-                            value={form.label}
+                            value={form.key}
                           >
                             {activeForms.map((c) => (
                               <MenuItem
@@ -359,9 +356,9 @@ function FormFieldSettings({
                                     : false
                                 }
                                 key={c.key}
-                                value={c.label}
+                                value={c.key}
                               >
-                                {t(c.label)}
+                                {t(c.label)} ({t(c.key)})
                               </MenuItem>
                             ))}
                           </TextField>
@@ -422,12 +419,12 @@ function FormFieldSettings({
                                 <TextField
                                   sx={{ mt: 2 }}
                                   fullWidth
-                                  label={t('value')}
+                                  label={t("value")}
                                   onChange={(e) => setConditionValue(e, index)}
                                   value={form.value || []}
                                   select
                                   SelectProps={{ multiple: true }}
-                                  helperText={t('canSelectMultiple')}
+                                  helperText={t("canSelectMultiple")}
                                 >
                                   {Object.entries(form.options).map(
                                     ([key, value]: [string, any]) => (
@@ -482,7 +479,7 @@ function FormFieldSettings({
                                         sx={{ mt: 1 }}
                                         key={valIndex}
                                         fullWidth
-                                        label={t('value')}
+                                        label={t("value")}
                                         onChange={(e) =>
                                           setStringValue(e, index, valIndex)
                                         }
