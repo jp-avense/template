@@ -12,7 +12,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ModalButton from "src/components/ModalButton";
 import { FilterContext } from "src/contexts/FilterContext";
-import { getAxiosErrorMessage, getDefaultValue, toMap } from "src/lib";
+import { checkConditions, getAxiosErrorMessage, getDefaultValue, toMap } from "src/lib";
 import { settingsService } from "src/services/settings.service";
 import { taskService } from "src/services/task.service";
 import {
@@ -177,27 +177,6 @@ function PageHeader() {
     });
   };
 
-  const checkConditions = (currentValues, field: FormFieldExtended) => {
-    const { conditions } = field;
-
-    if (!conditions || Object.keys(conditions).length < 1) return true;
-
-    return Object.entries(conditions).every(
-      ([key, value]: [string, string[]]) => {
-        const formValue: string | string[] = currentValues[key];
-
-        return value.some((item) => {
-          if (item === "!null") {
-            return Array.isArray(formValue) ? formValue.length : formValue;
-          } else {
-            if (Array.isArray(formValue)) return formValue.includes(item);
-            return formValue == item;
-          }
-        });
-      }
-    );
-  };
-
   useEffect(() => {
     if (chosenType) {
       if (chosenForm) {
@@ -247,6 +226,7 @@ function PageHeader() {
       }
     }
   }, [types, details, originalData, chosenType, chosenForm]);
+
 
   return (
     <>
