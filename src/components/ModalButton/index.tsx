@@ -30,7 +30,10 @@ const ModalButton = ({
 
   const handleClose = (e) => {
     if (setForceOpen) setForceOpen(false);
-    onClose();
+    if (onClose) {
+      onClose();
+    }
+
     setOpen(false);
   };
   const handleOpen = (e) => {
