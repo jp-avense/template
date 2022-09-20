@@ -9,12 +9,13 @@ import {
   TextField,
   MenuItem,
   Button,
+  Checkbox,
 } from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContext } from "src/contexts/FilterContext";
 import { formService } from "src/services/form.service";
-import { TabsContext } from "src/contexts/TabsContext";
+
 import {
   FormFieldExtended,
   InputTypeEnum,
@@ -34,6 +35,7 @@ import {
   Document,
   StyleSheet,
   Font,
+  View,
 } from "@react-pdf/renderer";
 
 Font.register({
@@ -53,11 +55,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
     marginBottom: 30,
+    fontFamily: "Rubik",
   },
-  text: {
+  textEn: {
     margin: 12,
     fontSize: 14,
     textAlign: "justify",
+    fontFamily: "Rubik",
+  },
+  textHe: {
+    margin: 12,
+    fontSize: 14,
+    textAlign: "right",
     fontFamily: "Rubik",
   },
   image: {
@@ -94,6 +103,9 @@ const FormTab = (props: Props) => {
   const [formValue, setFormValue] = useState([]);
   const [taskDetails, setTaskDetails] = useState([]);
   const [pdfData, setPdfData] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const { i18n } = useTranslation();
+  const direction = i18n.dir();
 
   const {
     t,
@@ -103,6 +115,12 @@ const FormTab = (props: Props) => {
   const {
     handleFilter: { selectedRows, originalData },
   } = context;
+
+  const onClose = () => {
+    setSelectAll(false);
+    setPdfData([]);
+    setTaskDetails([]);
+  };
 
   const selected = useMemo(() => {
     return originalData.find(
@@ -120,16 +138,40 @@ const FormTab = (props: Props) => {
     return (
       <Document key={"pdfDocument"}>
         <Page key={"pdfPage"} style={styles.body}>
-          <Text style={styles.title}> Task {selected.taskId} </Text>
-          {pdfData.map((item) => {
-            return (
-              <>
-                <Text key={item.label + "text"} style={styles.text}>
-                  {item.label} : {item.value}
-                </Text>
-              </>
-            );
-          })}
+          {direction === "ltr" ? (
+            <>
+              <Text style={styles.title}>
+                {" "}
+                {t("task")} {selected.taskId}{" "}
+              </Text>
+              {pdfData.map((item) => {
+                return (
+                  <>
+                    <Text key={item.label + "text"} style={styles.textEn}>
+                      {t(item.label)} : {item.value}
+                    </Text>
+                  </>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              <Text style={styles.title}>
+                {" "}
+                {selected.taskId} {t("task")}
+              </Text>
+              {pdfData.map((item) => {
+                return (
+                  <>
+                    <Text key={item.label + "text"} style={styles.textHe}>
+                      {item.value} : {t(item.label)}
+                    </Text>
+                  </>
+                );
+              })}
+            </>
+          )}
+
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) =>
@@ -166,8 +208,8 @@ const FormTab = (props: Props) => {
     setTaskDetails(current);
   };
 
-  const handleClose = () => {
-    pdfValues();
+  const handleClick = (e) => {
+    setSelectAll(e.target.checked);
   };
 
   const pdfValues = () => {
@@ -204,7 +246,18 @@ const FormTab = (props: Props) => {
 
   useEffect(() => {
     pdfValues();
-  }, [components]);
+  }, [components, taskDetails]);
+
+  useEffect(() => {
+    if (selectAll) {
+      const res = selected.taskDetails.map((c) => {
+        return c.label;
+      });
+      setTaskDetails(res);
+    } else {
+      setTaskDetails([]);
+    }
+  }, [selectAll]);
 
   useEffect(() => {
     if (selected && selected?.form) {
@@ -329,7 +382,7 @@ const FormTab = (props: Props) => {
 
               return (
                 <TableRow key={key + index}>
-                  <TableCell>{label}</TableCell>
+                  <TableCell>{t(label)}</TableCell>
                   <TableCell>{components[index]}</TableCell>
                 </TableRow>
               );
@@ -354,21 +407,26 @@ const FormTab = (props: Props) => {
         />
       )}
       <ModalButton
-        text={t("Download PDF")}
+        text={t("downloadPDF")}
         buttonProps={{
           variant: "contained",
         }}
-        title={t("Download PDF")}
+        title={t("downloadPDF")}
+        onClose={onClose}
       >
-        Select additional details to be included in the pdf
+        {t("detailsForPDF")}
+        <Box sx={{ mt: 2 }}>
+          {t("selectAllDetails")}
+          <Checkbox checked={selectAll} onClick={handleClick}></Checkbox>
+        </Box>
         <TextField
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, mb: 2 }}
           fullWidth
-          label="value"
+          label={t("value")}
           onChange={(e) => setConditionValue(e)}
           value={taskDetails || []}
           select
-          SelectProps={{ multiple: true, onClose: handleClose }}
+          SelectProps={{ multiple: true }}
         >
           {selected.taskDetails.map((c) => (
             <MenuItem key={c.key} value={c.label}>
@@ -385,7 +443,7 @@ const FormTab = (props: Props) => {
             loading ? (
               <Button variant="contained">Loading PDF</Button>
             ) : (
-              <Button variant="contained">Download</Button>
+              <Button variant="contained">{t("download")}</Button>
             )
           }
         </PDFDownloadLink>

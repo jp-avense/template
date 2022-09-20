@@ -12,7 +12,8 @@ type Props = {
   title: string;
   forceOpen?: boolean;
   setForceOpen?: (state) => any;
-  actions?: ReactNodeLike
+  actions?: ReactNodeLike;
+  onClose?: () => any;
 };
 
 const ModalButton = ({
@@ -22,13 +23,14 @@ const ModalButton = ({
   title,
   forceOpen,
   setForceOpen,
-  actions
+  actions,
+  onClose,
 }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleClose = (e) => {
     if (setForceOpen) setForceOpen(false);
-
+    onClose();
     setOpen(false);
   };
   const handleOpen = (e) => {
@@ -38,7 +40,12 @@ const ModalButton = ({
 
   return (
     <>
-      <Modals onClose={handleClose} open={forceOpen ?? open} title={title} actions={actions}>
+      <Modals
+        onClose={handleClose}
+        open={forceOpen ?? open}
+        title={title}
+        actions={actions}
+      >
         <>{children}</>
       </Modals>
       <Button {...buttonProps} onClick={handleOpen}>
