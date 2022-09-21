@@ -34,6 +34,7 @@ const AssignTaskForm = ({ selected }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [isValid, setIsValid] = useState(true);
+  const [filteredAgents, setFilteredAgents] = useState([]);
 
   const context = useContext(AgentContext);
   const auth = useContext(AuthContext);
@@ -63,6 +64,18 @@ const AssignTaskForm = ({ selected }: Props) => {
       getAgents();
     }
   }, []);
+
+  useEffect(() => {
+    if (agents.length > 0) {
+      const res = agents.filter((item) => {
+        const rolesArr = item["custom:role"].split(",");
+        if (rolesArr.includes("agent")) {
+          return item;
+        }
+      });
+      setFilteredAgents(res);
+    }
+  }, [agents]);
 
   useEffect(() => {
     let res = originalData.filter((item) => selected.includes(item._id));
@@ -155,7 +168,7 @@ const AssignTaskForm = ({ selected }: Props) => {
                   fullWidth
                   value={selectedAgent}
                 >
-                  {agents.map((a) => (
+                  {filteredAgents.map((a) => (
                     <MenuItem key={a.sub} value={a.sub}>
                       {a.name}
                     </MenuItem>

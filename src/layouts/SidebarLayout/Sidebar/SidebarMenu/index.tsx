@@ -196,43 +196,52 @@ function SidebarMenu() {
   return (
     <>
       <MenuWrapper sx={{ pt: 2 }}>
-        <List
-          component="div"
-          subheader={
-            <ListSubheader component="div" disableSticky>
-              {t("dashboards")}
-            </ListSubheader>
-          }
-        >
-          <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard"
-                  startIcon={<DashboardIcon />}
-                >
-                  {t("dashboard")}
-                </Button>
-              </ListItem>
-              {isAdmin && (
-                <ListItem component="div">
-                  <Button
-                    disableRipple
-                    component={RouterLink}
-                    onClick={closeSidebar}
-                    to="/reports"
-                    startIcon={<ReportIcon />}
-                  >
-                    {t("reports")}
-                  </Button>
-                </ListItem>
-            )}
-           </List>
-          </SubMenuWrapper>
-        </List>
+        {isAdmin || isBackoffice ? (
+          <>
+            <List
+              component="div"
+              subheader={
+                <ListSubheader component="div" disableSticky>
+                  {t("dashboards")}
+                </ListSubheader>
+              }
+            >
+              <SubMenuWrapper>
+                <List component="div">
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/dashboard"
+                      startIcon={<DashboardIcon />}
+                    >
+                      {t("dashboard")}
+                    </Button>
+                  </ListItem>
+                </List>
+                {isAdmin && (
+                  <List component="div">
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={RouterLink}
+                        onClick={closeSidebar}
+                        to="/reports"
+                        startIcon={<ReportIcon />}
+                      >
+                        {t("reports")}
+                      </Button>
+                    </ListItem>
+                  </List>
+                )}
+              </SubMenuWrapper>
+            </List>
+          </>
+        ) : (
+          <></>
+        )}
+
         <List
           component="div"
           subheader={

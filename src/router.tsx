@@ -6,6 +6,7 @@ import BaseLayout from "src/layouts/BaseLayout";
 
 import SuspenseLoader from "src/components/SuspenseLoader";
 import AdminOnlyRoute from "./components/AdminOnlyRoute";
+import BackOfficeAndAdminRoute from "./components/BackOfficeAndAdminRoute";
 import FormFields from "./content/pages/FormFields";
 import FormBuilder from "./content/pages/FormBuilder";
 import CreateForm from "./content/pages/FormBuilder/createForm";
@@ -67,7 +68,11 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "dashboard",
-        element: <DashboardPage />,
+        element: (
+          <BackOfficeAndAdminRoute>
+            <DashboardPage />
+          </BackOfficeAndAdminRoute>
+        ),
       },
     ],
   },
@@ -77,7 +82,11 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "reports",
-        element: <ReportsPage />,
+        element: (
+          <AdminOnlyRoute>
+            <ReportsPage />{" "}
+          </AdminOnlyRoute>
+        ),
       },
     ],
   },
@@ -177,11 +186,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: (
-          <AdminOnlyRoute>
-            <ProfilePage />
-          </AdminOnlyRoute>
-        ),
+        element: <ProfilePage />,
       },
     ],
   },

@@ -20,7 +20,7 @@ import { t } from "i18next";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { formService } from "src/services/form.service";
 import { getAxiosErrorMessage } from "src/lib";
@@ -29,6 +29,8 @@ import _ from "lodash";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { taskService } from "src/services/task.service";
+import { InputTypeEnum } from "./form-field.interface";
+import { TaskDefaultColumns } from "src/consts";
 
 function FormFieldForm({ onDone }) {
   const [type, setType] = useState("");
@@ -37,6 +39,7 @@ function FormFieldForm({ onDone }) {
   const [success, setSuccess] = useState("");
   const [fieldInCreate, setFieldInCreate] = useState(false);
   const [details, setDetails] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [relatedDetail, setRelatedDetail] = useState(null);
 
   const [options, setOptions] = useState([{ key: "", value: "" }]);
@@ -58,10 +61,19 @@ function FormFieldForm({ onDone }) {
 
   useEffect(() => {
     if (fieldInCreate && details.length === 0) {
-      taskService.getDetails().then(({ data }) => {
-        console.log(data);
-        setDetails(data);
-      });
+      setLoading(true);
+      taskService
+        .getDetails()
+        .then(({ data }) => {
+          data.sort((a, b) => a.label.localeCompare(b));
+
+          const defaultProps = Object.values(TaskDefaultColumns);
+
+          const res = data.filter((item) => !defaultProps.includes(item.key));
+
+          setDetails(res);
+        })
+        .finally(() => setLoading(false));
     }
   }, [fieldInCreate]);
 
@@ -93,52 +105,67 @@ function FormFieldForm({ onDone }) {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try {
-        setError("");
-        setSuccess("");
+      setError("");
+      setSuccess("");
 
-        const res = { ...values } as any;
-        res.inputType = type;
+      const res = { ...values } as any;
+      res.inputType = type;
 
-        let errors = [];
+      let errors = [];
 
-        if (type === "radios" || type === "checkboxes" || type === "dropdown") {
-          const reduced = options.reduce((acc, x) => {
-            return {
-              ...acc,
-              [x.key]: x.value,
-            };
-          }, {});
+      if (type === "radios" || type === "checkboxes" || type === "dropdown") {
+        const reduced = options.reduce((acc, x) => {
+          return {
+            ...acc,
+            [x.key]: x.value,
+          };
+        }, {});
 
-          res.options = reduced;
+        res.options = reduced;
 
-          if (
-            res.defaultValue &&
-            !Object.keys(res.options).includes(res.defaultValue)
-          ) {
-            errors.push("Default value must exist in the options");
-          }
+        if (
+          res.defaultValue &&
+          !Object.keys(res.options).includes(res.defaultValue)
+        ) {
+          errors.push("Default value must exist in the options");
         }
+      }
 
-        if (type === "textarea") res.rows = rows;
-        if (type === "markup" && res.defaultValue) {
-          const hasScript = /<script.+>/g.test(res.defaultValue);
+      if (type === "textarea") res.rows = rows;
+      if (type === "markup" && res.defaultValue) {
+        const hasScript = /<script.+>/g.test(res.defaultValue);
 
-          if (hasScript) errors.unshift("Default value invalid");
-          else res.defaultValue = _.escape(res.defaultValue);
+        if (hasScript) errors.unshift("Default value invalid");
+        else res.defaultValue = _.escape(res.defaultValue);
+      }
+
+      if (fieldInCreate) {
+        if (relatedDetail?._id != null) {
+          const exist = details.find((item) => item._id === relatedDetail._id);
+
+          if (!exist) errors.unshift("Related task detail does not exist");
+        } else {
+          errors.unshift("Please choose a related task detail");
         }
+      }
 
-        if (!errors.length) {
-          console.log(res);
-          await formService.createField(res);
+      if (!errors.length) {
+        try {
+          const params = {
+            ...res,
+          };
+
+          if (fieldInCreate) params["taskDetailKey"] = relatedDetail._id;
+
+          await formService.createField(params);
           await onDone();
 
           setSuccess("Success");
-        } else setError(errors[0]);
-      } catch (error) {
-        console.log(error);
-        setError(getAxiosErrorMessage(error));
-      }
+        } catch (error) {
+          console.log(error);
+          setError(getAxiosErrorMessage(error));
+        }
+      } else setError(errors[0]);
     },
   });
 
@@ -326,23 +353,28 @@ function FormFieldForm({ onDone }) {
                       fullWidth
                     ></TextField>
                   )}
+                  {type === InputTypeEnum.TEXT ||
+                  type === InputTypeEnum.TEXTAREA ? (
+                    <TextField
+                      sx={{ mt: 2 }}
+                      id="validation"
+                      name="validation"
+                      label={t("validation")}
+                      value={formik.values.validation}
+                      onChange={(e) => handleChange(e)}
+                      error={
+                        formik.touched.validation &&
+                        Boolean(formik.errors.validation)
+                      }
+                      helperText={
+                        (formik.touched.validation &&
+                          formik.errors.validation) ||
+                        t("mustBeRegex")
+                      }
+                      fullWidth
+                    ></TextField>
+                  ) : null}
 
-                  <TextField
-                    sx={{ mt: 2 }}
-                    id="validation"
-                    name="validation"
-                    label={t("validation")}
-                    value={formik.values.validation}
-                    onChange={(e) => handleChange(e)}
-                    error={
-                      formik.touched.validation &&
-                      Boolean(formik.errors.validation)
-                    }
-                    helperText={
-                      formik.touched.validation && formik.errors.validation
-                    }
-                    fullWidth
-                  ></TextField>
                   {type === "textarea" ? (
                     <>
                       <TextField
@@ -422,7 +454,7 @@ function FormFieldForm({ onDone }) {
                           onChange={(e) => setFieldInCreate(e.target.checked)}
                         />
                       }
-                      label="Use in task create form"
+                      label={t("useInCreateForm")}
                     />
                     {fieldInCreate && (
                       <Autocomplete
@@ -431,14 +463,19 @@ function FormFieldForm({ onDone }) {
                         options={details}
                         fullWidth
                         blurOnSelect
-
+                        disabled={loading}
                         onChange={(e, value) => setRelatedDetail(value)}
                         renderInput={(params) => (
-                          <TextField {...params} label="Related task detail" />
+                          <TextField
+                            {...params}
+                            label={
+                              loading ? t("loading") : t("relatedTaskDetail")
+                            }
+                            placeholder={loading && t("loading")}
+                          />
                         )}
                       />
                     )}
-                    {false}
                   </Box>
                 </Box>
 

@@ -24,40 +24,24 @@ import PrintIcon from "@mui/icons-material/Print";
 import SignaturePad from "signature_pad";
 import "./style.css";
 import { useTranslation } from "react-i18next";
-import _ from "lodash";
+import _, { cloneDeep } from "lodash";
 import { Form } from "../FormBuilder/form.interface";
-import { InputTypeEnum, FormFieldExtended } from "../FormFields/form-field.interface";
+import {
+  InputTypeEnum,
+  FormFieldExtended,
+} from "../FormFields/form-field.interface";
 
 type Props = {
-  data: Form;
-  onChange?: (values: object) => any
+  form: Form;
+  setValues: (value: any) => any;
+  values: any;
 };
 
-const CustomCreateForm = ({ data, onChange }: Props) => {
-  const [values, setValues] = useState({});
-
+const CustomCreateForm = ({ form, setValues, values }: Props) => {
   const [canvas, setCanvas] = useState(null);
   const [pad, setPad] = useState(null);
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const fields = data.formFields;
-
-    const res = fields.reduce((acc, item) => {
-      const { inputType, key } = item;
-
-      if (inputType === InputTypeEnum.CHECKBOX) {
-        acc[key] = [];
-      } else {
-        acc[key] = "";
-      }
-
-      return acc;
-    }, {});
-
-    setValues(res);
-  }, [data]);
 
   useEffect(() => {
     if (canvas) setPad(new SignaturePad(canvas));
@@ -80,9 +64,7 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
     const [key, inputType] = toSplit.split(".");
     if (!inputType) return;
 
-    let obj = {
-      ...values,
-    };
+    let obj = cloneDeep(values);
 
     switch (inputType) {
       case InputTypeEnum.CHECKBOX:
@@ -98,15 +80,17 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
         obj[key] = value;
     }
 
-    const invalidFields = data.formFields.filter(
+    const invalidFields = form.formFields.filter(
       (item) => !checkConditions(obj, item)
     );
 
     for (const f of invalidFields) {
-      obj[f.key] = Array.isArray(obj[f.key]) ? [] : "";
+      delete obj[f.key]
     }
 
-    setValues(obj);
+    const recalculatedVals = recursiveDisplay(form.formFields, cloneDeep(obj));
+
+    setValues(recalculatedVals);
   };
 
   const generateFieldComponent = (field: FormFieldExtended) => {
@@ -237,7 +221,13 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
                   return (
                     <FormControlLabel
                       key={key}
-                      control={<Radio id={`${pk}.${inputType}`} value={key} />}
+                      control={
+                        <Radio
+                          id={`${pk}.${inputType}`}
+                          value={key}
+                          checked={values[pk] == key}
+                        />
+                      }
                       onChange={handleChange}
                       label={inputLabel}
                     />
@@ -321,7 +311,7 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
   const checkConditions = (currentValues, field: FormFieldExtended) => {
     const { conditions } = field;
 
-    if (!conditions) return true;
+    if (!conditions || Object.keys(conditions).length < 1) return true;
 
     return Object.entries(conditions).every(
       ([key, value]: [string, string[]]) => {
@@ -339,9 +329,41 @@ const CustomCreateForm = ({ data, onChange }: Props) => {
     );
   };
 
+  const recursiveDisplay = (fields: any[], valueContainer) => {
+    const allShownFields = fields.filter((item) =>
+      checkConditions(valueContainer, item)
+    );
+
+    const newFieldsToShow = allShownFields.filter(
+      (item) => !(item.key in valueContainer)
+    );
+
+    if (newFieldsToShow.length == 0) return valueContainer;
+
+    for (const newField of newFieldsToShow) {
+      const { defaultValue, key, inputType } = newField;
+
+      let fallbackValue = inputType === InputTypeEnum.CHECKBOX ? [] : "";
+
+      if (defaultValue == null || defaultValue == "") {
+        valueContainer[key] = fallbackValue;
+      } else {
+        let resetValue = defaultValue;
+
+        if (inputType === InputTypeEnum.CHECKBOX) {
+          if (!Array.isArray(defaultValue)) resetValue = [defaultValue];
+        }
+
+        valueContainer[key] = resetValue;
+      }
+    }
+
+    return recursiveDisplay(fields, valueContainer);
+  };
+
   const shownFields = useMemo(() => {
-    return data.formFields.filter((item) => checkConditions(values, item));
-  }, [values, data]);
+    return form.formFields.filter((item) => checkConditions(values, item));
+  }, [values, form]);
 
   return (
     <>

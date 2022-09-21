@@ -105,16 +105,17 @@ function FormFieldSettings({
 
   const actions = [
     { value: "closeForm", label: t("closeForm") },
-    { value: "rescheduleTask", label: t("rescheduleTask") },
+    { value: "reschedualTask", label: t("reschedualTask") },
     { value: "transmitDone", label: t("transmitDone") },
-    { value: "transmitRescheduled", label: t("transmitRescheduled") },
+    { value: "transmitReschedualed", label: t("transmitReschedualed") },
     { value: "startTask", label: t("startTask") },
   ];
 
   const setSelectedCondition = (e, index) => {
     const forms = cloneDeep(activeForms);
-    const data = forms.filter((c) => e.target.value == c.label);
+    const data = forms.filter((c) => e.target.value == c.key);
     let current = selectedForm.slice();
+    data[0].value = [];
     current.splice(index, 1, data[0]);
     setSelectedForm(current);
   };
@@ -150,10 +151,14 @@ function FormFieldSettings({
   }, [selectedForm]);
 
   useEffect(() => {
-    const res = action.map((c) => {
-      return { value: c, label: t(c) };
-    });
-    setCurrentFormAction(res);
+    if (action?.length > 0) {
+      const res = action.map((c) => {
+        return { value: c, label: t(c) };
+      });
+      setCurrentFormAction(res);
+    } else {
+      setCurrentFormAction([]);
+    }
   }, [action]);
 
   useEffect(() => {
@@ -201,7 +206,6 @@ function FormFieldSettings({
   useEffect(() => {
     const index = fieldSettings.findIndex((c) => c._id === selected[0]?._id);
     if (index > -1) {
-      // here
       const condition = Object.entries(fieldSettings[index].conditions)
         .map(([key, value]: [string, any]) => {
           const forms = cloneDeep(activeForms);
@@ -307,6 +311,7 @@ function FormFieldSettings({
                 value={currentFormAction}
                 onChange={(e) => setSelectedAction(e)}
               />
+
               {activeForms.length > 0 ? (
                 <>
                   <Grid
@@ -339,7 +344,7 @@ function FormFieldSettings({
                             label="Fields"
                             select
                             onChange={(e) => setSelectedCondition(e, index)}
-                            value={form.label}
+                            value={form.key}
                           >
                             {activeForms.map((c) => (
                               <MenuItem
@@ -351,9 +356,9 @@ function FormFieldSettings({
                                     : false
                                 }
                                 key={c.key}
-                                value={c.label}
+                                value={c.key}
                               >
-                                {t(c.label)}
+                                {t(c.label)} ({t(c.key)})
                               </MenuItem>
                             ))}
                           </TextField>
@@ -414,11 +419,12 @@ function FormFieldSettings({
                                 <TextField
                                   sx={{ mt: 2 }}
                                   fullWidth
-                                  label="value"
+                                  label={t("value")}
                                   onChange={(e) => setConditionValue(e, index)}
                                   value={form.value || []}
                                   select
                                   SelectProps={{ multiple: true }}
+                                  helperText={t("canSelectMultiple")}
                                 >
                                   {Object.entries(form.options).map(
                                     ([key, value]: [string, any]) => (
@@ -473,7 +479,7 @@ function FormFieldSettings({
                                         sx={{ mt: 1 }}
                                         key={valIndex}
                                         fullWidth
-                                        label="value"
+                                        label={t("value")}
                                         onChange={(e) =>
                                           setStringValue(e, index, valIndex)
                                         }

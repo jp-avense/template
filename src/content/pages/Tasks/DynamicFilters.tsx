@@ -67,6 +67,11 @@ function DynamicFilter() {
 
   useEffect(() => {
     const deets = init(details);
+
+    deets.sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+    
     setTaskDetails(deets);
   }, [details, types, status, agents]);
 
@@ -399,9 +404,6 @@ function DynamicFilter() {
       setOpen(false);
     }
   };
-  taskDetails.sort((a, b) => {
-    return a.label.localeCompare(b.label);
-  });
 
   const handleClose = (e) => {
     e.stopPropagation();

@@ -55,7 +55,7 @@ interface Rows {
   executionStartDate: string;
 }
 
-const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
+const TaskTable = () => {
   const [tableData, setTableData] = useState<Rows[]>([]);
   const filterContext = useContext(FilterContext);
   const tabsContext = useContext(TabsContext);
@@ -181,7 +181,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
   const createRows = (data) => {
     let rows = [];
 
-    data.map((c) => {
+    data.map((c, idx) => {
       let dynamicDetails: any[] = [];
       let details: Rows = {
         dynamicDetails: [],
@@ -194,7 +194,8 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
         updatedBy: "",
         executionStartDate: "",
       };
-      c.taskDetails.map((e) => {
+
+      c.taskDetails.map((e, i) => {
         if (e.inputType === "date" || e.inputType === "datetime") {
           dynamicDetails.push({
             ...e,
@@ -209,13 +210,14 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
             ...e,
             value: dynamicLabel || e.value,
           });
-        } else
+        } else {
           dynamicDetails.push({
             ...e,
-            value: e.value || "",
+            value: e.value ?? "",
             id: e.label,
             order: e.order,
           });
+        }
       });
 
       dynamicDetails.sort((a, b) => a.order - b.order);
@@ -235,12 +237,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
       rows.push(details);
     });
 
-    if (data.length > 0) {
-      setTableData(() => {
-        setCreateRowsDone(true);
-        return rows;
-      });
-    }
+    setTableData(rows)
   };
 
   const headCells = () => {
@@ -383,6 +380,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
           return { ...acc, [formKey]: `${formStr}` };
         }
 
+        // TODO if possible, change to inputtype rather than key
         if (formKey === "lastKnownGeoLocation") {
           if (formObj == null) {
             return {
@@ -473,9 +471,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
 
       const csvData = objectToCsv(table, tasks);
       download(csvData);
-      // console.log("csv", csvData);
     } catch (error) {
-      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -495,12 +491,9 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
     const headers = str.slice(0, str.indexOf("\n")).split(comma);
     const headerFix = headers.map((i) => i.replace(/\r|"|\\/g, ""));
 
-    console.log("headerFix", headerFix);
-
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean);
 
-    console.log("rowFix", rowFix);
 
     const arr = rowFix.map((row) => {
       const rowVal = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -646,7 +639,7 @@ const TaskTable = ({ createRowsDone, setCreateRowsDone }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!createRowsDone || loading ? (
+            {loading ? (
               <TableRow>
                 <TableCell colSpan={headers.length + 1} align="center">
                   <CircularProgress size={30} />

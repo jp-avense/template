@@ -24,10 +24,14 @@ import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import hebFlag from "../../../assets/images/icons/hebFlag.svg";
 import enFlag from "../../../assets/images/icons/enFlag.svg";
+import useRoles from "src/hooks/useRole";
 
 const LoginPage = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const roles = useRoles();
+  const isAdmin = roles.includes("admin");
+  const isBackoffice = roles.includes("backoffice");
 
   const validationSchema = yup.object({
     username: yup
@@ -45,7 +49,7 @@ const LoginPage = () => {
     handleAccess: { accessToken, setAccessToken },
     handleRefresh: { setRefreshToken },
     handleId: { idToken, setIdToken },
-    handleUser: { setUser, getUser },
+    handleUser: { setUser, getUser, user },
   } = context;
 
   const formik = useFormik({
@@ -71,8 +75,6 @@ const LoginPage = () => {
         });
 
         await getUser(IdToken);
-
-        navigate("/dashboard");
       } catch (error) {
         if (error.response.data) setError(t(error.response.data.message));
         else if (error.request) setError(t("noResponse"));
@@ -83,8 +85,12 @@ const LoginPage = () => {
     },
   });
 
-  if (accessToken && idToken) {
-    return <Navigate to="/dashboard" />;
+  if (accessToken && idToken && roles.length > 0) {
+    if (isAdmin || isBackoffice) {
+      return <Navigate to="/dashboard" />;
+    } else {
+      return <Navigate to="/tasks" />;
+    }
   }
 
   const handleDirection = (lang: string) => {
