@@ -12,6 +12,7 @@ import {
   Checkbox,
   CircularProgress,
   Alert,
+  FormHelperText,
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
@@ -56,7 +57,8 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   const [error, setError] = useState("");
   const [type, setType] = useState("");
   const [rows, setRows] = useState(5);
-
+  const [value, setValue] = useState([]);
+  const [currentValue, setCurrentValue] = useState([]);
   const [options, setOptions] = useState([{ key: "", value: "" }]);
 
   const types = [
@@ -158,6 +160,19 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
       }
     },
   });
+
+  useEffect(() => {
+    const res = value.map((c) => {
+      return c;
+    });
+
+    setCurrentValue(res);
+  }, [value]);
+
+  const setSelectedVal = (e) => {
+    const res = e.target.value;
+    setValue(res);
+  };
 
   const optionsValue = (e, index) => {
     let current = options.slice().map((item) => {
@@ -281,22 +296,72 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
                     }
                     fullWidth
                   ></TextField>
-                  <TextField
-                    sx={{ mt: 2 }}
-                    id="defaultValue"
-                    name="defaultValue"
-                    label={t("defaultValue")}
-                    value={formik.values.defaultValue}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.defaultValue &&
-                      Boolean(formik.errors.defaultValue)
-                    }
-                    helperText={
-                      formik.touched.defaultValue && formik.errors.defaultValue
-                    }
-                    fullWidth
-                  ></TextField>
+                  {type === "radios" || type === "dropdown" ? (
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                      <InputLabel>Default Value</InputLabel>
+                      <Select
+                        label={t("defaultValue")}
+                        id="defaultValue"
+                        name="defaultValue"
+                        value={formik.values.defaultValue}
+                        onChange={formik.handleChange}
+                        error={
+                          formik.touched.defaultValue &&
+                          Boolean(formik.errors.defaultValue)
+                        }
+                      >
+                        {options.map((c, index) => (
+                          <MenuItem key={c.key} value={c.key}>
+                            {c.key}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        {formik.touched.defaultValue &&
+                          formik.errors.defaultValue}
+                      </FormHelperText>
+                    </FormControl>
+                  ) : type === "checkboxes" ? (
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                      <InputLabel>Default Value</InputLabel>
+                      <Select
+                        placeholder={t("defaultValue")}
+                        id="defaultValue"
+                        name="defaultValue"
+                        value={currentValue}
+                        onChange={(e) => setSelectedVal(e)}
+                        multiple
+                      >
+                        {options.map((c, index) => (
+                          <MenuItem key={c.key} value={c.key}>
+                            {c.key}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        {formik.touched.defaultValue &&
+                          formik.errors.defaultValue}
+                      </FormHelperText>
+                    </FormControl>
+                  ) : (
+                    <TextField
+                      sx={{ mt: 2 }}
+                      id="defaultValue"
+                      name="defaultValue"
+                      label={t("defaultValue")}
+                      value={formik.values.defaultValue}
+                      onChange={formik.handleChange}
+                      error={
+                        formik.touched.defaultValue &&
+                        Boolean(formik.errors.defaultValue)
+                      }
+                      helperText={
+                        formik.touched.defaultValue &&
+                        formik.errors.defaultValue
+                      }
+                      fullWidth
+                    ></TextField>
+                  )}
                   <TextField
                     sx={{ mt: 2 }}
                     id="validation"
