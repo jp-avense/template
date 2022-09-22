@@ -71,11 +71,11 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
     if (selectedForm.taskDetailKey) {
       setFieldInCreate(true);
 
-      const res = details.find(item => item._id === selectedForm.taskDetailKey) ?? null
+      const res =
+        details.find((item) => item._id === selectedForm.taskDetailKey) ?? null;
 
       setRelatedDetail(res);
-      setInputValue(res?.label ?? "")
-
+      setInputValue(res?.label ?? "");
     }
   }, [selectedForm, details]);
 
@@ -142,7 +142,6 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
     placeholder: yup.string(),
   });
 
-
   const formik = useFormik({
     initialValues: {
       label: selectedForm.label,
@@ -159,9 +158,10 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
         setSuccess("");
 
         const res = { ...values } as any;
+
         res.inputType = type;
 
-        if(fieldInCreate) res.taskDetailKey = relatedDetail._id
+        if (fieldInCreate) res.taskDetailKey = relatedDetail._id;
 
         let errors = [];
 
@@ -181,6 +181,10 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
           ) {
             errors.push("Default value must exist in the options");
           }
+        }
+
+        if (type === "checkboxes") {
+          res.defaultValue = currentValue;
         }
 
         if (type === "textarea") res.rows = rows;
@@ -205,7 +209,7 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   });
 
   useEffect(() => {
-    const res = value.slice()
+    const res = value.slice();
     setCurrentValue(res);
   }, [value]);
 
