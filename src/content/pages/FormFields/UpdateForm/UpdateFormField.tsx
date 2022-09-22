@@ -214,6 +214,7 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
   }, [value]);
 
   const setSelectedVal = (e) => {
+    console.log("e", e);
     const res = e.target.value;
     setValue(res);
   };
@@ -377,8 +378,8 @@ const UpdateFormField = ({ selectedForm, onDone }: Props) => {
                         multiple
                       >
                         {options.map((c, index) => (
-                          <MenuItem key={c.key} value={c.key}>
-                            {c.key}
+                          <MenuItem key={c.key} value={c.value}>
+                            {c.value}
                           </MenuItem>
                         ))}
                       </Select>
