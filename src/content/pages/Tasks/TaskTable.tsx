@@ -237,7 +237,7 @@ const TaskTable = () => {
       rows.push(details);
     });
 
-    setTableData(rows)
+    setTableData(rows);
   };
 
   const headCells = () => {
@@ -343,21 +343,38 @@ const TaskTable = () => {
       const values = item.taskDetails;
 
       const detailValues = values.reduce((acc, item) => {
+        const detailKey = item.key;
         const detailObj = item.value;
 
         if (typeof detailObj == null) {
-          return { ...acc, [item.key]: "" };
+          return { ...acc, [detailKey]: "" };
         }
 
         if (typeof detailObj === "object") {
-          return { ...acc, [item.key]: `"${detailObj?.value}"` };
+          return { ...acc, [detailKey]: `"${detailObj?.value}"` };
         }
 
-        if (typeof detailObj === "string" || typeof detailObj === "number") {
-          return { ...acc, [item.key]: `"${detailObj}"` };
+        if (typeof detailObj === "string" && typeof detailObj === "number") {
+          return { ...acc, [detailKey]: `"${detailObj}"` };
         }
 
-        return { ...acc, [item.key]: detailObj };
+        if (detailKey === "statusId") {
+          const statusLabel = status.find((item) => {
+            if (item.Key === detailObj) {
+              return item.label;
+            }
+          });
+
+          const getLabel = statusLabel?.label;
+
+          return { ...acc, [detailKey]: `"${getLabel}"` };
+        }
+
+        if (Array.isArray(detailObj)) {
+          return { ...acc, [detailKey]: `"${detailObj}"` };
+        }
+
+        return { ...acc, [detailKey]: detailObj ? `"${detailObj}"` : "" };
       }, {});
 
       return detailValues;
@@ -375,9 +392,7 @@ const TaskTable = () => {
         }
 
         if (typeof formObj === "string" || typeof formObj === "number") {
-          const formStr = ("" + formObj).replace(/\n/g, "");
-
-          return { ...acc, [formKey]: `${formStr}` };
+          return { ...acc, [formKey]: `"${formObj}"` };
         }
 
         // TODO if possible, change to inputtype rather than key
@@ -399,7 +414,7 @@ const TaskTable = () => {
           return { ...acc, [formKey]: `"${formObj}"` };
         }
 
-        return { ...acc, [formKey]: formObj };
+        return { ...acc, [formKey]: formObj ? `"${formObj}"` : "" };
       }, {});
 
       return formX;
@@ -425,7 +440,7 @@ const TaskTable = () => {
 
       const findKey = value
         .map((item) => Object.keys(item))
-        .reduce((acc, cur) => (acc > cur.length ? acc : cur), {});
+        .reduce((acc, cur) => (acc > cur ? acc : cur), {});
 
       newArr.push(findKey.join(","));
 
@@ -451,6 +466,8 @@ const TaskTable = () => {
 
       const tasks = res.data.tasks;
 
+      console.log("tasks", tasks);
+
       setXlsData(tasks);
 
       const table = tasks.map((item) => ({
@@ -472,6 +489,7 @@ const TaskTable = () => {
       const csvData = objectToCsv(table, tasks);
       download(csvData);
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         timer: 4000,
@@ -493,7 +511,6 @@ const TaskTable = () => {
 
     const rows = str.slice(str.indexOf("\n") + 1).split("\n");
     const rowFix = rows.map((i) => i.replace(/\r/g, "")).filter(Boolean);
-
 
     const arr = rowFix.map((row) => {
       const rowVal = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -533,7 +550,6 @@ const TaskTable = () => {
 
         setFileName("");
       } catch (error) {
-        console.log(error);
         setUploadStatus({
           status: "error",
           message: getAxiosErrorMessage(error),
